@@ -1,0 +1,24 @@
+{
+  "name": "LexiQ • Dil & Kelime Kartları",
+  "short_name": "LexiQ",
+  "description": "Çok dilli akıllı kelime öğrenme ve pratik yapma uygulaması",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon_ios.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

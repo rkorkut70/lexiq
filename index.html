@@ -1,0 +1,2748 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LexiQ">
+  <link rel="apple-touch-icon" href="icon_ios.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Çok dilli müfredat tabanlı minimalist kelime öğrenme uygulaması.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>LexiQ • Çok Dilli Akıllı Kelime Kartları</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+  <link rel="stylesheet" href="style.css?v=1791301000000">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Üst Başlık (Header) -->
+    <header class="app-header">
+      <div class="brand" id="brandHeaderHomeBtn" title="LexiQ Hakkında">
+        <span class="brand-name">Lexi<span class="brand-highlight">Q</span></span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Sıralama Butonu -->
+        <button id="leaderboardBtn" class="pill-btn user-header-btn leaderboard-header-btn" title="Liderlik Tablosu">
+          <span class="settings-btn-icon">🏆</span>
+          <span>Sıralama</span>
+        </button>
+
+        <!-- Ayarlar & Profil Butonu (Tıklanınca Ayarları Açar) -->
+        <button id="userProfileBtn" class="pill-btn user-header-btn student-profile-header-btn" title="Öğrenci Bilgileri & Profil">
+          <span id="headerUserAvatar" class="settings-btn-icon">🦊</span>
+          <span id="headerUserName">Öğrenci</span>
+        </button>
+
+        <!-- Eski Dil Seçici (Geriye Dönük Uyumluluk için Gizli) -->
+        <button id="langSelectBtn" class="pill-btn" aria-label="Dil Değiştir" title="Dili Değiştir" style="display: none;">
+          <span id="activeLangFlag">🇬🇧</span>
+          <span id="activeLangLabel">EN-TR</span>
+        </button>
+
+        <!-- Rozetler & XP Butonu -->
+        <button id="badgesBtn" class="pill-btn xp-header-btn" title="Kazanılan Puan ve Rozetler Vitrini">
+          <span class="xp-star">⭐</span>
+          <span id="headerXpText">0</span> <span class="xp-suffix">XP</span>
+        </button>
+
+        <!-- Eski Ayrı Ayarlar Butonu (Header'da yer açmak için gizli, yukarıdaki Ayarlar butonu kullanılıyor) -->
+        <button id="settingsBtn" class="icon-btn settings-header-icon-btn" aria-label="Ayarlar" title="Uygulama Ayarları">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <!-- Karanlık Mod Butonu -->
+        <button id="themeToggleBtn" class="icon-btn" aria-label="Tema Değiştir" title="Karanlık / Açık Mod">
+          <!-- Ay ikonu (Karanlık Mod) -->
+          <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Güneş ikonu (Açık Mod) -->
+          <svg id="sunIcon" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Eski Mod Geçiş Çubuğu (Geriye Dönük Uyumluluk için Gizli) -->
+    <nav class="mode-nav-bar" aria-label="Uygulama Modu" style="display: none;">
+      <button class="mode-tab" id="tabFlashcards" data-mode="flashcards">
+        <span class="mode-tab-icon">🃏</span>
+        <span>Kartlar</span>
+      </button>
+      <button class="mode-tab" id="tabArena" data-mode="arena">
+        <span class="mode-tab-icon">🎮</span>
+        <span>Kelime Arenası</span>
+        <span class="mode-pulse-dot" id="arenaAvailableDot" style="display:none;"></span>
+      </button>
+    </nav>
+
+    <!-- ============================================================
+         0. GİRİŞ SAYFASI GÖRÜNÜMÜ (HOME DASHBOARD VIEW)
+         ============================================================ -->
+    <div id="homeView" class="view-panel active-view home-no-scroll" style="display: none;">
+      <div class="home-container">
+        <!-- 0. ÜNİTE SEÇİCİ ÇUBUĞU (İLK KUTUNUN ÜSTÜNDE) -->
+        <div class="home-unit-selector-row">
+          <button id="headerUnitSelectBtn" class="home-unit-select-btn" title="Çalışılan Üniteyi Değiştir" type="button">
+            <div class="home-unit-btn-left">
+              <span class="home-unit-icon">📚</span>
+              <div class="home-unit-text-wrap">
+                <span class="home-unit-sub">Çalışılan Ünite</span>
+                <span class="home-unit-name" id="headerUnitLabel">Starter Unit</span>
+              </div>
+            </div>
+            <div class="home-unit-btn-right">
+              <span class="home-unit-change-tag">Değiştir</span>
+              <svg class="unit-dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <!-- 1. ÜST BİLGİ EKRANI (HERO INFO CARD) -->
+        <section class="home-hero-card">
+          <div class="home-hero-glow"></div>
+          
+          <div class="home-hero-top">
+            <div class="home-user-greeting">
+              <span class="greeting-avatar" id="homeUserAvatar">🦊</span>
+              <span class="greeting-text">Merhaba, <strong id="homeUserName">Öğrenci</strong>!</span>
+            </div>
+            <span class="home-unit-badge" id="homeUnitBadge">🇬🇧 İngilizce • A2</span>
+          </div>
+
+          <div class="home-hero-body">
+            <h2 class="home-hero-title" id="homeHeroTitle">A2 • Starter Unit</h2>
+            <p class="home-hero-desc" id="homeHeroDesc">Gateway to the World A2, Starter Unit kelimelerini öğren</p>
+          </div>
+
+          <button id="homeStartBtn" class="home-cta-btn" type="button">
+            <span class="cta-icon">🃏</span>
+            <span id="homeStartBtnText">Kelime Öğren</span>
+            <svg class="cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </section>
+
+        <!-- 2. KELİME ARENASI (SADE & KOMPAKT PRATİK KARTI) -->
+        <section class="home-arena-banner-card" id="homeArenaBannerCard">
+          <div class="home-arena-banner-left">
+            <div class="home-arena-banner-icon">🎮</div>
+            <div class="home-arena-banner-text">
+              <h3 class="home-arena-banner-title">Kelime Arenası</h3>
+              <p class="home-arena-banner-desc" id="homeArenaSubtext">Öğrendiğin kelimelerle meydan oku ve yarış!</p>
+            </div>
+          </div>
+          <button id="homeViewAllArenaBtn" class="home-arena-go-btn" type="button" aria-label="Kelime Arenası'na Git">
+            <span>Arenaya Başla ▶</span>
+          </button>
+        </section>
+
+        <!-- 3. GÜN ÖĞRENİLEN KELİME BİLGİSİ (TODAY'S LEARNED WORDS CARD) -->
+        <section class="home-daily-progress-card">
+          <div class="daily-progress-header">
+            <div class="daily-progress-title-wrap">
+              <span class="daily-title-icon">🎯</span>
+              <div>
+                <h3 class="daily-card-title">Bugün Öğrenilen Kelimeler</h3>
+                <span class="daily-card-subtitle" id="dailyGoalSubtext">Günlük Hedef: 15 Kelime</span>
+              </div>
+            </div>
+            <span class="daily-percent-badge" id="homeProgressPercent">%0</span>
+          </div>
+
+          <div class="daily-metric-row">
+            <div class="daily-count-display">
+              <span class="daily-learned-val" id="homeTodayLearnedText">0</span>
+              <span class="daily-target-val" id="homeDailyTargetText">/ 15</span>
+              <span class="daily-unit-label">Kelime</span>
+            </div>
+            <div class="daily-pills-col">
+              <span class="daily-pill streak-pill" id="homeStatStreak">🔥 1 Gün Seri</span>
+              <span class="daily-pill remaining-pill" id="homeRemainingText">⏳ 15 Kalan</span>
+            </div>
+          </div>
+
+          <div class="home-progress-track">
+            <div id="homeProgressFill" class="home-progress-fill" style="width: 0%;"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         1. FLASH KARTLAR GÖRÜNÜMÜ (FLASHCARDS VIEW)
+         ============================================================ -->
+    <!-- ============================================================
+         1. KELİME KARTLARI GÖRÜNÜMÜ (SAF KART ÇALIŞMA ALANI)
+         ============================================================ -->
+    <div id="flashcardsView" class="view-panel flashcards-pure-view flashcards-no-scroll" style="display: none;">
+      <!-- Arka Plan Uyumluluk Elemanları (Görünmez, JS Uyumluluğu) -->
+      <div class="card-hidden-compat" style="display: none;" aria-hidden="true">
+        <button id="flashcardsBackBtn" type="button"></button>
+        <span id="focusUnitTitle"></span>
+        <button id="unitSelectBtn" type="button"></button>
+        <span id="activeUnitTitle"></span>
+        <span id="activeUnitDates"></span>
+        <span id="progressCountLabel"></span>
+        <span id="learnedCountText"></span>
+        <span id="totalCountText"></span>
+        <span id="progressPercentText"></span>
+        <div id="progressFill"></div>
+        <span id="cardIndexCounter"></span>
+        <button class="filter-tab active" data-filter="pending"></button>
+        <button class="filter-tab" data-filter="learned"></button>
+        <select id="dailyGoalSelect"><option value="15" selected>15</option></select>
+        <div id="cardNavBar" style="display:none !important;"></div>
+        <div id="actionPanel" style="display:none !important;"></div>
+      </div>
+
+      <!-- Saf Kart Alanı (Merkezi Odak) -->
+      <main class="card-pure-section">
+        <!-- KART FİLTRE VE İSTATİSTİK SEKMELERİ -->
+        <div class="card-filter-tabs-container">
+          <div class="card-tab-buttons">
+            <button class="card-tab-btn active" data-filter="pending" id="cardTabPendingBtn">
+              Öğrenilecekler <span class="tab-badge" id="pendingTabCount">(0)</span>
+            </button>
+            <button class="card-tab-btn" data-filter="learned" id="cardTabLearnedBtn">
+              Öğrenilenler <span class="tab-badge" id="learnedTabCount">(0)</span>
+            </button>
+          </div>
+          
+          <div class="card-tab-content">
+            <div id="tabContentPending" class="tab-pane active">
+              <div class="inline-goal-selector">
+                <span class="inline-goal-label">Günlük Hedef:</span>
+                <select id="inlineDailyGoalSelect" class="setting-select-box inline-select">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15" selected>15</option>
+                  <option value="20">20</option>
+                  <option value="+5">+5 Ekle</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="tabContentLearned" class="tab-pane" style="display: none;">
+              <div class="today-bar-content">
+                <div class="today-bar-left">
+                  <span class="today-bar-title">Günlük İlerleme:</span>
+                </div>
+                <div class="today-bar-right">
+                  <span class="today-bar-metric">
+                    <strong id="cardTodayLearnedCount" class="today-bar-num">0</strong>
+                    <span class="today-bar-sep">/</span>
+                    <span id="cardTodayTargetCount" class="today-bar-target">15</span>
+                  </span>
+                </div>
+              </div>
+              <div class="today-bar-track">
+                <div id="cardTodayProgressFill" class="today-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kart Sarmalayıcı (Fiziksel Deste Efekti) -->
+        <div class="flashcard-wrapper" id="flashcardWrapper" title="Çevirmek için dokunun">
+          <div class="flashcard" id="flashcard">
+            <!-- Kart Ön Yüzü (Kağıt Şablonu) -->
+            <div class="card-face card-front" id="cardFrontFace" lang="en">
+              <div class="card-top">
+                <span class="card-unit-label" id="cardUnitBadge" lang="en">UNIT 1</span>
+                <span class="card-status-badge status-pending" id="cardStatusBadge">
+                  Bekliyor
+                </span>
+              </div>
+
+              <div class="card-center">
+                <h1 class="card-word" id="cardTargetWord" lang="en">Kelime</h1>
+                
+                <!-- Fonetik Telaffuz (IPA) ve Sözcük Türü Rozetleri -->
+                <div class="word-meta-row" id="wordMetaRow">
+                  <span class="phonetic-badge" id="cardPhonetic" title="Fonetik Telaffuz">/telaffuz/</span>
+                  <span class="pos-badge" id="cardPos" lang="en" title="Sözcük Türü">NOUN</span>
+                </div>
+
+                <!-- Aksan / Telaffuz Kontrolleri -->
+                <div class="audio-controls-row">
+                  <!-- İngilizce için US ve UK Aksan Butonları -->
+                  <div id="enAccentGroup" class="accent-btn-group">
+                    <button type="button" class="accent-btn active" id="pronounceUsBtn" data-accent="US" title="Amerikan İngilizcesi (US)">
+                      <svg class="accent-flag-svg" width="16" height="11" viewBox="0 0 16 11" fill="none" style="border-radius:2px; flex-shrink:0;">
+                        <rect width="16" height="11" fill="#B22234"/>
+                        <rect y="1.22" width="16" height="1.22" fill="white"/>
+                        <rect y="3.66" width="16" height="1.22" fill="white"/>
+                        <rect y="6.11" width="16" height="1.22" fill="white"/>
+                        <rect y="8.55" width="16" height="1.22" fill="white"/>
+                        <rect width="6.4" height="6.11" fill="#3C3B6E"/>
+                      </svg>
+                      <span class="accent-name">US</span>
+                      <svg class="accent-sound-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+
+                    <button type="button" class="accent-btn" id="pronounceUkBtn" data-accent="UK" title="İngiliz İngilizcesi (UK)">
+                      <svg class="accent-flag-svg" width="16" height="11" viewBox="0 0 16 11" fill="none" style="border-radius:2px; flex-shrink:0;">
+                        <rect width="16" height="11" fill="#012169"/>
+                        <path d="M0 0 L16 11 M16 0 L0 11" stroke="#ffffff" stroke-width="2"/>
+                        <path d="M0 0 L16 11 M16 0 L0 11" stroke="#C8102E" stroke-width="1.2"/>
+                        <path d="M8 0 V11 M0 5.5 H16" stroke="#ffffff" stroke-width="3"/>
+                        <path d="M8 0 V11 M0 5.5 H16" stroke="#C8102E" stroke-width="1.8"/>
+                      </svg>
+                      <span class="accent-name">UK</span>
+                      <svg class="accent-sound-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Fransızca / Almanca için Genel Telaffuz Butonu -->
+                  <button class="audio-btn" id="pronounceBtn" style="display:none;" aria-label="Telaffuzu Dinle" title="Telaffuzu Dinle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-bottom">
+                <div class="card-flip-pill" id="cardFlipPromptFront" title="Kartı çevirmek için dokunun">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="17 1 21 5 17 9"></polyline>
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                    <polyline points="7 23 3 19 7 15"></polyline>
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                  </svg>
+                  <span>Anlamı Gör</span>
+                </div>
+                <span id="cardCategoryHint" class="card-cat-badge">Genel</span>
+              </div>
+            </div>
+
+            <!-- Kart Arka Yüzü -->
+            <div class="card-face card-back">
+              <div class="card-top">
+                <span class="card-unit-label" id="cardBackWordLabel">Kelime</span>
+                <span class="card-status-badge status-pending" id="cardBackStatusBadge">
+                  Türkçe Çeviri
+                </span>
+              </div>
+
+              <div class="card-center">
+                <h2 class="card-meaning" id="cardMeaningText">Anlamı</h2>
+                <div class="example-box">
+                  <p class="example-sentence" id="cardExampleSentence">Örnek cümle...</p>
+                  <p class="example-translation" id="cardSentenceTranslation">Cümle çevirisi...</p>
+                </div>
+              </div>
+
+              <div class="card-bottom">
+                <div class="card-flip-pill return-pill" id="cardFlipPromptBack" title="Ön yüze dönmek için dokunun">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>Ön Yüz</span>
+                </div>
+                <button type="button" id="markRepeatBtn" class="card-flip-pill repeat-pill" title="Tekrar Öğrenilecek">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>Tekrar Et</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Günlük Hedef Tamamlandı Kutlama ve Yönlendirme Kartı -->
+        <div id="flashcardGoalCompletedView" class="goal-completed-full-view" style="display: none;">
+          <div class="completed-hero-icon">🏆</div>
+          <h2 class="completed-hero-title">🎯 Günlük Hedef Tamamlandı!</h2>
+          <p class="completed-hero-desc" id="cardCompletedFullDesc">
+            Tebrikler! Belirlediğin öğrenme hedefini başarıyla tamamladın. Öğrendiğin bu kelimeleri kalıcı hafızana almak için şimdi <strong>Kelime Arenası'nda eğlenceli etkinliklerle</strong> pratik yapma zamanı!
+          </p>
+          <div class="completed-hero-actions">
+            <button id="cardFullArenaBtn" class="pill-btn primary-action-btn" type="button">
+              <span>🎮</span> Kelime Arenası'nda Başla
+            </button>
+            <button id="cardFullHomeBtn" class="pill-btn secondary-btn" type="button">
+              <span>🏠</span> Giriş Sayfasına Dön
+            </button>
+            <button id="cardFullLearnMoreBtn" class="pill-btn secondary-btn" type="button">
+              <span>➕</span> <span id="cardFullLearnMoreText">+5 Kelime Daha Öğren</span>
+            </button>
+            <button id="cardFullReviewLearnedBtn" class="pill-btn secondary-btn" type="button">
+              <span>👀</span> Öğrenilen Kelimeleri İncele
+            </button>
+          </div>
+        </div>
+
+        <!-- Günlük Hedef Tamamlandıysa Kart Altında Kelime Arenası'na Git Butonu -->
+        <button type="button" id="cardReviewGoArenaBtn" class="card-review-arena-btn" style="display: none;" title="Kelime Arenası'nda Pratik Yap">
+          <span class="review-arena-icon">🎮</span>
+          <span class="review-arena-text">Arenaya Git</span>
+          <span class="review-arena-arrow">›</span>
+        </button>
+
+        <!-- Kart Altı Gezinme ve Öğrendim Aksiyon Çubuğu -->
+        <div class="card-action-bar-under" id="cardBottomControls">
+          <button type="button" id="prevCardBtn" class="card-nav-action-btn" aria-label="Önceki Kelime" title="Önceki Kelime">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <button type="button" id="markLearnedBtn" class="card-main-learned-btn" title="Öğrenildi Olarak İşaretle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span id="markLearnedBtnText">Öğrendim</span>
+          </button>
+
+          <button type="button" id="nextCardBtn" class="card-nav-action-btn" aria-label="Sonraki Kelime" title="Sonraki Kelime">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- ============================================================
+         2. KELİME ARENASI & OYUNLAR GÖRÜNÜMÜ (ARENA VIEW)
+         ============================================================ -->
+    <div id="arenaView" class="view-panel" style="display: none;">
+      <!-- Modern Birleşik Oyun Başlığı & İstatistik Kartı -->
+      <div class="arena-hero-banner" id="arenaHeroBanner">
+        <div class="arena-hero-glow"></div>
+        <div class="arena-hero-top">
+          <div class="arena-hero-title-wrap">
+            <h2 class="arena-hero-title">🎮 Kelime Arenası</h2>
+            <p class="arena-hero-sub">Öğrendiğin kelimelerle meydan oku, puan ve rozet kazan!</p>
+          </div>
+          <div class="arena-learned-pool-pill" id="arenaLearnedPoolPill" title="Pratik Havuzundaki Kelime Sayısı">
+            <span class="pool-icon">📚</span>
+            <span id="arenaPoolCountText">0 Kelime</span>
+          </div>
+        </div>
+
+        <div class="arena-quick-stats">
+          <div class="quick-stat-badge streak">
+            <div class="stat-top-line">
+              <span class="stat-icon">🔥</span>
+              <span class="stat-lbl">Seri</span>
+            </div>
+            <strong class="stat-num" id="arenaStreakText">0</strong>
+          </div>
+          <div class="quick-stat-badge mult">
+            <div class="stat-top-line">
+              <span class="stat-icon">⚡</span>
+              <span class="stat-lbl">Çarpan</span>
+            </div>
+            <strong class="stat-num" id="arenaMultiplierText">x1.0</strong>
+          </div>
+          <div class="quick-stat-badge xp">
+            <div class="stat-top-line">
+              <span class="stat-icon">⭐</span>
+              <span class="stat-lbl">Toplam XP</span>
+            </div>
+            <strong class="stat-num" id="arenaXpText">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- YETERSİZ ÖĞRENİLEN KELİME UYARI EKRANI (EMPTY STATE) -->
+      <div id="arenaEmptyState" class="arena-empty-state" style="display: none;">
+        <div class="empty-trophy-icon">🏆</div>
+        <h2 class="empty-title">Arenaya Giriş Kilitli!</h2>
+        <p class="empty-desc">
+          Arenada sadece kartlarda <strong>"Öğrendim"</strong> dediğin kelimeler yarışır. Yarışmaya başlamak için kartlardan en az <strong>3 kelimeyi</strong> öğrenmelisin!
+        </p>
+        <div class="empty-progress-box">
+          <div class="empty-progress-text">Hazır Kelimeler: <span id="arenaReadyCount">0</span> / 3</div>
+          <div class="empty-progress-track">
+            <div id="arenaReadyFill" class="empty-progress-fill"></div>
+          </div>
+        </div>
+        <button id="arenaGoToCardsBtn" class="pill-btn primary-action-btn">
+          <span>🃏</span> Kartlara Dön ve Kelime Öğren
+        </button>
+      </div>
+
+      <!-- OYUNLAR MENÜSÜ / AKTİVİTE SEÇİM LİSTESİ (GAMES HUB) -->
+      <div id="arenaGamesMenu" class="arena-games-menu">
+        <div class="games-hub-grid" id="gamesHubGrid">
+          <!-- 1. Kart Eşleştirme (min 8) -->
+          <div class="game-hub-card" data-game="match">
+            <div class="game-hub-icon-wrap theme-indigo">
+              <span class="game-hub-icon">🃏</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Kart Eşleştirme</span>
+                <span class="game-req-badge" id="reqBadge_match">🔒 En az 8 kelime</span>
+              </div>
+              <p class="game-hub-desc">Yabancı kelimeleri Türkçe anlamlarıyla eşleştir.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_match">Oyna ▶</span>
+          </div>
+
+          <!-- 2. Doğru mu Yanlış mı? (min 4) -->
+          <div class="game-hub-card" data-game="truefalse">
+            <div class="game-hub-icon-wrap theme-amber">
+              <span class="game-hub-icon">⚡</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Doğru mu Yanlış mı?</span>
+                <span class="game-req-badge" id="reqBadge_truefalse">🔒 En az 4 kelime</span>
+              </div>
+              <p class="game-hub-desc">Verilen anlam doğru mu? Zamana karşı karar ver.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_truefalse">Oyna ▶</span>
+          </div>
+
+          <!-- 3. Harf Tetrisi (min 3) -->
+          <div class="game-hub-card" data-game="tetris">
+            <div class="game-hub-icon-wrap theme-emerald">
+              <span class="game-hub-icon">🕹️</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Harf Tetrisi</span>
+                <span class="game-req-badge" id="reqBadge_tetris">🔒 En az 3 kelime</span>
+              </div>
+              <p class="game-hub-desc">Süzülen harfleri yakalayarak kelimeyi tamamla.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_tetris">Oyna ▶</span>
+          </div>
+
+          <!-- 4. Harf Karıştırma (min 3) -->
+          <div class="game-hub-card" data-game="anagram">
+            <div class="game-hub-icon-wrap theme-blue">
+              <span class="game-hub-icon">🧩</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Harf Karıştırma</span>
+                <span class="game-req-badge" id="reqBadge_anagram">🔒 En az 3 kelime</span>
+              </div>
+              <p class="game-hub-desc">Dağınık harfleri sıraya dizerek kelimeyi bul.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_anagram">Oyna ▶</span>
+          </div>
+
+          <!-- 5. Dinle ve Yaz (min 4) -->
+          <div class="game-hub-card" data-game="listen">
+            <div class="game-hub-icon-wrap theme-purple">
+              <span class="game-hub-icon">🎧</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Dinle ve Yaz</span>
+                <span class="game-req-badge" id="reqBadge_listen">🔒 En az 4 kelime</span>
+              </div>
+              <p class="game-hub-desc">Telaffuzu dinle, duyduğun kelimeyi harflerle yaz.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_listen">Oyna ▶</span>
+          </div>
+
+          <!-- 6. 4 Şıklı Test (min 6) -->
+          <div class="game-hub-card" data-game="quiz">
+            <div class="game-hub-icon-wrap theme-rose">
+              <span class="game-hub-icon">🎯</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">4 Şıklı Test</span>
+                <span class="game-req-badge" id="reqBadge_quiz">🔒 En az 6 kelime</span>
+              </div>
+              <p class="game-hub-desc">Zamana karşı çoktan seçmeli kelime testi.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_quiz">Oyna ▶</span>
+          </div>
+
+          <!-- 7. Cümle Kurma (min 4) -->
+          <div class="game-hub-card" data-game="scramble">
+            <div class="game-hub-icon-wrap theme-cyan">
+              <span class="game-hub-icon">📝</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Cümle Kurma</span>
+                <span class="game-req-badge" id="reqBadge_scramble">🔒 En az 4 kelime</span>
+              </div>
+              <p class="game-hub-desc">Karışık kelimeleri dizerek örnek cümleyi oluştur.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_scramble">Oyna ▶</span>
+          </div>
+
+          <!-- 8. Boşluk Doldurma (min 5) -->
+          <div class="game-hub-card" data-game="cloze">
+            <div class="game-hub-icon-wrap theme-orange">
+              <span class="game-hub-icon">✨</span>
+            </div>
+            <div class="game-hub-info">
+              <div class="game-hub-title-row">
+                <span class="game-hub-title">Boşluk Doldurma</span>
+                <span class="game-req-badge" id="reqBadge_cloze">🔒 En az 5 kelime</span>
+              </div>
+              <p class="game-hub-desc">Örnek cümledeki eksik anahtar kelimeyi bul.</p>
+            </div>
+            <span class="game-hub-play-btn" id="playBtn_cloze">Oyna ▶</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AKTİF OYUN KONTEYNERİ -->
+      <!-- AKTİF OYUN KONTEYNERİ (TAM EKRAN VE YALITILMIŞ OYUN SAHASI) -->
+      <div id="arenaActiveGameArea" class="arena-active-game-area" style="display: none;">
+        <!-- 1. SATIR: OYUN ÜST GEZİNME ÇUBUĞU (Sol: Arenaya Dön, Sağ: ? ve X) -->
+        <div class="active-game-top-bar">
+          <div class="active-game-top-left">
+            <button id="backToGamesMenuBtn" class="back-to-games-btn" type="button" title="Kelime Arenası Menüsüne Dön">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>🎮 Arenaya Dön</span>
+            </button>
+          </div>
+          <div class="active-game-top-actions">
+            <!-- Oyun Penceresi Ses Efektlerini Aç / Kapat Butonu -->
+            <button id="gameSoundFxToggleBtn" class="active-game-icon-btn game-sound-toggle-btn" type="button" title="Oyun Ses Efektlerini Aç / Kapat" aria-label="Ses Efektleri">
+              <span id="gameSoundFxIcon">🔊</span>
+            </button>
+            <button id="gameHowToPlayBtn" class="active-game-icon-btn game-how-to-play-circle-btn" type="button" title="Nasıl Oynanır?" aria-label="Nasıl Oynanır">
+              <span class="topbar-question-icon">?</span>
+            </button>
+            <button id="closeActiveGameBtn" class="active-game-icon-btn active-game-close-btn" type="button" title="Kapat (Menüye Dön)" aria-label="Kapat">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. SATIR: TEK SATIR BÜYÜK VE ORTALANMIŞ OYUN ADI -->
+        <div class="active-game-title-row">
+          <h2 class="active-game-title-text" id="activeGameNameBadge">Arena</h2>
+        </div>
+
+        <!-- Oyun Nasıl Oynanır Açıklama Modalı / Overlay -->
+        <div id="gameHowToPlayOverlay" class="game-how-to-play-overlay" style="display: none;">
+          <div class="game-how-to-card">
+            <div class="game-how-to-header">
+              <div class="game-how-to-icon" id="howToPlayIcon">🎮</div>
+              <div class="game-how-to-title-wrap">
+                <h3 class="game-how-to-title" id="howToPlayTitle">Oyun Adı</h3>
+                <span class="game-how-to-tag" id="howToPlayTag">Nasıl Oynanır?</span>
+              </div>
+            </div>
+
+            <div class="game-how-to-body" id="howToPlayContent">
+              <!-- JS ile dinamik kurallar ve açıklamalar doldurulur -->
+            </div>
+
+            <div class="game-how-to-footer">
+              <button id="gameStartPlayBtn" class="game-start-play-btn" type="button">
+                <span id="howToPlayBtnText">Oyuna Başla</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+              <label class="how-to-play-remember">
+                <input type="checkbox" id="howToPlayDontShowCheck">
+                <span>Bir dahaki sefere doğrudan başla</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. KART EŞLEŞTİRME (MEMORY MATCH) -->
+        <div id="gameMatchView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="matchHintBtn" class="game-hint-btn" type="button" title="Bir Çift İpucu Göster (-5 XP)">💡 İpucu <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center"></div>
+              <div class="game-card-header-actions">
+                <span class="match-score-badge">Eşleşen: <strong id="matchFoundCount">0</strong> / 4</span>
+              </div>
+            </div>
+            <div class="game-prompt">
+              <div class="game-prompt-label">HEDEF</div>
+              <div class="game-prompt-meaning">Kelimeleri Anlamlarıyla Eşleştir</div>
+              <div class="game-prompt-hint">Yabancı kelimeye ve Türkçe karşılığına dokun</div>
+            </div>
+            <div class="match-grid" id="matchGrid">
+              <!-- 8 kart JS ile doldurulacak -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. DOĞRU MU YANLIŞ MI? (TRUE OR FALSE) -->
+        <div id="gameTrueFalseView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="tfHintBtn" class="game-hint-btn" type="button" title="Kelime Hakkında İpucu Al (-3 XP)">💡 İpucu <span class="hint-cost-badge">-3 XP</span></button>
+              </div>
+              <div class="game-header-center">
+                <button class="mini-audio-btn" id="tfAudioBtn" title="Telaffuzu Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="game-card-header-actions">
+                <span class="tetris-timer-badge">⏱️ <span id="tfTimer">20</span>s</span>
+              </div>
+            </div>
+            <div class="tf-card-body">
+              <div id="tfHintDetail" class="game-hint-bubble" style="display: none;"></div>
+              <div class="tf-word-box">
+                <span class="tf-word-label">KELİME</span>
+                <h3 class="tf-target-word" id="tfTargetWord">Word</h3>
+              </div>
+              <div class="tf-meaning-box">
+                <span class="tf-word-label">GÖSTERİLEN ANLAM</span>
+                <p class="tf-displayed-meaning" id="tfDisplayedMeaning">Anlamı</p>
+              </div>
+              <div class="tf-actions-row">
+                <button id="tfFalseBtn" class="tf-action-btn tf-false-btn" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>YANLIŞ</span>
+                </button>
+                <button id="tfTrueBtn" class="tf-action-btn tf-true-btn" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>DOĞRU</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. HARF TETRİSİ (WORD DROP) -->
+        <div id="gameTetrisView" class="game-active-area" style="display: none;">
+          <div class="game-card tetris-card">
+            <div class="game-card-header tetris-card-header">
+              <div class="game-header-left tetris-header-left">
+                <button id="tetrisHintBtn" class="game-hint-btn" type="button" title="Sıradaki Harfi Doldur (-5 XP)">💡 İpucu <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center">
+                <button class="mini-audio-btn" id="tetrisAudioBtn" title="Telaffuzu Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="game-card-header-actions tetris-header-right">
+                <span class="tetris-timer-badge">⏱️ <span id="tetrisTimer">30</span>s</span>
+              </div>
+            </div>
+
+            <div class="game-prompt tetris-prompt">
+              <div class="game-prompt-label tetris-prompt-label">TÜRKÇE ANLAMI</div>
+              <div class="game-prompt-meaning tetris-meaning" id="tetrisMeaningText">anlamı</div>
+              <div class="game-prompt-hint tetris-hint-text" id="tetrisHintText">Düşen harfleri yakala ve kelimeyi tamamla!</div>
+            </div>
+
+            <!-- Düşen Harfler Oyun Sahası -->
+            <div class="tetris-stage" id="tetrisStage">
+              <div class="tetris-danger-line" title="Tehlike Çizgisi"></div>
+              <!-- Düşen bloklar dinamik eklenecek -->
+            </div>
+
+            <!-- Tetris Hedef Harf Dizisi -->
+            <div class="tetris-target-bar">
+              <span class="tetris-target-label">KELİME:</span>
+              <div class="tetris-target-slots" id="tetrisSlots"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. HARF KARIŞTIRMA (ANAGRAM RUSH) -->
+        <div id="gameAnagramView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="anagramHintBtn" class="game-hint-btn" type="button" title="Sıradaki Doğru Harfi Yerleştir (-5 XP)">💡 İpucu <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center">
+                <button class="mini-audio-btn" id="anagramAudioBtn" title="Telaffuzu Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="game-card-header-actions">
+                <span class="xp-bubble">+10 XP</span>
+              </div>
+            </div>
+
+            <div class="game-prompt">
+              <div class="game-prompt-label">TÜRKÇE ANLAMI</div>
+              <div class="game-prompt-meaning" id="anagramMeaningText">anlamı</div>
+              <div class="game-prompt-hint" id="anagramHintText"></div>
+            </div>
+
+            <div class="letter-slots-container" id="anagramSlots"></div>
+            <div class="letter-bank-container" id="anagramBank"></div>
+
+            <div class="game-controls-row">
+              <button id="anagramBackspaceBtn" class="game-ctrl-btn" title="Son Harfi Geri Al" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                  <line x1="18" y1="9" x2="12" y2="15"></line>
+                  <line x1="12" y1="9" x2="18" y2="15"></line>
+                </svg>
+                <span>Geri Al</span>
+              </button>
+              <button id="anagramResetBtn" class="game-ctrl-btn" title="Baştan Başla" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Sıfırla</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. DİNLE VE YAZ (LISTEN & SPELL) -->
+        <div id="gameListenView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="listenHintBtn" class="game-hint-btn" type="button" title="Türkçe Anlam İpucu Al (-5 XP)">💡 İpucu <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center">
+                <button class="mini-audio-btn" id="listenHeaderAudioBtn" title="Sesi Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="game-card-header-actions">
+                <span class="xp-bubble">+15 XP</span>
+              </div>
+            </div>
+            <div class="listen-prompt-box">
+              <button class="listen-big-speaker-btn" id="listenPlayAudioBtn" title="Tekrar Dinle" type="button">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span>Sesi Dinle</span>
+              </button>
+              <div class="game-prompt-hint" id="listenHintText">İpucu: anlamı</div>
+            </div>
+            <div class="letter-slots-container" id="listenSlots"></div>
+            <div class="letter-bank-container" id="listenBank"></div>
+            <div class="game-controls-row">
+              <button id="listenBackspaceBtn" class="game-ctrl-btn" title="Son Harfi Geri Al" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                  <line x1="18" y1="9" x2="12" y2="15"></line>
+                  <line x1="12" y1="9" x2="18" y2="15"></line>
+                </svg>
+                <span>Geri Al</span>
+              </button>
+              <button id="listenResetBtn" class="game-ctrl-btn" title="Baştan Başla" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Sıfırla</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. 4 ŞIKLI HIZLI TEST (SPEED QUIZ) -->
+        <div id="gameQuizView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="quizHintBtn" class="game-hint-btn" type="button" title="2 Yanlış Şıkkı Ele (-5 XP)">💡 50:50 Joker <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-card-header-actions">
+                <span class="xp-bubble">+10 XP</span>
+              </div>
+            </div>
+            <div class="quiz-question-box">
+              <span class="game-prompt-label">BU KELİMENİN ANLAMI NEDİR?</span>
+              <div class="quiz-target-word-row">
+                <h2 class="quiz-target-word" id="quizTargetWord">Word</h2>
+                <button class="mini-audio-btn quiz-word-audio-btn" id="quizAudioBtn" title="Telaffuzu Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="quiz-options-grid" id="quizOptionsGrid">
+              <!-- 4 şık JS ile doldurulacak -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. CÜMLE KURMA (SENTENCE SCRAMBLE) -->
+        <div id="gameScrambleView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="scrambleHintBtn" class="game-hint-btn" type="button" title="Sıradaki Doğru Kelimeyi Yerleştir (-5 XP)">💡 İpucu <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center">
+                <button class="mini-audio-btn" id="scrambleAudioBtn" title="Cümleyi Dinle" aria-label="Telaffuz" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="game-card-header-actions">
+                <span class="xp-bubble">+15 XP</span>
+              </div>
+            </div>
+            <div class="scramble-prompt-box">
+              <span class="game-prompt-label">CÜMLENİN TÜRKÇE KARŞILIĞI</span>
+              <p class="scramble-translation-text" id="scrambleTranslationText">Cümle çevirisi...</p>
+            </div>
+            <div class="scramble-slots-area" id="scrambleSlots"></div>
+            <div class="scramble-chips-bank" id="scrambleBank"></div>
+            <div class="game-controls-row">
+              <button id="scrambleBackspaceBtn" class="game-ctrl-btn" title="Son Kelimeyi Geri Al" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                  <line x1="18" y1="9" x2="12" y2="15"></line>
+                  <line x1="12" y1="9" x2="18" y2="15"></line>
+                </svg>
+                <span>Geri Al</span>
+              </button>
+              <button id="scrambleResetBtn" class="game-ctrl-btn" title="Baştan Başla" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Sıfırla</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. BOŞLUK DOLDURMA (SENTENCE CLOZE) -->
+        <div id="gameClozeView" class="game-active-area" style="display: none;">
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-left">
+                <button id="clozeHintBtn" class="game-hint-btn" type="button" title="2 Yanlış Şıkkı Ele (-5 XP)">💡 50:50 Joker <span class="hint-cost-badge">-5 XP</span></button>
+              </div>
+              <div class="game-header-center"></div>
+              <div class="game-card-header-actions">
+                <span class="xp-bubble">+10 XP</span>
+              </div>
+            </div>
+
+            <div class="cloze-sentence-box">
+              <p class="cloze-sentence-text" id="clozeSentenceText">Cümle yükleniyor...</p>
+              <p class="cloze-translation-text" id="clozeTranslationText">Çeviri...</p>
+            </div>
+
+            <div class="cloze-options-grid" id="clozeOptionsGrid">
+              <!-- 4 Seçenek Butonu JS ile doldurulacak -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alt Ortada Az Görünür Açılır Çekmece / Ana Ekran Penceresi -->
+    <div id="floatingNavDock" class="bottom-drawer-dock" aria-label="Hızlı Gezinme" style="display: none;">
+      <!-- Çekmece Arkası Yarı Saydam Karartma -->
+      <div id="drawerBackdrop" class="drawer-backdrop" style="display: none;"></div>
+
+      <!-- Açılır Pencere / Menü Çekmecesi (Gizli, ucuna tıklayınca görünür olur) -->
+      <div id="floatingNavMenu" class="drawer-panel" style="display: none;" role="menu">
+        <div class="drawer-handle-bar" id="drawerCloseBar" title="Kapat">
+          <div class="drawer-pill-indicator"></div>
+        </div>
+        <div class="drawer-actions">
+          <button type="button" class="drawer-btn drawer-home-btn" id="floatMenuHome" data-tab="home">
+            <span class="dmenu-icon">🏠</span>
+            <span class="dmenu-title">Ana Ekran</span>
+          </button>
+          <button type="button" class="drawer-btn" id="floatMenuCards" data-tab="flashcards">
+            <span class="dmenu-icon">🃏</span>
+            <span class="dmenu-title">Kelime Kartları</span>
+          </button>
+          <button type="button" class="drawer-btn" id="floatMenuArena" data-tab="arena">
+            <span class="dmenu-icon">🎮</span>
+            <span class="dmenu-title">Kelime Arenası</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ekranda Yer Kaplamayan, Az Görünür Uç (Tetikleyici Sekme) -->
+      <button type="button" id="floatingToggleBtn" class="drawer-peek-tab" aria-label="Ana Ekran Penceresini Aç" title="Ana Ekran Menüsü">
+        <span class="peek-tab-indicator"></span>
+        <span class="peek-tab-content">
+          <svg class="peek-tab-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          <span class="peek-tab-text">Ana Ekran</span>
+          <svg class="peek-tab-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <!-- Toast Bildirim (Kompakt Bilgilendirmeler) -->
+    <div id="toast" class="toast">Durum güncellendi</div>
+
+    <!-- OYUN & XP BÜYÜK KUTLAMA BANNERI (GÖZE ÇARPAN DİNAMİK EFEKTLER) -->
+    <div id="celebrationBanner" class="celebration-banner">
+      <div class="celebration-burst-glow"></div>
+      <div class="celebration-icon" id="celebrationIcon">🎉</div>
+      <div class="celebration-content">
+        <div class="celebration-title" id="celebrationTitle">Tebrikler!</div>
+        <div class="celebration-subtitle" id="celebrationSubtitle">+15 XP Kazandınız!</div>
+      </div>
+      <div class="celebration-xp-pill" id="celebrationXpPill">+15 XP</div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       İLK KULLANIM KURULUM SİHİRBAZI (ONBOARDING WIZARD)
+       ============================================================ -->
+  <div id="onboardingModal" class="modal-overlay full-screen-modal" style="display: none;">
+    <div class="modal-card onboarding-card">
+      <!-- Sihirbaz İlerleme Çubuğu -->
+      <div class="onboarding-steps-indicator" style="display:none;">
+        <span class="ob-step-dot active" data-step="1"></span>
+        <span class="ob-step-dot" data-step="2"></span>
+        <span class="ob-step-dot" data-step="3"></span>
+        <span class="ob-step-dot" data-step="4"></span>
+      </div>
+
+      <!-- 1. ADIM: YENİ DİNAMİK & ÇEKİCİ KARŞILAMA VE GİRİŞ EKRANI -->
+      <div class="onboarding-step-view active welcome-screen-view" id="obStep0">
+        <!-- Kurumsal Üst Rozet (Kompakt ADÜ YDYO Kimliği) -->
+        <div class="welcome-school-badge">
+          <img src="school_logo.jpg" alt="ADÜ YDYO Logo" class="welcome-school-logo">
+          <div class="welcome-school-text">
+            <span class="welcome-school-title">ADÜ Yabancı Diller Yüksekokulu</span>
+            <span class="welcome-school-sub">Resmi Kelime Öğrenme Platformu</span>
+          </div>
+        </div>
+
+        <!-- Ana Logo ve Enerjik Başlık -->
+        <div class="welcome-hero-section">
+          <div class="welcome-brand-wrapper">
+            <h1 class="welcome-brand-name">Lexi<span class="welcome-brand-q">Q</span></h1>
+            <span class="welcome-version-pill">v1.3.0 Beta</span>
+          </div>
+          <p class="welcome-hero-tagline">Akıllı Tekrar • Kelime Arenası • Kalıcı Başarı</p>
+        </div>
+
+        <!-- YENİ: BİLGİLENDİRME VE VİTRİN KARTI (Akıllı Hatırlatma Eklenmiş) -->
+        <div class="welcome-showcase-card">
+          <div class="welcome-showcase-header">
+            <span class="welcome-showcase-sparkle">✨</span>
+            <span class="welcome-showcase-title">Hazırlık Kelimelerini Oyunla Keşfet</span>
+          </div>
+
+          <!-- 4 Kolonlu / 2x2 Dengeli Özellik & İlerleme Özeti -->
+          <div class="welcome-showcase-grid">
+            <div class="welcome-grid-stat">
+              <span class="wps-icon">📚</span>
+              <strong class="wps-val">Tüm Üniteler</strong>
+              <small class="wps-desc">Ders Kitapları</small>
+            </div>
+            <div class="welcome-grid-stat">
+              <span class="wps-icon">🎮</span>
+              <strong class="wps-val">8 Oyun</strong>
+              <small class="wps-desc">Kelime Arenası</small>
+            </div>
+            <div class="welcome-grid-stat">
+              <span class="wps-icon">🏆</span>
+              <strong class="wps-val">XP & Rozet</strong>
+              <small class="wps-desc">Kişisel Başarı</small>
+            </div>
+            <div class="welcome-grid-stat highlight">
+              <span class="wps-icon">⏰</span>
+              <strong class="wps-val">Akıllı Hatırlatma</strong>
+              <small class="wps-desc">Günlük Bildirim</small>
+            </div>
+          </div>
+
+          <!-- Alt Bilgi Etiketleri -->
+          <div class="welcome-showcase-tags">
+            <span class="wst-badge">🎯 A1 • A2 • B1</span>
+            <span class="wst-badge">🔊 Sesli Telaffuz</span>
+            <span class="wst-badge">🧠 Akıllı Tekrar</span>
+            <span class="wst-badge">🔔 Çalışma Alarmı</span>
+          </div>
+        </div>
+
+        <!-- Aksiyon Butonları (Yeniden Tasarlanmış Modern Butonlar) -->
+        <div class="welcome-actions-container">
+          <button type="button" class="welcome-action-btn welcome-action-primary" id="obWelcomeRegisterBtn">
+            <span class="wab-icon">🚀</span>
+            <div class="wab-content">
+              <span class="wab-title">Kayıt Ol & Hemen Başla</span>
+              <span class="wab-sub">İlerlemeyi ve XP'leri buluta kaydet</span>
+            </div>
+            <span class="wab-arrow">➔</span>
+          </button>
+          
+          <button type="button" class="welcome-action-btn welcome-action-secondary" id="obWelcomeLoginBtn">
+            <span class="wab-icon">🔑</span>
+            <div class="wab-content">
+              <span class="wab-title">Zaten Hesabım Var</span>
+              <span class="wab-sub">Mevcut hesabınla giriş yap</span>
+            </div>
+            <span class="wab-arrow">➔</span>
+          </button>
+          
+          <button type="button" class="welcome-action-guest" id="obWelcomeGuestBtn">
+            <span>Kayıt olmadan misafir olarak devam et</span>
+            <span class="wag-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. ADIM: İSİM & AVATAR -->
+      <div class="onboarding-step-view" id="obStep1" style="display: none;">
+        
+        <div class="ob-step-tag" style="margin-bottom:10px;">ADIM 1 / 4</div><h2 class="ob-title">Profilini Oluştur 👤</h2>
+        <p class="ob-subtitle">Kişisel kelime öğrenme maceranda seni hangi isim ve avatar temsil etsin?</p>
+        
+        
+
+        <div class="ob-field-group">
+          <label class="ob-field-label" for="obNameInput">Adın veya Takma Adın:</label>
+          <input type="text" id="obNameInput" class="ob-text-input" placeholder="Örn: Ali, Zeynep..." maxlength="20" autocomplete="off">
+        </div>
+
+        <div class="ob-field-group">
+          <label class="ob-field-label">Kendine Bir Avatar Seç:</label>
+          <div class="ob-avatar-grid" id="obAvatarGrid">
+    <button type="button" class="avatar-chip active" data-avatar="👽">👽</button>
+  <button type="button" class="avatar-chip " data-avatar="👾">👾</button>
+  <button type="button" class="avatar-chip " data-avatar="🤖">🤖</button>
+  <button type="button" class="avatar-chip " data-avatar="👻">👻</button>
+  <button type="button" class="avatar-chip " data-avatar="🤡">🤡</button>
+  <button type="button" class="avatar-chip " data-avatar="💩">💩</button>
+  <button type="button" class="avatar-chip " data-avatar="🎃">🎃</button>
+  <button type="button" class="avatar-chip " data-avatar="👺">👺</button>
+  <button type="button" class="avatar-chip " data-avatar="🐶">🐶</button>
+  <button type="button" class="avatar-chip " data-avatar="🐱">🐱</button>
+  <button type="button" class="avatar-chip " data-avatar="🐭">🐭</button>
+  <button type="button" class="avatar-chip " data-avatar="🐹">🐹</button>
+  <button type="button" class="avatar-chip " data-avatar="🐰">🐰</button>
+  <button type="button" class="avatar-chip " data-avatar="🦊">🦊</button>
+  <button type="button" class="avatar-chip " data-avatar="🐻">🐻</button>
+  <button type="button" class="avatar-chip " data-avatar="🐼">🐼</button>
+  <button type="button" class="avatar-chip " data-avatar="🐨">🐨</button>
+  <button type="button" class="avatar-chip " data-avatar="🐯">🐯</button>
+  <button type="button" class="avatar-chip " data-avatar="🦁">🦁</button>
+  <button type="button" class="avatar-chip " data-avatar="🐮">🐮</button>
+  <button type="button" class="avatar-chip " data-avatar="🐷">🐷</button>
+  <button type="button" class="avatar-chip " data-avatar="🐸">🐸</button>
+  <button type="button" class="avatar-chip " data-avatar="🐵">🐵</button>
+  <button type="button" class="avatar-chip " data-avatar="🐧">🐧</button>
+  <button type="button" class="avatar-chip " data-avatar="🦆">🦆</button>
+  <button type="button" class="avatar-chip " data-avatar="🦉">🦉</button>
+  <button type="button" class="avatar-chip " data-avatar="🦇">🦇</button>
+  <button type="button" class="avatar-chip " data-avatar="🐺">🐺</button>
+  <button type="button" class="avatar-chip " data-avatar="🐴">🐴</button>
+  <button type="button" class="avatar-chip " data-avatar="🦄">🦄</button>
+  <button type="button" class="avatar-chip " data-avatar="🐝">🐝</button>
+  <button type="button" class="avatar-chip " data-avatar="🦋">🦋</button>
+  <button type="button" class="avatar-chip " data-avatar="🐞">🐞</button>
+  <button type="button" class="avatar-chip " data-avatar="🐢">🐢</button>
+  <button type="button" class="avatar-chip " data-avatar="🐍">🐍</button>
+  <button type="button" class="avatar-chip " data-avatar="🦖">🦖</button>
+  <button type="button" class="avatar-chip " data-avatar="🐙">🐙</button>
+  <button type="button" class="avatar-chip " data-avatar="🐠">🐠</button>
+  <button type="button" class="avatar-chip " data-avatar="🐬">🐬</button>
+  <button type="button" class="avatar-chip " data-avatar="🐳">🐳</button>
+  <button type="button" class="avatar-chip " data-avatar="🐆">🐆</button>
+  <button type="button" class="avatar-chip " data-avatar="🦓">🦓</button>
+  <button type="button" class="avatar-chip " data-avatar="🦍">🦍</button>
+  <button type="button" class="avatar-chip " data-avatar="🐘">🐘</button>
+  <button type="button" class="avatar-chip " data-avatar="🦛">🦛</button>
+  <button type="button" class="avatar-chip " data-avatar="🦒">🦒</button>
+  <button type="button" class="avatar-chip " data-avatar="🦘">🦘</button>
+  <button type="button" class="avatar-chip " data-avatar="🦩">🦩</button>
+</div>
+        </div>
+
+        <div class="ob-btn-row">
+          <button type="button" class="pill-btn secondary-btn" id="obStep1BackBtn">← Geri</button>
+          <button type="button" class="pill-btn primary-action-btn" id="obStep1NextBtn">Devam Et ➔</button>
+        </div>
+      </div>
+
+      <!-- 2. ADIM: DİL SEÇİMİ -->
+      <div class="onboarding-step-view" id="obStep2" style="display: none;">
+        <div class="ob-step-tag">ADIM 2 / 4</div>
+        <h2 class="ob-title">Öğrenmek İstediğin Dil 🌍</h2>
+        <p class="ob-subtitle">Hedef dilini seç. Bunu dilediğin zaman ayarlardan değiştirebilirsin.</p>
+
+        <div class="ob-options-list" id="obLangOptions">
+          <div class="ob-option-card active" data-lang="EN-TR">
+            <span class="ob-opt-flag">🇬🇧</span>
+            <div class="ob-opt-text">
+              <span class="ob-opt-title">İngilizce → Türkçe</span>
+              <span class="ob-opt-desc">Gateway to the World Müfredatı</span>
+            </div>
+            <span class="ob-check-mark">✓</span>
+          </div>
+          <div class="ob-option-card" data-lang="FR-TR">
+            <span class="ob-opt-flag">🇫🇷</span>
+            <div class="ob-opt-text">
+              <span class="ob-opt-title">Fransızca → Türkçe</span>
+              <span class="ob-opt-desc">Français - Turc Temel Müfredat</span>
+            </div>
+            <span class="ob-check-mark">✓</span>
+          </div>
+          <div class="ob-option-card" data-lang="DE-TR">
+            <span class="ob-opt-flag">🇩🇪</span>
+            <div class="ob-opt-text">
+              <span class="ob-opt-title">Almanca → Türkçe</span>
+              <span class="ob-opt-desc">Deutsch - Türkisch Temel Müfredat</span>
+            </div>
+            <span class="ob-check-mark">✓</span>
+          </div>
+        </div>
+
+        <div class="ob-btn-row">
+          <button type="button" class="pill-btn secondary-btn" id="obStep2BackBtn">← Geri</button>
+          <button type="button" class="pill-btn primary-action-btn" id="obStep2NextBtn">İleri ➔</button>
+        </div>
+      </div>
+
+      <!-- 3. ADIM: SEVİYE SEÇİMİ (VERİTABANINDAN DİNAMİK) -->
+      <div class="onboarding-step-view" id="obStep3" style="display: none;">
+        <div class="ob-step-tag">ADIM 3 / 4</div>
+        <h2 class="ob-title">Hangi Kurdasın? 📚</h2>
+        <p class="ob-subtitle">Öğrenimine uygun kuru (Track) seçmelisin.</p>
+
+        <div class="ob-options-list" id="obTrackOptions">
+          <div class="ob-option-card active" data-track="4A">
+            <span class="ob-opt-flag" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:rgba(16,185,129,0.15);color:#10b981;font-weight:900;font-size:0.9rem;border:1.5px solid rgba(16,185,129,0.3);flex-shrink:0;">4A</span>
+            <div class="ob-opt-text">
+              <span class="ob-opt-title">Alt Kur (4A - A2 Seviyesi)</span>
+              <span class="ob-opt-desc">A2 Temel Müfredat: Başlangıç ve temel üniteler</span>
+            </div>
+            <span class="ob-check-mark">✓</span>
+          </div>
+          <div class="ob-option-card" data-track="4B">
+            <span class="ob-opt-flag" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:rgba(59,130,246,0.15);color:#3b82f6;font-weight:900;font-size:0.9rem;border:1.5px solid rgba(59,130,246,0.3);flex-shrink:0;">4B</span>
+            <div class="ob-opt-text">
+              <span class="ob-opt-title">Üst Kur (4B - B1 Seviyesi)</span>
+              <span class="ob-opt-desc">B1 İleri Müfredat: Orta ve ileri düzey üniteler</span>
+            </div>
+            <span class="ob-check-mark">✓</span>
+          </div>
+        </div>
+
+        <div class="ob-btn-row">
+          <button type="button" class="pill-btn secondary-btn" id="obStep3BackBtn">← Geri</button>
+          <button type="button" class="pill-btn primary-action-btn" id="obStep3NextBtn">İleri ➔</button>
+        </div>
+      </div>
+
+      <!-- 4. ADIM: MÜFREDAT BİLGİSİ & GÜNLÜK HEDEF -->
+      <div class="onboarding-step-view" id="obStep4" style="display: none;">
+        <div class="ob-step-tag">ADIM 4 / 4</div>
+        <h2 class="ob-title">Rotan Oluşturuldu! 🗺️</h2>
+        
+        <div id="obTrackInfoBox" style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.4; color: var(--text-main); text-align: left;">
+          <!-- JS fills this in -->
+        </div>
+
+        <div class="ob-field-group">
+          <label class="ob-field-label">Günlük Kelime Kotan:</label>
+          <div class="ob-goal-grid" id="obGoalGrid">
+            <button type="button" class="goal-chip" data-goal="5">5 Kelime</button>
+            <button type="button" class="goal-chip" data-goal="10">10 Kelime</button>
+            <button type="button" class="goal-chip active" data-goal="15">15 Kelime ⭐</button>
+            <button type="button" class="goal-chip" data-goal="20">20 Kelime</button>
+            <button type="button" class="goal-chip" data-goal="999">Tüm Ünite</button>
+          </div>
+        </div>
+
+        <div class="ob-btn-row">
+          <button type="button" class="pill-btn secondary-btn" id="obStep4BackBtn">← Geri</button>
+          <button type="button" class="pill-btn primary-action-btn" id="obCompleteBtn">
+            <span>🚀</span> Öğrenmeye Başla!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZORUNLU AÇILIŞ DİL SEÇİM MODALI (Geriye Dönük Uyumluluk için Gizli) -->
+  <div id="langModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Dil Çiftini Seçin</h2>
+          <p class="modal-subtitle">Öğrenmek istediğiniz dili belirleyin. Bu ayarı daha sonra dilediğiniz zaman değiştirebilirsiniz.</p>
+        </div>
+      </div>
+
+      <div class="modal-options-list">
+        <div class="lang-option-card" data-lang="EN-TR">
+          <div class="lang-info">
+            <span class="lang-flag">🇬🇧</span>
+            <div>
+              <div class="lang-name">İngilizce → Türkçe</div>
+              <div class="lang-desc">English - Turkish (EN-TR)</div>
+            </div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="lang-option-card" data-lang="FR-TR">
+          <div class="lang-info">
+            <span class="lang-flag">🇫🇷</span>
+            <div>
+              <div class="lang-name">Fransızca → Türkçe</div>
+              <div class="lang-desc">Français - Turc (FR-TR)</div>
+            </div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="lang-option-card" data-lang="DE-TR">
+          <div class="lang-info">
+            <span class="lang-flag">🇩🇪</span>
+            <div>
+              <div class="lang-name">Almanca → Türkçe</div>
+              <div class="lang-desc">Deutsch - Türkisch (DE-TR)</div>
+            </div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH (GİRİŞ/KAYIT) MODALI (FULLSCREEN / GENİŞ TASARIM) -->
+  <div id="authModal" class="modal-overlay" style="z-index: 10005;">
+    <div class="modal-card auth-modal-card">
+      <button id="closeAuthModalBtn" class="icon-btn auth-close-btn" aria-label="Kapat">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="auth-hero">
+        <div class="auth-logo-circle">
+          <span class="brand-name">Lexi<span class="brand-highlight">Q</span></span>
+        </div>
+        <h2 class="auth-hero-title" id="authModalTitle">Tekrar Hoş Geldiniz</h2>
+        <p class="auth-hero-desc" id="authModalDesc">Kaldığınız yerden devam etmek için giriş yapın.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" id="authTabLogin" class="auth-tab-btn active">Giriş Yap</button>
+        <button type="button" id="authTabRegister" class="auth-tab-btn">Kayıt Ol</button>
+      </div>
+      
+      <form id="authForm" class="auth-form-container">
+        <div class="auth-input-group" id="authNameGroup">
+          <input type="text" id="authName" placeholder="Adınız Soyadınız (Sıralama için)" class="auth-input" style="display:none;" />
+        </div>
+        
+        <div class="auth-input-group">
+          <input type="email" id="authEmail" placeholder="E-posta Adresiniz" class="auth-input" required />
+        </div>
+        
+        <div class="auth-input-group">
+          <input type="password" id="authPassword" placeholder="Şifreniz (En az 6 karakter)" class="auth-input" required />
+        </div>
+        
+        <div id="authError" class="auth-error-msg" style="display:none;"></div>
+        
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary auth-submit-btn">Giriş Yap</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LİDERLİK TABLOSU MODALI -->
+  <div id="leaderboardModal" class="modal-overlay" style="z-index: 10020;">
+    <div class="modal-card leaderboard-modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">🏆 Kelime Arenası Liderleri</h2>
+        </div>
+        <button id="closeLeaderboardModalBtn" class="icon-btn" aria-label="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Sekmeler (Haftalık / Tüm Zamanlar) -->
+      <div class="leaderboard-tabs">
+        <button class="leaderboard-tab active">Haftalık</button>
+        <button class="leaderboard-tab">Tüm Zamanlar</button>
+      </div>
+
+      <!-- Kullanıcının Mevcut Durumu (Giriş yapmamışsa) -->
+      <div class="leaderboard-user-status" id="leaderboardAuthStatus">
+        <div class="leaderboard-status-text">Sıralamanı görmek için giriş yapmalısın.</div>
+        <button class="btn btn-primary btn-sm" id="leaderboardLoginBtn">Giriş Yap</button>
+      </div>
+
+      <!-- Liste Alanı -->
+      <div class="leaderboard-list">
+        <!-- 1. Sıra (Örnek) -->
+        <div class="leaderboard-item rank-1">
+          <div class="lb-rank">1</div>
+          <div class="lb-avatar">👨‍🚀</div>
+          <div class="lb-info">
+            <div class="lb-name">Kozmik Bilge</div>
+            <div class="lb-badge">Titanyum Efendi</div>
+          </div>
+          <div class="lb-score">14.500 XP</div>
+        </div>
+        <!-- 2. Sıra (Örnek) -->
+        <div class="leaderboard-item rank-2">
+          <div class="lb-rank">2</div>
+          <div class="lb-avatar">🦁</div>
+          <div class="lb-info">
+            <div class="lb-name">LexiAslan</div>
+            <div class="lb-badge">Altın Şövalye</div>
+          </div>
+          <div class="lb-score">12.200 XP</div>
+        </div>
+        <!-- 3. Sıra (Örnek) -->
+        <div class="leaderboard-item rank-3">
+          <div class="lb-rank">3</div>
+          <div class="lb-avatar">🦊</div>
+          <div class="lb-info">
+            <div class="lb-name">Hızlı Tilki</div>
+            <div class="lb-badge">Gümüş Usta</div>
+          </div>
+          <div class="lb-score">9.800 XP</div>
+        </div>
+        <!-- Diğerleri (Örnek) -->
+        <div class="leaderboard-item">
+          <div class="lb-rank">4</div>
+          <div class="lb-avatar">🐱</div>
+          <div class="lb-info">
+            <div class="lb-name">Kelime Kedisi</div>
+            <div class="lb-badge">Bronz Çaylak</div>
+          </div>
+          <div class="lb-score">6.100 XP</div>
+        </div>
+        <div class="leaderboard-item">
+          <div class="lb-rank">5</div>
+          <div class="lb-avatar">🦉</div>
+          <div class="lb-info">
+            <div class="lb-name">Gece Kuşu</div>
+            <div class="lb-badge">Bronz Çaylak</div>
+          </div>
+          <div class="lb-score">4.350 XP</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HAKKINDA MODALI (MODERN & ŞIK YENİ TASARIM) -->
+  <div id="aboutModal" class="modal-overlay">
+    <div class="modal-card about-modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Hakkında</h2>
+        </div>
+        <button id="closeAboutModalBtn" class="icon-btn" aria-label="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="about-modal-body">
+        <!-- Brand & Versiyon Başlığı -->
+        <div class="about-hero-box">
+          <div class="about-brand-row">
+            <span class="about-brand">Lexi<span class="brand-highlight">Q</span></span>
+            <span class="about-version-pill" id="aboutAppVersion">v1.3.0 Beta</span>
+          </div>
+          <p class="about-tagline">Müfredat Tabanlı Çok Dilli Kelime Arenası</p>
+        </div>
+
+        <!-- ADÜ YDYO Kurumsal Bilgi Kartı -->
+        <div class="about-school-card">
+          <img src="school_logo.jpg" alt="ADÜ YDYO Logo" class="about-school-logo">
+          <div class="about-school-info">
+            <div class="about-school-title">Aydın Adnan Menderes Üniversitesi</div>
+            <div class="about-school-dept">Yabancı Diller Yüksekokulu (YDYO)</div>
+            <div class="about-school-note">Hazırlık öğrencileri ve dil öğrenenler için müfredata tam uyumlu olarak hazırlanmıştır.</div>
+          </div>
+        </div>
+
+        <!-- 3'lü İstatistik & Özellik Kartları -->
+        <div class="about-stats-grid">
+          <div class="about-stat-item">
+            <span class="about-stat-icon">📚</span>
+            <div class="about-stat-num">9.400+</div>
+            <div class="about-stat-label">Kelime & Cümle</div>
+          </div>
+          <div class="about-stat-item">
+            <span class="about-stat-icon">🌍</span>
+            <div class="about-stat-num">3 Dil</div>
+            <div class="about-stat-label">İngilizce • Almanca • Fransızca</div>
+          </div>
+          <div class="about-stat-item">
+            <span class="about-stat-icon">🎮</span>
+            <div class="about-stat-num">8 Oyun</div>
+            <div class="about-stat-label">İnteraktif Arena</div>
+          </div>
+        </div>
+
+        <!-- Geliştirici & İletişim Kartı -->
+        <div class="about-dev-card">
+          <div class="about-dev-avatar">👨‍💻</div>
+          <div class="about-dev-info">
+            <div class="about-dev-name">Vibecoded by <strong>Rıdvan Korkut</strong></div>
+            <div class="about-dev-period">2026 – 2027 Akademik Yılı</div>
+            <div class="about-dev-emails">
+              <a href="mailto:ridvan.korkut@adu.edu.tr" class="about-mail-link">ridvan.korkut@adu.edu.tr</a>
+              <span class="about-dot">•</span>
+              <a href="mailto:rkorkut@gmail.com" class="about-mail-link">rkorkut@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hızlı Eylem Butonları -->
+        <div class="about-actions-grid">
+          <button type="button" id="aboutCheckUpdateBtn" class="about-action-btn" style="background: rgba(16,185,129,0.12); color: #10b981; border: 1.5px solid rgba(16,185,129,0.3); font-weight:700;">
+            <span>🔄</span>
+            <span>Güncellemeleri Denetle</span>
+          </button>
+          <button type="button" id="aboutOpenFeedbackBtn" class="about-action-btn primary">
+            <span>💬</span>
+            <span>Geri Bildirim & Hata Bildir</span>
+          </button>
+          <button type="button" id="aboutOpenPrivacyBtn" class="about-action-btn secondary">
+            <span>🔒</span>
+            <span>Gizlilik Politikası</span>
+          </button>
+        </div>
+
+        <div class="about-footer-note">
+          LexiQ her gün sizin geri bildirimlerinizle gelişiyor. İyi öğrenmeler! 🚀
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GERİ BİLDİRİM VE HATA BİLDİRİMİ MODALI (TAM EKRAN & YENİLENMİŞ SADE TASARIM) -->
+  <div id="feedbackModal" class="modal-overlay full-screen-modal" style="z-index: 10010;">
+    <div class="modal-card feedback-modal-card">
+      <div class="modal-header feedback-modal-header">
+        <div class="feedback-modal-title-row">
+          <span class="feedback-header-icon">💬</span>
+          <div>
+            <h2 class="modal-title">Geri Bildirim & Hata Bildir</h2>
+            <p class="modal-subtitle">Görüşleriniz ve hata bildirimleriniz bizim için çok kıymetli</p>
+          </div>
+        </div>
+        <button id="closeFeedbackModalBtn" class="icon-btn" aria-label="Kapat" title="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="feedback-modal-body">
+        <form id="feedbackForm" class="feedback-form">
+          <!-- 1. BİLDİRİM TÜRÜ KARTLARI -->
+          <div class="feedback-section-card">
+            <label class="feedback-section-label">Bildirim Türünü Seçin:</label>
+            <div class="feedback-type-chips" id="feedbackTypeChips">
+              <button type="button" class="feedback-chip active" data-type="bug">
+                <span class="chip-icon">🐞</span>
+                <div class="chip-text">
+                  <span class="chip-title">Hata Bildirimi</span>
+                  <span class="chip-desc">Teknik sorun veya çökme</span>
+                </div>
+              </button>
+              <button type="button" class="feedback-chip" data-type="word_fix">
+                <span class="chip-icon">📖</span>
+                <div class="chip-text">
+                  <span class="chip-title">Kelime Hatası</span>
+                  <span class="chip-desc">Yanlış çeviri veya yazım</span>
+                </div>
+              </button>
+              <button type="button" class="feedback-chip" data-type="suggestion">
+                <span class="chip-icon">💡</span>
+                <div class="chip-text">
+                  <span class="chip-title">Öneri & Fikir</span>
+                  <span class="chip-desc">Yeni özellik veya geliştirme</span>
+                </div>
+              </button>
+              <button type="button" class="feedback-chip" data-type="general">
+                <span class="chip-icon">⭐</span>
+                <div class="chip-text">
+                  <span class="chip-title">Genel Görüş</span>
+                  <span class="chip-desc">Deneyim veya teşekkür</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. MESAJ ALANI -->
+          <div class="feedback-section-card">
+            <label class="feedback-section-label" for="feedbackMessageInput">
+              Mesajınız / Açıklama: <span class="feedback-required-dot">*</span>
+            </label>
+            <textarea id="feedbackMessageInput" class="feedback-textarea" rows="4" placeholder="Karşılaştığınız sorunu, hatalı kelimeyi veya uygulamanın gelişimi için fikrinizi detaylıca yazabilirsiniz..." required></textarea>
+          </div>
+
+          <!-- 3. İLETİŞİM BİLGİLERİ (İSTEĞE BAĞLI) -->
+          <div class="feedback-section-card">
+            <label class="feedback-section-label">İletişim Bilgileri (İsteğe Bağlı):</label>
+            <div class="feedback-grid-2">
+              <div class="feedback-input-wrap">
+                <span class="input-icon">👤</span>
+                <input type="text" id="feedbackNameInput" class="feedback-input" placeholder="Adınız Soyadınız">
+              </div>
+              <div class="feedback-input-wrap">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="feedbackEmailInput" class="feedback-input" placeholder="E-posta adresiniz">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. GÖNDER AKSİYONU -->
+          <div class="feedback-actions">
+            <button type="submit" id="feedbackSubmitBtn" class="pill-btn primary-action-btn feedback-submit-btn">
+              <span>🚀</span>
+              <span>Bildirimi Gönder</span>
+            </button>
+          </div>
+
+          <!-- Alternatif E-posta Bağlantısı -->
+          <div class="feedback-direct-email">
+            <span>Doğrudan e-posta yazmak için:</span>
+            <a href="mailto:ridvan.korkut@adu.edu.tr?subject=LexiQ%20Geri%20Bildirim" class="feedback-mail-link">ridvan.korkut@adu.edu.tr</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- GİZLİLİK POLİTİKASI MODALI (MODERN VE DÜZGÜN METİN SUNUMU) -->
+  <div id="privacyModal" class="modal-overlay" style="z-index: 10015;">
+    <div class="modal-card privacy-modal-card">
+      <div class="modal-header">
+        <div class="privacy-modal-title-row">
+          <span class="privacy-modal-icon">🔒</span>
+          <div>
+            <h2 class="modal-title">Gizlilik Politikası</h2>
+            <p class="modal-subtitle">LexiQ • Kişisel Verilerin Korunması ve Gizlilik</p>
+          </div>
+        </div>
+        <button id="closePrivacyModalBtn" class="icon-btn" aria-label="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="privacy-content-scroll">
+        <div class="privacy-badge-row">
+          <span class="privacy-badge">📅 Yürürlük Tarihi: 6 Ekim 2026</span>
+          <span class="privacy-badge highlight">🛡️ %100 Çevrimdışı & Güvenli</span>
+        </div>
+
+        <p class="privacy-lead-text">
+          <strong>LexiQ</strong> ("uygulamamız"), Aydın Adnan Menderes Üniversitesi Yabancı Diller Yüksekokulu öğrencileri ve dil öğrenen tüm kullanıcıların gizliliğine en üst düzeyde saygı duyar ve kişisel verilerin korunmasını temel ilke olarak benimser.
+        </p>
+
+        <div class="privacy-section-card">
+          <div class="privacy-section-header">
+            <span class="privacy-sec-num">1</span>
+            <h3>Toplanan Bilgiler ve Veri Saklama</h3>
+          </div>
+          <p>
+            LexiQ, öncelikli olarak <strong>tamamen çevrimdışı (offline)</strong> çalışacak mimaride tasarlanmıştır. 
+            Kelime öğrenme geçmişiniz, çözdüğünüz test sonuçları, günlük hedefleriniz ve tercihleriniz yalnızca cihazınızın kendi yerel hafızasında (yerel depolama) tutulur.
+          </p>
+          <p>
+            İsteğe bağlı olarak giriş yapılması durumunda, liderlik tablosu sıralaması ve cihazlar arası yedekleme için yalnızca takma adınız (rumuz) ve toplam puan/XP bilgileriniz güvenli Google Firebase bulut sunucusunda şifreli olarak barındırılır.
+          </p>
+        </div>
+
+        <div class="privacy-section-card">
+          <div class="privacy-section-header">
+            <span class="privacy-sec-num">2</span>
+            <h3>Cihaz İzinleri ve İnternet Erişimi</h3>
+          </div>
+          <p>
+            Uygulama, temel işlevlerini yerine getirmek için gereksiz hiçbir hassas cihaz izni istemez:
+          </p>
+          <ul class="privacy-bullet-list">
+            <li><strong>Rehber, Konum, Kamera, Dosyalar:</strong> Cihazınızdaki rehbere, konum bilgisine, kameraya veya kişisel fotoğraflarınıza <u>kesinlikle erişilmez</u>.</li>
+            <li><strong>İnternet Erişimi:</strong> Yalnızca bulut liderlik tablosu puanı ve hata/geri bildirim iletimi için kullanılır. Çevrimdışı modda internetsiz tam işlevle çalışır.</li>
+          </ul>
+        </div>
+
+        <div class="privacy-section-card">
+          <div class="privacy-section-header">
+            <span class="privacy-sec-num">3</span>
+            <h3>Seslendirme ve Telaffuz Sistemi</h3>
+          </div>
+          <p>
+            Kelimelerin dinlenmesi ve telaffuz edilmesi sırasında cihazınızın işletim sistemine ait yerel Metin-Konuşma (TTS) altyapısı kullanılır. 
+            Mikrofonunuz dinlenmez veya herhangi bir ortam ses kaydı alınmaz/kaydedilmez.
+          </p>
+        </div>
+
+        <div class="privacy-section-card">
+          <div class="privacy-section-header">
+            <span class="privacy-sec-num">4</span>
+            <h3>Üçüncü Taraf Paylaşımı ve Reklamlar</h3>
+          </div>
+          <p>
+            LexiQ içerisinde üçüncü taraf reklam izleyicileri, kişisel veri pazarlama ağları bulunmaz. 
+            Verileriniz hiçbir reklam şirketi veya üçüncü taraf kurum ile ticari amaçla paylaşılmaz, satılmaz veya kiralanmaz.
+          </p>
+        </div>
+
+        <div class="privacy-section-card">
+          <div class="privacy-section-header">
+            <span class="privacy-sec-num">5</span>
+            <h3>İletişim ve Veri Sahibi Hakları</h3>
+          </div>
+          <p>
+            Gizlilik politikamız veya verilerinizle ilgili her türlü soru, öneri ve kayıt silme talepleriniz için dilediğiniz an bizimle iletişime geçebilirsiniz:
+          </p>
+          <div class="privacy-contact-box">
+            <div><strong>Geliştirici:</strong> Rıdvan Korkut (ADÜ YDYO)</div>
+            <div><strong>Kurumsal E-posta:</strong> <a href="mailto:ridvan.korkut@adu.edu.tr">ridvan.korkut@adu.edu.tr</a></div>
+            <div><strong>Alternatif İletişim:</strong> <a href="mailto:rkorkut@gmail.com">rkorkut@gmail.com</a></div>
+          </div>
+        </div>
+
+        <button type="button" id="privacyModalOkBtn" class="pill-btn primary-action-btn privacy-ok-btn">
+          <span>Anladım & Kapat</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÜNİTE SEÇİM MODALI -->
+  <div id="unitModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="unitModalTitle">Kitap Ünitesi Seç</h2>
+          <p class="modal-subtitle" id="unitModalSubtitle">Her ünitedeki toplam kelime ve öğrenme durumunuz:</p>
+        </div>
+        <button id="closeUnitModalBtn" class="icon-btn" aria-label="Kapat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-options-list" id="unitOptionsList">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ROZETLER VİTRİNİ MODALI -->
+  <!-- ROZETLER VİTRİNİ MODALI -->
+  <div id="badgesModal" class="modal-overlay">
+    <div class="modal-card badges-modal-card">
+      <div class="badges-modal-header">
+        <div class="badges-modal-title-wrap">
+          <div class="badges-modal-icon-badge">🎖️</div>
+          <div>
+            <h2 class="badges-modal-title">Başarı Rozetleri</h2>
+            <p class="badges-modal-subtitle">Kelimeleri öğrendikçe ve arenada çözdükçe rozetlerin kilidini aç!</p>
+          </div>
+        </div>
+        <button id="closeBadgesModalBtn" class="icon-btn badges-modal-close-btn" aria-label="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- KATEGORİ FİLTRELEME SEKMELERİ (SABİT ÜST BAR) -->
+      <div class="badges-category-tabs" id="badgesCategoryTabs">
+        <button class="badge-tab-btn active" data-category="all" id="badgeTabAll">Tümü (73)</button>
+        <button class="badge-tab-btn" data-category="xp">🎖️ Seviye</button>
+        <button class="badge-tab-btn" data-category="vocab">📚 Kelime</button>
+        <button class="badge-tab-btn" data-category="game">🎮 Oyunlar</button>
+        <button class="badge-tab-btn" data-category="streak">🔥 Seri & Odak</button>
+        <button class="badge-tab-btn" data-category="lang">🌐 Dil & Kur</button>
+      </div>
+
+      <!-- MODAL İÇİ KAYDIRILABİLİR GÖVDE -->
+      <div class="badges-modal-scrollable-body" id="badgesModalScrollBody">
+        <!-- XP & ROZET SİSTEMİ NASIL ÇALIŞIR REHBERİ (VARSAYILAN KAPALI) -->
+        <div id="badgeSystemGuideBox" class="badge-system-guide-box">
+          <div class="guide-header" id="guideToggleBtn">
+            <div class="guide-title-row">
+              <span class="guide-icon">💡</span>
+              <span class="guide-title">XP ve Rozet Sistemi Nasıl Çalışır?</span>
+            </div>
+            <span class="guide-toggle-icon" id="guideToggleArrow">▶</span>
+          </div>
+          <div class="guide-content" id="guideContentBody" style="display: none;">
+            <div class="guide-grid">
+              <div class="guide-item">
+                <span class="guide-item-icon">🎴</span>
+                <div class="guide-item-text">
+                  <strong>Kartlarda Kelime:</strong> Her yeni kelime için <strong>+10 XP</strong>.
+                </div>
+              </div>
+              <div class="guide-item">
+                <span class="guide-item-icon">🎮</span>
+                <div class="guide-item-text">
+                  <strong>Arena Oyunları:</strong> Her doğru turdan <strong>+10 ila +25 XP</strong>.
+                </div>
+              </div>
+              <div class="guide-item">
+                <span class="guide-item-icon">🔥</span>
+                <div class="guide-item-text">
+                  <strong>Seri Çarpanı:</strong> 5 doğruda <strong>x1.2</strong>, 10 doğruda <strong>x1.5</strong>, 15 doğruda <strong>x2.0</strong>.
+                </div>
+              </div>
+              <div class="guide-item">
+                <span class="guide-item-icon">⚠️</span>
+                <div class="guide-item-text">
+                  <strong>İpucu Cezası:</strong> İpucu kullanıldığında <strong>-5 XP</strong> düşülür.
+                </div>
+              </div>
+              <div class="guide-item">
+                <span class="guide-item-icon">🌟</span>
+                <div class="guide-item-text">
+                  <strong>Saf Zihin:</strong> İpucu kullanmadan biten tura ekstra <strong>+5 XP</strong>!
+                </div>
+              </div>
+              <div class="guide-item">
+                <span class="guide-item-icon">🏆</span>
+                <div class="guide-item-text">
+                  <strong>Rozetler:</strong> XP, kelime ve kurlarda ilerledikçe özel başarı rozetlerinin kilidi açılır.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <!-- YENİDEN TASARLANAN BAŞARI ÖZET KARTI -->
+        <div class="badges-xp-summary">
+          <div class="badges-summary-card-inner">
+            <div class="badges-summary-stat-col">
+              <div class="badges-stat-badge-icon">🏆</div>
+              <div class="badges-stat-text-group">
+                <span class="stat-label">Kazanılan Rozet</span>
+                <span id="modalBadgesCountText" class="stat-value">0 / 73</span>
+              </div>
+            </div>
+            <div class="badges-summary-divider"></div>
+            <div class="badges-summary-stat-col">
+              <div class="badges-stat-badge-icon xp-icon">⭐</div>
+              <div class="badges-stat-text-group">
+                <span class="stat-label">Toplam Tecrübe</span>
+                <span id="modalTotalXpText" class="stat-value">0 XP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="badges-grid" id="badgesGrid">
+          <!-- JS ile dinamik rozet kartları doldurulacak -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YENİ ROZET KAZANMA TEBRİK MODALI (KUTLAMA) -->
+  <div id="badgeCelebrationModal" class="modal-overlay">
+    <div class="modal-card celebration-card">
+      <div class="celebration-particles">✨ 🎉 ✨</div>
+      <div class="celebration-badge-icon" id="celebrationBadgeIcon">🏆</div>
+      <h2 class="celebration-title" id="celebrationBadgeTitle">Yeni Rozet Açıldı!</h2>
+      <p class="celebration-desc" id="celebrationBadgeDesc">Tebrikler, bu başarıyı kazandın!</p>
+      <button id="closeCelebrationBtn" class="pill-btn primary-action-btn" style="margin-top: 18px;">
+        <span>🔥</span> Harika, Devam Et!
+      </button>
+    </div>
+  </div>
+
+  <!-- GÜNLÜK HEDEF TAMAMLANDI & ETKİNLİKLERE YÖNLENDİRME TAM EKRAN MODALI -->
+  <div id="dailyGoalCompleteModal" class="modal-overlay full-screen-modal">
+    <div class="modal-card celebration-card goal-complete-card">
+      <div class="celebration-particles">🎉 🌟 🎯</div>
+      <div class="celebration-badge-icon">🏆</div>
+      <h2 class="celebration-title" id="goalCompleteTitle">Günlük Hedef Tamamlandı!</h2>
+      <p class="celebration-desc" id="goalCompleteDesc">
+        Tebrikler! Bugün öğrenilecek kelimelerin hepsini başarıyla öğrendin.
+      </p>
+
+      <div class="goal-complete-prompt-box">
+        <span class="prompt-icon">💡</span>
+        <p class="prompt-text">
+          Öğrendiğin kelimeleri pekiştirmek ve refleks haline getirmek için şimdi <strong>Kelime Arenası'nda eğlenceli etkinliklerle</strong> pratik yapma zamanı!
+        </p>
+      </div>
+
+      <div class="goal-complete-actions">
+        <button id="goToActivitiesBtn" class="pill-btn primary-action-btn" type="button">
+          <span>🎮</span> Kelime Arenası'nda Başla
+        </button>
+        <button id="learnMoreWordsBtn" class="pill-btn secondary-btn" type="button">
+          <span>➕</span> <span id="learnMoreBtnText">+5 Kelime Daha Öğren</span>
+        </button>
+        <button id="closeGoalCompleteModalBtn" class="pill-btn text-link-btn" type="button">
+          Kartlarda Kal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AYARLAR MODALI (SABİT BOYUTLU & MOBİLDE KAYDIRMA GEREKTİRMEYEN KOMPAKT TASARIM) -->
+  
+  <!-- ÖĞRENCİ BİLGİLERİ VE PROFİL MODALI (TAM EKRAN & ADAPTİF) -->
+  <div id="studentProfileModal" class="modal-overlay full-screen-modal">
+    <div class="modal-card student-profile-modal-card">
+      <div class="modal-header student-profile-header">
+        <div class="student-profile-title-wrap">
+          <span class="student-profile-main-icon">🎓</span>
+          <div>
+            <h2 class="modal-title">Öğrenci Profili</h2>
+            <p class="modal-subtitle">Gelişim ve İlerleme Durumu</p>
+          </div>
+        </div>
+        <button id="closeStudentProfileModalBtn" class="icon-btn" aria-label="Kapat" title="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="student-profile-body">
+        <!-- 1. KİMLİK KARTI (SADE, KOMPAKT & ENTEGRE) -->
+        <div class="student-hero-card">
+          <div class="student-hero-main-row">
+            <button type="button" class="student-avatar-badge student-avatar-clickable" id="profHeroAvatarBtn" title="Avatarı Değiştir">
+              <span id="profHeroAvatar">🦊</span>
+              <span class="avatar-edit-icon" title="Değiştir">✏️</span>
+            </button>
+            <div class="student-hero-details">
+              <div class="student-name-edit-wrap">
+                <input type="text" id="profNameInput" class="student-name-input" placeholder="Öğrenci Adı" maxlength="20" title="Öğrenci Adı">
+                <button type="button" id="profSaveBtn" class="student-name-save-pill" title="Değişiklikleri Kaydet">
+                  <span>Kaydet</span>
+                </button>
+              </div>
+              <span id="profHeroName" style="display: none;">Öğrenci</span>
+              <div class="student-hero-badges">
+                <span class="student-track-badge" id="profHeroTrackBadge">4A (A2 Temel)</span>
+                <span class="student-lang-badge" id="profHeroLangBadge">🇬🇧 İngilizce</span>
+              </div>
+            </div>
+            <div class="student-hero-action">
+              <button type="button" id="profLoginOrOutBtn" class="student-login-toggle-btn">Giriş / Kayıt</button>
+            </div>
+          </div>
+          <div class="student-hero-status-row">
+            <span class="status-indicator-dot"></span>
+            <span class="student-account-status" id="profAccountStatusText">Misafir Kullanıcı (Bulut kapalı)</span>
+          </div>
+        </div>
+
+        <!-- 2. İSTATİSTİK SAYACI (4'LÜ SADE KARTLAR) -->
+        <div class="student-stats-grid">
+          <div class="student-stat-card">
+            <span class="stat-icon">📚</span>
+            <div class="stat-val" id="profStatLearned">0</div>
+            <div class="stat-lbl">Öğrenilen</div>
+          </div>
+          <div class="student-stat-card">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-val" id="profStatXp">0</div>
+            <div class="stat-lbl">Toplam XP</div>
+          </div>
+          <div class="student-stat-card">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-val" id="profStatStreak">0</div>
+            <div class="stat-lbl">En İyi Seri</div>
+          </div>
+          <div class="student-stat-card">
+            <span class="stat-icon">🎖️</span>
+            <div class="stat-val" id="profStatBadges">0 / 36</div>
+            <div class="stat-lbl">Rozetler</div>
+          </div>
+        </div>
+
+        <!-- 3. DETAYLI ETKİNLİK VE ZAMAN İSTATİSTİKLERİ -->
+        <div class="student-activity-stats-card">
+          <div class="activity-stats-header">
+            <div class="activity-stats-title-row">
+              <span class="activity-header-icon">⏱️</span>
+              <div>
+                <h4 class="activity-section-title">Çalışma Süreleri</h4>
+                <p class="activity-section-desc">Toplam zaman kullanımı ve oturum bilgileri</p>
+              </div>
+            </div>
+            <button type="button" id="refreshStatsBtn" class="activity-stats-refresh-btn" title="Yenile">🔄</button>
+          </div>
+
+          <div class="activity-time-grid">
+            <div class="activity-time-item">
+              <span class="time-item-icon">🃏</span>
+              <div class="time-item-details">
+                <span class="time-item-label">Kelime Kartları</span>
+                <span class="time-item-val" id="profTimeCards">0 dk</span>
+              </div>
+            </div>
+
+            <div class="activity-time-item">
+              <span class="time-item-icon">🎮</span>
+              <div class="time-item-details">
+                <span class="time-item-label">Oyun & Pratik</span>
+                <span class="time-item-val" id="profTimeGames">0 dk</span>
+              </div>
+            </div>
+
+            <div class="activity-time-item">
+              <span class="time-item-icon">🚀</span>
+              <div class="time-item-details">
+                <span class="time-item-label">İlk Başlama</span>
+                <span class="time-item-val" id="profStartDate">-</span>
+              </div>
+            </div>
+
+            <div class="activity-time-item">
+              <span class="time-item-icon">📝</span>
+              <div class="time-item-details">
+                <span class="time-item-label">Kayıt Tarihi</span>
+                <span class="time-item-val" id="profRegDate">Misafir</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ünite Tamamlama Süreleri -->
+          <div class="activity-unit-durations-section">
+            <div class="unit-durations-header">
+              <span class="unit-durations-icon">🏆</span>
+              <span class="unit-durations-title">Ünite Tamamlama Süreleri</span>
+            </div>
+            <div class="unit-durations-list" id="profUnitDurationsList">
+              <div class="unit-duration-empty">Henüz tamamlanan ünite bulunmuyor.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. XP VE ROZET SİSTEMİ REHBERİ -->
+        <div class="student-how-it-works-banner" id="profOpenBadgesGuideBtn" title="XP ve Rozet Kurallarını Gör">
+          <div class="how-banner-left">
+            <span class="how-icon">📖</span>
+            <div>
+              <div class="how-title">XP ve Rozet Sistemi Nasıl İşler?</div>
+              <div class="how-subtitle">Kelime öğrenme +10 XP • İpucu -5 XP • Kriterler</div>
+            </div>
+          </div>
+          <span class="how-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVATAR SEÇİM MODALI (KATEGORİLİ & ZENGİN SEÇENEKLİ) -->
+  <div id="avatarPickerModal" class="modal-overlay">
+    <div class="modal-card avatar-picker-modal-card">
+      <div class="modal-header avatar-picker-header">
+        <div class="avatar-picker-title-wrap">
+          <span class="avatar-picker-main-icon">🎭</span>
+          <div>
+            <h3 class="modal-title">Avatarını Seç</h3>
+            <p class="modal-subtitle">Kendini en iyi anlatan avatarı belirle</p>
+          </div>
+        </div>
+        <button id="closeAvatarPickerModalBtn" class="icon-btn" aria-label="Kapat" title="Kapat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Kategori Filtre Butonları -->
+      <div class="avatar-category-tabs" id="avatarCategoryTabs">
+        <!-- JS ile kategoriler eklenecek -->
+      </div>
+
+      <!-- Kategori İçerik Avatar Izgarası -->
+      <div class="avatar-picker-body">
+        <div class="avatar-picker-grid" id="avatarPickerGrid">
+          <!-- JS ile avatarlar doldurulacak -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AYARLAR MODALI (TAM EKRAN) -->
+  <div id="settingsModal" class="modal-overlay full-screen-modal">
+    <div class="modal-card settings-modal-card">
+      <div class="modal-header settings-header-compact">
+        <div class="settings-title-wrap">
+          <h2 class="modal-title">⚙️ Uygulama Ayarları</h2>
+        </div>
+        <button id="closeSettingsModalBtn" class="icon-btn" aria-label="Kapat" title="Kapat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Ayarlar Sekmeleri (5 Modern Sekme) -->
+      <div class="settings-tabs-nav" id="settingsTabsNav">
+        <button type="button" class="settings-tab-btn active" data-tab="cards">
+          <span>🎨 Kart</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="audio">
+          <span>🔊 Ses</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="study">
+          <span>📚 Çalışma</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="reminder">
+          <span>⏰ Hatırlatıcı</span>
+        </button>
+        <button type="button" class="settings-tab-btn" data-tab="data">
+          <span>⚙️ Sistem</span>
+        </button>
+      </div>
+
+      <div class="settings-content">
+        <div class="settings-tab-panels">
+          <!-- 0. SEKME: PROFİL & MÜFREDAT -->
+          <div class="settings-tab-panel active" id="tabPanelProfile">
+            <div class="setting-block" id="settingAccountInfoBlock">
+              <span class="setting-block-label">Hesap Durumu</span>
+              <div id="settingAccountStatusBox" class="setting-account-box" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span id="settingAccountIcon" style="font-size: 1.3rem;">👤</span>
+                  <div>
+                    <div id="settingAccountStatusTitle" style="font-size: 0.92rem; font-weight: 700; color: var(--text-main);">Misafir Kullanıcı</div>
+                    <div id="settingAccountEmailText" style="font-size: 0.8rem; color: var(--text-muted);">Puanlarınızı bulutta saklamak için giriş yapın</div>
+                  </div>
+                </div>
+                <button type="button" id="settingAccountActionBtn" class="btn btn-primary btn-sm" style="padding: 6px 14px; font-size: 0.82rem; border-radius: var(--radius-md); white-space: nowrap;">Giriş Yap</button>
+              </div>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Öğrenci Adı</span>
+              <input type="text" id="settingUserNameInput" class="setting-text-input" placeholder="Adınız..." maxlength="20">
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Avatar</span>
+              <div class="setting-avatar-row" id="settingAvatarGrid">
+    <button type="button" class="setting-avatar-btn active" data-avatar="👽">👽</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="👾">👾</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🤖">🤖</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="👻">👻</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🤡">🤡</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="💩">💩</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🎃">🎃</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="👺">👺</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐶">🐶</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐱">🐱</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐭">🐭</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐹">🐹</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐰">🐰</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦊">🦊</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐻">🐻</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐼">🐼</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐨">🐨</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐯">🐯</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦁">🦁</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐮">🐮</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐷">🐷</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐸">🐸</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐵">🐵</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐧">🐧</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦆">🦆</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦉">🦉</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦇">🦇</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐺">🐺</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐴">🐴</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦄">🦄</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐝">🐝</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦋">🦋</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐞">🐞</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐢">🐢</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐍">🐍</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦖">🦖</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐙">🐙</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐠">🐠</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐬">🐬</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐳">🐳</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐆">🐆</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦓">🦓</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦍">🦍</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🐘">🐘</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦛">🦛</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦒">🦒</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦘">🦘</button>
+  <button type="button" class="setting-avatar-btn " data-avatar="🦩">🦩</button>
+</div>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Öğrenilen Dil</span>
+              <select id="settingLangSelect" class="setting-select-box">
+                <option value="EN-TR">🇬🇧 İngilizce → Türkçe</option>
+                <option value="FR-TR">🇫🇷 Fransızca → Türkçe</option>
+                <option value="DE-TR">🇩🇪 Almanca → Türkçe</option>
+              </select>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Eğitim Kuru</span>
+              <select id="settingTrackSelect" class="setting-select-box">
+                <option value="4A">Alt Kur (4A - A2 Seviyesi)</option>
+                <option value="4B">Üst Kur (4B - B1 Seviyesi)</option>
+              </select>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Aktif Ünite</span>
+              <select id="settingUnitSelect" class="setting-select-box">
+                <!-- JS ile dinamik doldurulur -->
+              </select>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Günlük Hedef Kotası</span>
+              <select id="settingDailyGoalSelect" class="setting-select-box">
+                <option value="5">5 Kelime / Gün</option>
+                <option value="10">10 Kelime / Gün</option>
+                <option value="15">15 Kelime / Gün (Önerilen)</option>
+                <option value="20">20 Kelime / Gün</option>
+                <option value="30">30 Kelime / Gün</option>
+              </select>
+            </div>
+
+            <button type="button" id="saveProfileSettingsBtn" class="pill-btn primary-action-btn" style="width: 100%; margin-top: 10px;">
+                <span>💾</span> Değişiklikleri Kaydet
+              </button>
+              
+              <!-- ÇIKIŞ YAP BUTONU -->
+              <button type="button" id="logoutBtn" class="pill-btn" style="width: 100%; margin-top: 15px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
+                <span style="margin-right: 8px;">🚪</span> Çıkış Yap
+              </button>
+          </div>
+
+          <!-- 1. SEKME: KART & GÖRÜNÜM -->
+          <div class="settings-tab-panel" id="tabPanelCards">
+            <!-- Kağıt Rengi -->
+            <div class="setting-block">
+              <span class="setting-block-label">Kağıt Rengi</span>
+              <div class="color-swatch-row" id="cardColorGrid">
+                <button type="button" class="color-palette-btn swatch-chip active" data-color="white" title="Klasik Beyaz">
+                  <span class="swatch-sample theme-white"></span>
+                  <span class="swatch-title">Beyaz</span>
+                </button>
+                <button type="button" class="color-palette-btn swatch-chip" data-color="ivory" title="Sıcak Fildişi">
+                  <span class="swatch-sample theme-ivory"></span>
+                  <span class="swatch-title">Fildişi</span>
+                </button>
+                <button type="button" class="color-palette-btn swatch-chip" data-color="yellow" title="Kanarya Sarısı">
+                  <span class="swatch-sample theme-yellow"></span>
+                  <span class="swatch-title">Sarı</span>
+                </button>
+                <button type="button" class="color-palette-btn swatch-chip" data-color="blue" title="Pastel Gök Mavisi">
+                  <span class="swatch-sample theme-blue"></span>
+                  <span class="swatch-title">Mavi</span>
+                </button>
+                <button type="button" class="color-palette-btn swatch-chip" data-color="green" title="Pastel Nane Yeşili">
+                  <span class="swatch-sample theme-green"></span>
+                  <span class="swatch-title">Yeşil</span>
+                </button>
+                <button type="button" class="color-palette-btn swatch-chip" data-color="dark" title="Koyu Gece">
+                  <span class="swatch-sample theme-dark"></span>
+                  <span class="swatch-title">Gece</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Yazı Boyutu (5 Kademeli Kompakt Seçim) -->
+            <div class="setting-block">
+              <div class="setting-block-header">
+                <span class="setting-block-label">Yazı Boyutu</span>
+              </div>
+              <div class="setting-segment-compact font-sizes" id="fontSizeSegmentGroup">
+                <button type="button" class="setting-segment-btn" data-size="xsmall" title="Daha Küçük">Daha Küçük</button>
+                <button type="button" class="setting-segment-btn" data-size="small" title="Küçük">Küçük</button>
+                <button type="button" class="setting-segment-btn active" data-size="normal" title="Normal">Normal</button>
+                <button type="button" class="setting-segment-btn" data-size="large" title="Büyük">Büyük</button>
+                <button type="button" class="setting-segment-btn" data-size="xlarge" title="Çok Büyük">Çok Büyük</button>
+              </div>
+            </div>
+
+            <!-- Yazı Tipi Ailesi (Font) -->
+            <div class="setting-block">
+              <span class="setting-block-label">Yazı Tipi (Font Stili)</span>
+              <select id="settingFontFamilySelect" class="setting-select-box">
+                <option value="system">Modern Sistem (Standart Sans)</option>
+                <option value="serif">Kitap & Roman (Zarif Serif)</option>
+                <option value="dyslexic">Okuma Kolaylığı (Disleksi Dostu / Yuvarlak)</option>
+                <option value="monospace">Daktilo / Kod (Monospace)</option>
+              </select>
+            </div>
+
+            <!-- Kart Çevirme & Animasyon Hızı -->
+            <div class="setting-block">
+              <span class="setting-block-label">Kart Çevirme Hızı</span>
+              <div class="setting-segment-compact" id="cardFlipSpeedSegmentGroup">
+                <button type="button" class="setting-segment-btn" data-speed="fast" title="Hızlı (0.2s)">Hızlı (0.2s)</button>
+                <button type="button" class="setting-segment-btn active" data-speed="normal" title="Normal (0.35s)">Normal</button>
+                <button type="button" class="setting-segment-btn" data-speed="slow" title="Yumuşak (0.5s)">Yumuşak</button>
+              </div>
+            </div>
+
+            <!-- Kart Seçenekleri -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <span class="setting-row-text">Çizgili Defter Dokusu</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingLinedPaper">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-compact-row">
+                <span class="setting-row-text">Ters Kart Modu (Anlam → Kelime)</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingReverseMode">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. SEKME: SES & TELAFFUZ -->
+          <div class="settings-tab-panel" id="tabPanelAudio">
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Otomatik Seslendirme</span>
+                  <span class="setting-row-desc">Kart değiştikçe kelimeyi otomatik oku</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingAutoplayAudio">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Oyun & Başarı Ses Efektleri</span>
+                  <span class="setting-row-desc">XP kazanımı, zafer ve tebrik sesleri</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingSoundFx" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-block">
+              <span class="setting-block-label">Telaffuz Hızı</span>
+              <div class="setting-segment-compact" id="speechSpeedSegmentGroup">
+                <button type="button" class="setting-segment-btn active" data-speed="1.0">Normal (1.0x)</button>
+                <button type="button" class="setting-segment-btn" data-speed="0.75">Yavaş (0.75x)</button>
+              </div>
+            </div>
+
+            <!-- Titreşimli Geri Bildirim (Haptic Feedback) -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">📳 Titreşimli Geri Bildirim (Haptik)</span>
+                  <span class="setting-row-desc">Kart çevirme, doğru/yanlış ve buton dokunuşlarında hafif titreşim</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingHapticFeedback" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. SEKME: ÇALIŞMA (ÖĞRENME VE KART AKIŞI) -->
+          <div class="settings-tab-panel" id="tabPanelStudy">
+            <div class="setting-block">
+              <span class="setting-block-label">Gösterilecek Kartlar</span>
+              <select id="settingCardFilter" class="setting-select-box">
+                <option value="pending">Sadece Öğrenilecekler (Varsayılan)</option>
+                <option value="learned">Öğrenilenleri İncele</option>
+              </select>
+            </div>
+
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Kartları Karıştır (Rastgele)</span>
+                  <span class="setting-row-desc">Müfredatı karışık sırayla getirir</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingShuffle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Otomatik Slayt (Eller Serbest)</span>
+                  <span class="setting-row-desc">4 saniyede bir kartı çevirir ve ilerletir</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingAutoSlideshow">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- SRS Zorluk Odaklı Çalışma Modu -->
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">🧠 Akıllı Tekrar (Zor Kelimelere Öncelik)</span>
+                  <span class="setting-row-desc">Sık hata yapılan veya henüz pekişmemiş kelimeleri öne alır</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingSrsPriority">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Örnek Cümleyi de Seslendir -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">🗣️ Örnek Cümleyi Seslendir</span>
+                  <span class="setting-row-desc">Kart çevrildiğinde İngilizce örnek cümleyi de telaffuz eder</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingReadExampleAudio">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. SEKME: HATIRLATICI (GELİŞMİŞ AKILLI ALARM & BİLDİRİM SİSTEMİ) -->
+          <div class="settings-tab-panel" id="tabPanelReminder">
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Akıllı Çalışma Hatırlatıcısı</span>
+                  <span class="setting-row-desc">Uygulama kapalıyken bile belirlediğiniz gün ve saatlerde bildirim</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingStudyReminder">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Hatırlatıcı Detay Paneli (Varsayılan olarak görünür, izin kapalıyken pasif modda) -->
+              <div id="studyReminderDetailsPanel" class="reminder-details-panel panel-disabled" style="margin-top: 14px; padding: 16px; background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 16px;">
+                <!-- Pasif Bilgilendirme Rozeti -->
+                <div id="reminderDisabledNotice" class="reminder-disabled-notice">
+                  <span class="reminder-disabled-notice-icon">🔒</span>
+                  <span>Hatırlatıcı kapalıdır. Gün ve saat ayarlarını etkinleştirmek için yukarıdaki butonu açınız.</span>
+                </div>
+
+                <!-- Canlı Durum & Bir Sonraki Bildirim Göstergesi -->
+                <div id="reminderNextAlarmStatusBox" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 12px; margin-bottom: 14px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">⏱️</span>
+                    <div>
+                      <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent);">Bir Sonraki Bildirim:</div>
+                      <div id="reminderNextAlarmText" style="font-size: 0.84rem; font-weight: 700; color: var(--text-main);">Hesaplanıyor...</div>
+                    </div>
+                  </div>
+                  <button type="button" id="reminderTestNotificationBtn" class="pill-btn primary-action-btn" style="padding: 6px 12px; font-size: 0.78rem; white-space: nowrap;" title="Şimdi bir test bildirimi gönder">
+                    <span>🔔</span> Test Et
+                  </button>
+                </div>
+
+                <!-- 1. Gün Seçimi -->
+                <div style="margin-bottom: 14px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="font-size: 0.84rem; font-weight: 800; color: var(--text-main);">📅 Hatırlatma Günleri:</span>
+                    <button type="button" id="reminderSelectAllDaysBtn" style="background:none; border:none; color:var(--accent); font-size:0.78rem; font-weight:700; cursor:pointer; padding:2px 6px;">Her Gün</button>
+                  </div>
+                  <div class="reminder-days-grid" id="reminderDaysGrid" style="display: flex; gap: 6px; justify-content: space-between;">
+                    <button type="button" class="reminder-day-chip active" data-day="1" title="Pazartesi">Pzt</button>
+                    <button type="button" class="reminder-day-chip active" data-day="2" title="Salı">Sal</button>
+                    <button type="button" class="reminder-day-chip active" data-day="3" title="Çarşamba">Çar</button>
+                    <button type="button" class="reminder-day-chip active" data-day="4" title="Perşembe">Per</button>
+                    <button type="button" class="reminder-day-chip active" data-day="5" title="Cuma">Cum</button>
+                    <button type="button" class="reminder-day-chip active" data-day="6" title="Cumartesi">Cmt</button>
+                    <button type="button" class="reminder-day-chip active" data-day="0" title="Pazar">Paz</button>
+                  </div>
+                </div>
+
+                <!-- 2. Çoklu Saat Seçimi -->
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="font-size: 0.84rem; font-weight: 800; color: var(--text-main);">⏰ Hatırlatma Saatleri:</span>
+                    <span style="font-size: 0.74rem; color: var(--text-muted);">(Günde birden fazla eklenebilir)</span>
+                  </div>
+
+                  <!-- Mevcut Saat Rozetleri -->
+                  <div class="reminder-times-list" id="reminderTimesList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                    <!-- JS ile dinamik doldurulur -->
+                  </div>
+
+                  <!-- Yeni Saat Ekleme Çubuğu -->
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="time" id="reminderNewTimeInput" value="20:00" class="setting-time-input" style="padding: 6px 12px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--bg-surface); color: var(--text-main); font-size: 0.9rem; font-weight: 700; flex: 1;">
+                    <button type="button" id="reminderAddTimeBtn" class="pill-btn primary-action-btn" style="padding: 7px 14px; font-size: 0.82rem; white-space: nowrap;">
+                      <span>➕</span> Saat Ekle
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. SEKME: VERİ & SİSTEM YÖNETİMİ (YENİLENMİŞ MODERN TASARIM) -->
+          <div class="settings-tab-panel" id="tabPanelData">
+            <!-- 1. KART: VERİ YEDEKLEME VE TAŞIMA -->
+            <div class="data-hub-card">
+              <div class="data-hub-header">
+                <span class="data-hub-icon">💾</span>
+                <div>
+                  <h4 class="data-hub-title">Veri Yedekleme & Aktarım</h4>
+                  <p class="data-hub-desc">İlerlemenizi, kelimelerinizi ve XP puanlarınızı dosya olarak yedekleyin veya başka bir cihaza taşıyın.</p>
+                </div>
+              </div>
+
+              <div class="data-hub-actions-grid">
+                <button type="button" id="backupDataBtn" class="data-hub-action-btn primary-action">
+                  <span class="dh-btn-icon">📥</span>
+                  <div class="dh-btn-text">
+                    <strong>Yedek İndir (JSON)</strong>
+                    <small>Tüm ilerlemeyi yerel dosyaya kaydet</small>
+                  </div>
+                </button>
+
+                <button type="button" id="restoreDataBtn" class="data-hub-action-btn secondary-action">
+                  <span class="dh-btn-icon">📤</span>
+                  <div class="dh-btn-text">
+                    <strong>Yedekten Yükle</strong>
+                    <small>JSON dosyasından geri yükle</small>
+                  </div>
+                </button>
+                <input type="file" id="restoreFileInput" accept=".json,application/json,text/plain,*/*" style="display:none">
+              </div>
+            </div>
+
+            <!-- 2. KART: UYGULAMA BAKIMI VE DESTEK -->
+            <div class="data-hub-card">
+              <div class="data-hub-header">
+                <span class="data-hub-icon">⚙️</span>
+                <div>
+                  <h4 class="data-hub-title">Sistem & Bakım</h4>
+                  <p class="data-hub-desc">Önbellek temizliği, güncellemeler ve iletişim</p>
+                </div>
+              </div>
+
+              <div class="data-hub-list">
+                <!-- Önbellek Temizle -->
+                <button type="button" id="clearCacheBtn" class="data-hub-row-btn">
+                  <div class="dh-row-left">
+                    <span class="dh-row-icon warn">🧹</span>
+                    <div class="dh-row-text">
+                      <strong>Önbellek ve Geçici Verileri Temizle</strong>
+                      <small>Sistem önbelleğini sıfırlar, öğrenme verileriniz korunur</small>
+                    </div>
+                  </div>
+                  <span class="dh-row-arrow">→</span>
+                </button>
+
+                <!-- Güncellemeleri Denetle -->
+                <button type="button" id="settingCheckUpdateBtn" class="data-hub-row-btn">
+                  <div class="dh-row-left">
+                    <span class="dh-row-icon success">🔄</span>
+                    <div class="dh-row-text">
+                      <strong>Güncellemeleri Denetle</strong>
+                      <small>Yeni kelime ve sürüm güncellemelerini kontrol et</small>
+                    </div>
+                  </div>
+                  <span class="dh-row-arrow">→</span>
+                </button>
+
+                <!-- Geri Bildirim & Hata Bildir -->
+                <button type="button" id="settingFeedbackBtn" class="data-hub-row-btn">
+                  <div class="dh-row-left">
+                    <span class="dh-row-icon info">💬</span>
+                    <div class="dh-row-text">
+                      <strong>Geri Bildirim & Hata Bildir</strong>
+                      <small>Öneri, talep veya karşılaştığınız sorunları iletin</small>
+                    </div>
+                  </div>
+                  <span class="dh-row-arrow">→</span>
+                </button>
+
+                <!-- Gizlilik Politikası -->
+                <button type="button" id="settingPrivacyBtn" class="data-hub-row-btn">
+                  <div class="dh-row-left">
+                    <span class="dh-row-icon muted">🔒</span>
+                    <div class="dh-row-text">
+                      <strong>Gizlilik Politikası</strong>
+                      <small>Kullanıcı hakları, veri koruma ve şartlar</small>
+                    </div>
+                  </div>
+                  <span class="dh-row-arrow">→</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. KART: SIFIRLAMA VE FABRİKA AYARLARI -->
+            <div class="data-hub-card danger-zone-hub">
+              <div class="data-hub-header">
+                <span class="data-hub-icon danger">⚠️</span>
+                <div>
+                  <h4 class="data-hub-title danger">Sıfırlama İşlemleri</h4>
+                  <p class="data-hub-desc">Bu işlemler geri alınamaz. Lütfen dikkatle kullanınız.</p>
+                </div>
+              </div>
+
+              <div class="data-hub-danger-actions">
+                <!-- İlerlemeyi Sıfırla -->
+                <button type="button" id="resetProgressBtn" class="data-danger-btn outline">
+                  <span class="danger-btn-icon">🔄</span>
+                  <div class="danger-btn-text">
+                    <strong>Tüm İlerlemeyi Sıfırla</strong>
+                    <small>Sadece kelime başarı durumunu ve XP'yi sıfırlar</small>
+                  </div>
+                </button>
+
+                <!-- Fabrika Ayarları (Tam Sıfırlama) -->
+                <button type="button" id="nuclearResetBtn" class="data-danger-btn solid">
+                  <span class="danger-btn-icon">🚨</span>
+                  <div class="danger-btn-text">
+                    <strong>Fabrika Ayarlarına Dön (Tam Sıfırlama)</strong>
+                    <small>Tüm ayarları, hesabı ve verileri silerek Hoş Geldin ekranına döner</small>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UYGULAMA İÇİ ÖZEL ONAY MODALI (CUSTOM CONFIRM MODAL) -->
+  <div id="customConfirmModal" class="modal-overlay" style="z-index: 10050; display: none;">
+    <div class="modal-card custom-confirm-card">
+      <div class="confirm-icon-wrap" id="confirmModalIcon">⚠️</div>
+      <h3 class="confirm-title" id="confirmModalTitle">Emin misiniz?</h3>
+      <p class="confirm-message" id="confirmModalMessage">Bu işlem geri alınamaz.</p>
+      <div class="confirm-actions-row">
+        <button type="button" class="pill-btn confirm-cancel-btn" id="confirmModalCancelBtn">Vazgeç</button>
+        <button type="button" class="pill-btn confirm-ok-btn danger-action" id="confirmModalOkBtn">Onayla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase v9 Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="firebase_backend.js?v=1791299900000"></script>
+
+  <!-- Kelime Verisi ve Uygulama Mantığı (Sadece Standart Vanilla JS) -->
+  <script src="words_data.js?v=1791299900000"></script>
+  <script src="app.js?v=1791299900000"></script>
+
+  </body>
+</html>
