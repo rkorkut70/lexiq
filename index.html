@@ -2013,8 +2013,9 @@
                 <span class="student-lang-badge" id="profHeroLangBadge">🇬🇧 İngilizce</span>
               </div>
             </div>
-            <div class="student-hero-action">
+            <div class="student-hero-action" style="display: flex; gap: 8px; align-items: center;">
               <button type="button" id="profLoginOrOutBtn" class="student-login-toggle-btn">Giriş / Kayıt</button>
+              <button type="button" id="profGuestLogoutBtn" class="student-login-toggle-btn is-logout" style="display: none;">Çıkış Yap</button>
             </div>
           </div>
           <div class="student-hero-status-row">
@@ -2306,7 +2307,7 @@
               
               <!-- ÇIKIŞ YAP BUTONU -->
               <button type="button" id="logoutBtn" class="pill-btn" style="width: 100%; margin-top: 15px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
-                <span style="margin-right: 8px;">🚪</span> Çıkış Yap
+                <span style="margin-right: 8px;">🚪</span> <span id="logoutBtnText">Çıkış Yap</span>
               </button>
           </div>
 

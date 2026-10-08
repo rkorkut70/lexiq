@@ -1500,6 +1500,65 @@
     window.location.reload();
   }
 
+  async function handleUserLogout(isGuestExplicit = false) {
+    const isFbLoggedIn = typeof fbUser !== 'undefined' && fbUser !== null;
+
+    if (!isFbLoggedIn || isGuestExplicit) {
+      // Misafir Çıkışı: Tam olarak Ayarlar > Sistem > Fabrika Ayarlarına Dön gibi cihazdaki verileri temizleyip karşılama ekranına döndürür
+      const confirmed = await showAppConfirm({
+        title: 'Misafir Oturumunu Kapat',
+        message: 'Misafir oturumundan çıkış yaptığınızda bu cihazdaki tüm öğrenme geçmişiniz, puanlarınız ve profiliniz sıfırlanarak Hoş Geldin ekranına dönülecektir (Fabrika Ayarlarına Dönüş).\n\nÇıkış yapmak istediğinize emin misiniz?',
+        icon: '🚪',
+        okText: 'Çıkış Yap ve Sıfırla',
+        cancelText: 'Vazgeç',
+        isDanger: true
+      });
+      if (!confirmed) return;
+
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem('lexiq_reset_done_v30', 'true');
+
+      try {
+        if (typeof window.logoutUser === 'function') {
+          window.logoutUser();
+        } else if (window.firebase && window.firebase.auth) {
+          window.firebase.auth().signOut();
+        }
+      } catch (e) {
+        console.warn('Logout error on guest reset:', e);
+      }
+
+      window.location.reload();
+      return;
+    }
+
+    // Kayıtlı Hesap Çıkışı
+    const confirmed = await showAppConfirm({
+      title: 'Hesaptan Çıkış Yap',
+      message: 'Hesabınızdan çıkış yapılacak ve Hoş Geldin ekranına dönülecektir. İlerlemeniz bulut hesabınızda saklanmaktadır.\n\nEmin misiniz?',
+      icon: '🚪',
+      okText: 'Çıkış Yap',
+      cancelText: 'Vazgeç',
+      isDanger: false
+    });
+    if (!confirmed) return;
+
+    try {
+      if (typeof window.logoutUser === 'function') {
+        window.logoutUser();
+      } else if (window.firebase && window.firebase.auth) {
+        window.firebase.auth().signOut();
+      }
+    } catch (e) {
+      console.warn('Logout error:', e);
+    }
+    if (typeof window.onUserLogout === 'function') {
+      window.onUserLogout();
+    }
+    showToast('Başarıyla çıkış yapıldı.');
+  }
+
   function switchSettingsTab(tabName) {
     const isCurrentlyOnProfile = dom.settingsTabPanels && Array.from(dom.settingsTabPanels).some(p => p.id === 'tabPanelProfile' && p.classList.contains('active'));
     if (isCurrentlyOnProfile && tabName !== 'profile' && typeof hasUnsavedProfileSettings === 'function' && hasUnsavedProfileSettings()) {
@@ -1576,29 +1635,36 @@
     if (accountStatus) {
       accountStatus.textContent = isFbLoggedIn ? `Kayıtlı: ${fbUser.email || state.userEmail}` : 'Misafir Kullanıcı (Bulut kapalı)';
     }
+    const profGuestLogoutBtn = document.getElementById('profGuestLogoutBtn');
     if (loginOutBtn) {
-      loginOutBtn.textContent = isFbLoggedIn ? 'Çıkış Yap' : 'Giriş / Kayıt';
-      loginOutBtn.classList.toggle('is-logout', isFbLoggedIn);
-      loginOutBtn.onclick = () => {
-        closeStudentProfileModal();
-        if (isFbLoggedIn) {
-          try {
-            if (typeof window.logoutUser === 'function') {
-              window.logoutUser();
-            } else if (window.firebase && window.firebase.auth) {
-              window.firebase.auth().signOut();
-            }
-          } catch (e) {
-            console.warn('Logout error:', e);
-          }
-          if (typeof window.onUserLogout === 'function') {
-            window.onUserLogout();
-          }
-          showToast('Başarıyla çıkış yapıldı.');
-        } else {
-          if (typeof window.openAuthModal === "function") { window.openAuthModal(); } else { const am = document.getElementById("authModal"); if (am) am.classList.add("active"); }
+      if (isFbLoggedIn) {
+        loginOutBtn.textContent = 'Çıkış Yap';
+        loginOutBtn.classList.add('is-logout');
+        if (profGuestLogoutBtn) profGuestLogoutBtn.style.display = 'none';
+        loginOutBtn.onclick = () => {
+          closeStudentProfileModal();
+          handleUserLogout(false);
+        };
+      } else {
+        loginOutBtn.textContent = 'Giriş / Kayıt';
+        loginOutBtn.classList.remove('is-logout');
+        if (profGuestLogoutBtn) {
+          profGuestLogoutBtn.style.display = 'inline-block';
+          profGuestLogoutBtn.onclick = () => {
+            closeStudentProfileModal();
+            handleUserLogout(true);
+          };
         }
-      };
+        loginOutBtn.onclick = () => {
+          closeStudentProfileModal();
+          if (typeof window.openAuthModal === "function") {
+            window.openAuthModal();
+          } else {
+            const am = document.getElementById("authModal");
+            if (am) am.classList.add("active");
+          }
+        };
+      }
     }
 
     const visibleBadges = getVisibleBadgesConfigForUser(state.activeLanguage);
@@ -2289,7 +2355,11 @@
       actionBtn.textContent = 'Giriş / Kayıt';
     }
     if (logoutBtn) {
-      logoutBtn.style.display = isAuth ? 'inline-flex' : 'none';
+      logoutBtn.style.display = 'inline-flex';
+      const logoutBtnText = document.getElementById('logoutBtnText');
+      if (logoutBtnText) {
+        logoutBtnText.textContent = isAuth ? 'Hesaptan Çıkış Yap' : 'Misafir Oturumunu Kapat (Sıfırla)';
+      }
     }
     const leaderboardAuthStatus = document.getElementById('leaderboardAuthStatus');
     if (leaderboardAuthStatus) {
@@ -6496,20 +6566,8 @@
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        closeSettingsModal();
-        try {
-          if (typeof window.logoutUser === 'function') {
-            window.logoutUser();
-          } else if (window.firebase && window.firebase.auth) {
-            window.firebase.auth().signOut();
-          }
-        } catch (e) {
-          console.warn('Logout error:', e);
-        }
-        if (typeof window.onUserLogout === 'function') {
-          window.onUserLogout();
-        }
-        if (typeof showToast === 'function') showToast('Çıkış yapıldı.');
+        closeSettingsModal(true);
+        handleUserLogout();
       });
     }
 
