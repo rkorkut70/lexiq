@@ -697,6 +697,12 @@
     tourNextBtn: document.getElementById('tourNextBtn'),
     restartTourBtn: document.getElementById('restartTourBtn'),
 
+    // Günlük Pratik Tamamlandı Modalı
+    dailyPracticeCompletedModal: document.getElementById('dailyPracticeCompletedModal'),
+    dailyPracticedCountText: document.getElementById('dailyPracticedCountText'),
+    dailyPracticedContinueAllBtn: document.getElementById('dailyPracticedContinueAllBtn'),
+    dailyPracticedExitArenaBtn: document.getElementById('dailyPracticedExitArenaBtn'),
+
     // Onboarding Sihirbazı
     onboardingModal: document.getElementById('onboardingModal'),
     obSteps: document.querySelectorAll('.onboarding-step-view'),
@@ -4106,10 +4112,106 @@
   // ==========================================
   // OYUNLAŞTIRMA & ARENA ORTAK FONKSİYONLARI
   // ==========================================
+  function getTodayDateKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function getTodayLearnedWordsList() {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const startTimestamp = startOfDay.getTime();
+
+    const targetLevel = state.userLevel || getLevelForTrack(state.activeLanguage, state.userTrack);
+    const allWords = getWordsData().filter(w => w.dil === state.activeLanguage && (!targetLevel || w.seviye === targetLevel));
+
+    return allWords.filter(w => {
+      const rec = state.learnedMap[w.id];
+      if (!rec || !rec.learned) return false;
+      if (state.sessionLearnedIds && state.sessionLearnedIds.has(w.id)) return true;
+      if (!rec.learnedAt) return false;
+      return (rec.learnedAt >= startTimestamp) || (Date.now() - rec.learnedAt < 24 * 60 * 60 * 1000);
+    });
+  }
+
+  function getTodayPracticedWordIds() {
+    const key = `lexiq_arena_practiced_${getTodayDateKey()}`;
+    try {
+      const data = JSON.parse(localStorage.getItem(key) || '[]');
+      return new Set(Array.isArray(data) ? data : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  function markWordPracticedInGame(wordId) {
+    if (!wordId) return;
+    const key = `lexiq_arena_practiced_${getTodayDateKey()}`;
+    const set = getTodayPracticedWordIds();
+    set.add(wordId);
+    try {
+      localStorage.setItem(key, JSON.stringify(Array.from(set)));
+    } catch (e) {}
+
+    // Günlük öğrenilen kelimelerin tümü pratik edildi mi kontrol et
+    checkDailyLearnedWordsPracticedMilestone();
+  }
+
+  function hasCompletedDailyArenaMilestoneToday() {
+    const key = `lexiq_arena_milestone_shown_${getTodayDateKey()}`;
+    return localStorage.getItem(key) === 'true';
+  }
+
+  function showDailyPracticeCompletedModal(count) {
+    if (!dom.dailyPracticeCompletedModal) return;
+    if (dom.dailyPracticedCountText) {
+      dom.dailyPracticedCountText.textContent = count;
+    }
+    playSoundEffect('correct');
+    dom.dailyPracticeCompletedModal.style.display = 'flex';
+  }
+
+  function checkDailyLearnedWordsPracticedMilestone() {
+    if (hasCompletedDailyArenaMilestoneToday()) return;
+
+    const todayLearned = getTodayLearnedWordsList();
+    if (!todayLearned || todayLearned.length < 3) return;
+
+    const practicedSet = getTodayPracticedWordIds();
+    const allPracticed = todayLearned.every(w => practicedSet.has(w.id));
+
+    if (allPracticed) {
+      const key = `lexiq_arena_milestone_shown_${getTodayDateKey()}`;
+      localStorage.setItem(key, 'true');
+
+      setTimeout(() => {
+        showDailyPracticeCompletedModal(todayLearned.length);
+      }, 500);
+    }
+  }
+
   function getLearnedWordsPool() {
     const targetLevel = state.userLevel || getLevelForTrack(state.activeLanguage, state.userTrack);
     const allWords = getWordsData().filter(w => w.dil === state.activeLanguage && (!targetLevel || w.seviye === targetLevel));
-    return allWords.filter(w => state.learnedMap[w.id] && state.learnedMap[w.id].learned === true);
+    const allLearned = allWords.filter(w => state.learnedMap[w.id] && state.learnedMap[w.id].learned === true);
+
+    if (state.arenaUseAllLearnedWordsPool || allLearned.length <= 3) {
+      return allLearned;
+    }
+
+    const todayLearned = getTodayLearnedWordsList();
+    if (todayLearned.length >= 3) {
+      const practicedSet = getTodayPracticedWordIds();
+      const unpracticedToday = todayLearned.filter(w => !practicedSet.has(w.id));
+
+      if (unpracticedToday.length >= 3) {
+        // Bugün öğrenilip henüz oyunda karşısına çıkmamış kelimeleri önceliklendir
+        const rest = allLearned.filter(w => !unpracticedToday.some(u => u.id === w.id));
+        return [...unpracticedToday, ...rest];
+      }
+    }
+
+    return allLearned;
   }
 
   function updateArenaBadgeDot() {
@@ -4971,6 +5073,8 @@
       candidate = pool.find(w => w.id !== state.currentAnagramWord.id) || candidate;
     }
     state.currentAnagramWord = candidate;
+    anagramState.targetWord = candidate;
+    markWordPracticedInGame(candidate.id);
 
     const cleanForAnagram = candidate.kelime.replace(/\(.*?\)/g, '').trim();
     const rawWord = cleanForAnagram.replace(/[^a-zA-ZçğıöşüÇĞİÖŞÜàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ]/g, '');
@@ -5173,6 +5277,7 @@
       candidate = candidates.find(w => w.id !== tetrisState.targetWord.id) || candidate;
     }
     tetrisState.targetWord = candidate;
+    markWordPracticedInGame(candidate.id);
 
     // Unicode harf desteği (Fransızca, Almanca, Türkçe vs. tam korumalı)
     const rawWord = candidate.kelime.replace(/[^\p{L}]/gu, '');
@@ -5396,6 +5501,7 @@
     const target = chosenPool[Math.floor(Math.random() * chosenPool.length)];
 
     clozeState.targetWord = target;
+    markWordPracticedInGame(target.id);
 
     // Clean word for matching and options (e.g. separable verbs "zu|ordnen" -> "zuordnen")
     const cleanWordForDisplay = target.kelime.replace(/\|/g, '').trim();
@@ -5616,6 +5722,7 @@
     const deck = [];
 
     selectedWords.forEach(w => {
+      markWordPracticedInGame(w.id);
       deck.push({
         id: w.id + '_word',
         pairId: w.id,
@@ -5750,6 +5857,7 @@
 
     const target = pool[Math.floor(Math.random() * pool.length)];
     tfState.targetWord = target;
+    markWordPracticedInGame(target.id);
     tfState.active = true;
     tfState.isAnswering = false;
     tfState.timeLeft = 20;
@@ -5865,6 +5973,7 @@
       candidate = pool.find(w => w.id !== listenState.targetWord.id) || candidate;
     }
     listenState.targetWord = candidate;
+    markWordPracticedInGame(candidate.id);
 
     const rawWord = candidate.kelime.replace(/[^\p{L}]/gu, '');
     const letters = rawWord.split('').map(c => candidate.dil === 'EN-TR' ? toEnglishUpper(c) : c.toUpperCase());
@@ -6026,6 +6135,7 @@
       candidate = pool.find(w => w.id !== quizState.targetWord.id) || candidate;
     }
     quizState.targetWord = candidate;
+    markWordPracticedInGame(candidate.id);
     quizState.isAnswering = false;
 
     if (dom.quizTargetWord) dom.quizTargetWord.textContent = candidate.kelime;
@@ -6123,6 +6233,7 @@
     const target = candidatePool[Math.floor(Math.random() * candidatePool.length)];
 
     scrambleState.targetWord = target;
+    markWordPracticedInGame(target.id);
 
     const sentence = getWordSentence(target) || `This word means ${getWordMeaning(target) || 'it'}.`;
     const words = sentence.trim().split(/\s+/);
@@ -7895,6 +8006,36 @@
     if (dom.dailyGoalCompleteModal) {
       dom.dailyGoalCompleteModal.addEventListener('click', (e) => {
         if (e.target === dom.dailyGoalCompleteModal) hideDailyGoalCompleteModal();
+      });
+    }
+
+    // Günlük Pratik Tamamlandı Tebrik Modalı Butonları
+    if (dom.dailyPracticedContinueAllBtn) {
+      dom.dailyPracticedContinueAllBtn.addEventListener('click', () => {
+        state.arenaUseAllLearnedWordsPool = true;
+        if (dom.dailyPracticeCompletedModal) {
+          dom.dailyPracticeCompletedModal.style.display = 'none';
+        }
+        playSoundEffect('correct');
+        showCelebrationBanner('Tüm Kelimeler Devrede! 🚀', 'Artık öğrendiğin tüm kelimelerle yarışıyorsun', 'Hazır!', '🔥');
+        showToast('Tüm öğrenilen kelimeler arenaya dahil edildi!');
+      });
+    }
+
+    if (dom.dailyPracticedExitArenaBtn) {
+      dom.dailyPracticedExitArenaBtn.addEventListener('click', () => {
+        if (dom.dailyPracticeCompletedModal) {
+          dom.dailyPracticeCompletedModal.style.display = 'none';
+        }
+        showGamesMenu();
+      });
+    }
+
+    if (dom.dailyPracticeCompletedModal) {
+      dom.dailyPracticeCompletedModal.addEventListener('click', (e) => {
+        if (e.target === dom.dailyPracticeCompletedModal) {
+          dom.dailyPracticeCompletedModal.style.display = 'none';
+        }
       });
     }
 

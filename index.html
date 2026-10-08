@@ -2771,6 +2771,27 @@
     </div>
   </div>
 
+  <!-- GÜNLÜK ÖĞRENİLEN TÜM KELİMELERLE PRATİK TAMAMLANDI TEBRİK MODALI -->
+  <div id="dailyPracticeCompletedModal" class="modal-overlay" style="z-index: 10060; display: none;">
+    <div class="modal-card celebration-modal-card" style="max-width: 420px; text-align: center; padding: 24px 22px;">
+      <div class="confirm-icon-wrap" style="font-size: 3.2rem; margin-bottom: 8px;">🎉</div>
+      <h3 class="confirm-title" style="font-size: 1.3rem; color: #38bdf8; font-weight: 800; margin: 0 0 10px 0;">Harika İş Çıkardın!</h3>
+      <p class="confirm-message" style="font-size: 0.94rem; line-height: 1.6; color: var(--text-muted); margin: 0 0 20px 0;">
+        Bugün öğrendiğin <strong id="dailyPracticedCountText" style="color: #fbbf24; font-size: 1.1rem;">0</strong> kelimenin <strong>hepsiyle</strong> oyunlarda alıştırma yaptın! 🎯
+        <br><br>
+        Şimdiye kadar öğrendiğin <strong>tüm kelimelerle</strong> meydan okumaya devam etmek ister misin?
+      </p>
+      <div class="confirm-actions-row" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        <button type="button" class="pill-btn primary-action-btn" id="dailyPracticedContinueAllBtn" style="width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #2563eb); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4); cursor: pointer;">
+          🚀 Tüm Kelimelerle Devam Et
+        </button>
+        <button type="button" class="pill-btn" id="dailyPracticedExitArenaBtn" style="width: 100%; padding: 11px; font-size: 0.88rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 14px; cursor: pointer;">
+          👏 Şimdilik Bu Kadar / Arenaya Dön
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Firebase v9 Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
