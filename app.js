@@ -183,9 +183,25 @@
     'Kelimeler senden korksun! 🦁'
   ];
 
+  let lastCelebrationMsgIdx = -1;
   function getRandomCelebrationMessage() {
-    const idx = Math.floor(Math.random() * CELEBRATION_MESSAGES.length);
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * CELEBRATION_MESSAGES.length);
+    } while (idx === lastCelebrationMsgIdx && CELEBRATION_MESSAGES.length > 1);
+    lastCelebrationMsgIdx = idx;
     return CELEBRATION_MESSAGES[idx];
+  }
+
+  const CELEBRATION_ICONS = ['🎉', '⚡', '🏆', '🔥', '🌟', '🎯', '💎', '👑', '🚀', '✨'];
+  let lastCelebrationIconIdx = -1;
+  function getRandomCelebrationIcon() {
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * CELEBRATION_ICONS.length);
+    } while (idx === lastCelebrationIconIdx && CELEBRATION_ICONS.length > 1);
+    lastCelebrationIconIdx = idx;
+    return CELEBRATION_ICONS[idx];
   }
 
   // 15-20 Esprili, Destekleyici ve Motive Edici Yanlış Cevap Mesajları Havuzu
@@ -212,9 +228,25 @@
     'Robotlar bile bazen yanılır, sen harika gidiyorsun! 🤖✨'
   ];
 
+  let lastEncouragementMsgIdx = -1;
   function getRandomEncouragementMessage() {
-    const idx = Math.floor(Math.random() * ENCOURAGEMENT_MESSAGES.length);
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * ENCOURAGEMENT_MESSAGES.length);
+    } while (idx === lastEncouragementMsgIdx && ENCOURAGEMENT_MESSAGES.length > 1);
+    lastEncouragementMsgIdx = idx;
     return ENCOURAGEMENT_MESSAGES[idx];
+  }
+
+  const ENCOURAGEMENT_ICONS = ['💪', '🎯', '🌱', '💡', '✨', '🔥', '🧠', '🛡️'];
+  let lastEncouragementIconIdx = -1;
+  function getRandomEncouragementIcon() {
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * ENCOURAGEMENT_ICONS.length);
+    } while (idx === lastEncouragementIconIdx && ENCOURAGEMENT_ICONS.length > 1);
+    lastEncouragementIconIdx = idx;
+    return ENCOURAGEMENT_ICONS[idx];
   }
 
   function getUnlearnedWordsCountInActiveUnit() {
@@ -240,6 +272,9 @@
     localStorage.setItem('kelime_game_stats', JSON.stringify(state.gameStats));
 
     const earned = addXp(basePoints);
+    const winTitle = getRandomCelebrationMessage();
+    const winIcon = getRandomCelebrationIcon();
+
     if (!state.roundUsedHint) {
       state.cleanWins = (state.cleanWins || 0) + 1;
       localStorage.setItem('kelime_clean_wins', state.cleanWins);
@@ -248,9 +283,9 @@
       localStorage.setItem('kelime_xp', state.xp);
       if (dom.headerXpText) dom.headerXpText.textContent = state.xp;
       if (dom.modalTotalXpText) dom.modalTotalXpText.textContent = `${(state.xp || 0).toLocaleString('tr-TR')} XP`;
-      showCelebrationBanner('Tebrikler! Kusursuz Zafer!', `${earned} XP + 5 XP Saf Zihin Bonusu`, `+${earned + bonus} XP`, '🌟');
+      showCelebrationBanner(winTitle, `${earned} XP + 5 XP Saf Zihin Bonusu`, `+${earned + bonus} XP`, winIcon);
     } else {
-      showCelebrationBanner('Tebrikler! Başardın!', `${earned} XP Kazandınız`, `+${earned} XP`, '🎉');
+      showCelebrationBanner(winTitle, `${earned} XP Kazandınız`, `+${earned} XP`, winIcon);
     }
     checkBadgeUnlocks();
     if (typeof window.syncProgressToFirebase === 'function') {
@@ -4080,6 +4115,7 @@
     const xpPill = document.getElementById('celebrationXpPill');
 
     if (banner && titleEl && subEl && xpPill) {
+      banner.classList.remove('is-wrong');
       if (iconEl) iconEl.textContent = icon;
       titleEl.textContent = title;
       subEl.textContent = subtitle;
@@ -4094,7 +4130,34 @@
         banner.classList.remove('show');
       }, 2600);
     } else {
-      showToast(`${title} • ${subtitle}`);
+      showToast(`${title} • ${subtitle}`, 'correct');
+    }
+  }
+
+  function showEncouragementBanner(title, subtitle, tagText = 'Tekrar Dene', icon = '💪') {
+    const banner = document.getElementById('celebrationBanner');
+    const iconEl = document.getElementById('celebrationIcon');
+    const titleEl = document.getElementById('celebrationTitle');
+    const subEl = document.getElementById('celebrationSubtitle');
+    const xpPill = document.getElementById('celebrationXpPill');
+
+    if (banner && titleEl && subEl && xpPill) {
+      banner.classList.add('is-wrong');
+      if (iconEl) iconEl.textContent = icon;
+      titleEl.textContent = title;
+      subEl.textContent = subtitle;
+      xpPill.textContent = tagText;
+      banner.classList.add('show');
+
+      playSoundEffect('wrong');
+
+      clearTimeout(celebrationTimer);
+      celebrationTimer = setTimeout(() => {
+        banner.classList.remove('show');
+        setTimeout(() => banner.classList.remove('is-wrong'), 300);
+      }, 2600);
+    } else {
+      showToast(`${title} • ${subtitle}`, 'wrong');
     }
   }
 
@@ -5348,7 +5411,10 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      const wordHint = (anagramState.targetWord.kelime || '').replace(/\(.*?\)/g, '').trim();
+      showEncouragementBanner(encMsg, `Hedef Kelime: "${wordHint}"`, 'Tekrar Dene', getRandomEncouragementIcon());
+      showToast(`❌ ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -5586,7 +5652,9 @@
         tetrisState.timeLeft = Math.max(1, tetrisState.timeLeft - 2);
         dom.tetrisTimer.textContent = tetrisState.timeLeft;
         resetStreak();
-        showToast(`❌ "${chosenLetter}" harfi gerekmiyor! (-2 sn) ${getRandomEncouragementMessage()}`, 'wrong');
+        const encMsg = getRandomEncouragementMessage();
+        showEncouragementBanner(encMsg, `"${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'Dikkat', getRandomEncouragementIcon());
+        showToast(`❌ "${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'wrong');
         setTimeout(() => { if (block.parentNode) block.remove(); }, 250);
       }
     }
@@ -5844,7 +5912,9 @@
         blank.className = 'cloze-blank blank-revealed';
       }
       resetStreak();
-      showToast(`❌ Doğru: ${displayWord}. ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      showEncouragementBanner(encMsg, `Doğru cevap: "${displayWord}"`, 'Devam Et', getRandomEncouragementIcon());
+      showToast(`❌ Doğru: ${displayWord}. ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -5980,7 +6050,9 @@
         c1.el.classList.add('shake-wrong');
         c2.el.classList.add('shake-wrong');
         resetStreak();
-        showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
+        const encMsg = getRandomEncouragementMessage();
+        showEncouragementBanner(encMsg, 'Bu kartlar eşleşmiyor, tekrar dene!', 'Odaklan', getRandomEncouragementIcon());
+        showToast(`❌ ${encMsg}`, 'wrong');
 
         setTimeout(() => {
           c1.el.classList.remove('selected', 'shake-wrong');
@@ -6059,7 +6131,9 @@
       if (tfState.timeLeft <= 0) {
         stopTrueFalseGame();
         resetStreak();
-        showToast(`⏱️ Süre doldu! Doğru: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}. ${getRandomEncouragementMessage()}`, 'wrong');
+        const encMsg = getRandomEncouragementMessage();
+        showEncouragementBanner(encMsg, `Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'Zaman', getRandomEncouragementIcon());
+        showToast(`⏱️ Süre doldu! Doğru: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'wrong');
         setTimeout(() => {
           if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
             startTrueFalseRound();
@@ -6108,7 +6182,10 @@
       }, 2200);
     } else {
       resetStreak();
-      showToast(`❌ Doğru anlam: "${getWordMeaning(tfState.targetWord)}". ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      const trueMeaning = getWordMeaning(tfState.targetWord);
+      showEncouragementBanner(encMsg, `Gerçek Anlam: "${trueMeaning}"`, 'Devam Et', getRandomEncouragementIcon());
+      showToast(`❌ Doğru anlam: "${trueMeaning}". ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -6273,7 +6350,11 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      const targetWordClean = listenState.targetWord.kelime;
+      const targetWordMeaning = getWordMeaning(listenState.targetWord);
+      showEncouragementBanner(encMsg, `Kelime: "${targetWordClean}" (${targetWordMeaning})`, 'Tekrar Dinle', getRandomEncouragementIcon());
+      showToast(`❌ ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -6370,7 +6451,9 @@
         if (b.textContent === correctMeaning) b.classList.add('correct');
       });
       resetStreak();
-      showToast(`❌ Doğru: "${correctMeaning}". ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      showEncouragementBanner(encMsg, `Doğru Cevap: "${correctMeaning}"`, 'Devam Et', getRandomEncouragementIcon());
+      showToast(`❌ Doğru: "${correctMeaning}". ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6533,7 +6616,10 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
+      const encMsg = getRandomEncouragementMessage();
+      const correctSentence = scrambleState.originalWords.join(' ');
+      showEncouragementBanner(encMsg, `Cümle: "${correctSentence}"`, 'Sırayı Düzelt', getRandomEncouragementIcon());
+      showToast(`❌ ${encMsg}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));

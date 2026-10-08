@@ -1927,6 +1927,33 @@ body[data-theme="dark"] .status-learned,
   white-space: nowrap;
 }
 
+/* Yanlış Cevap Teşvik & Destek Bannerı (Aynı zarif kutu, kırmızı/mercan tonlarında) */
+.celebration-banner.is-wrong {
+  background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%) !important;
+  border: 2px solid #f87171 !important;
+  box-shadow: 0 20px 50px rgba(185, 28, 28, 0.45), 0 0 30px rgba(248, 113, 113, 0.4) !important;
+  animation: encouragementPulse 1.8s infinite alternate ease-in-out !important;
+}
+
+@keyframes encouragementPulse {
+  0% { box-shadow: 0 20px 50px rgba(185, 28, 28, 0.45), 0 0 25px rgba(248, 113, 113, 0.35); }
+  100% { box-shadow: 0 25px 60px rgba(185, 28, 28, 0.65), 0 0 40px rgba(239, 68, 68, 0.55); }
+}
+
+.celebration-banner.is-wrong .celebration-title {
+  color: #fecaca !important;
+}
+
+.celebration-banner.is-wrong .celebration-subtitle {
+  color: #fee2e2 !important;
+}
+
+.celebration-banner.is-wrong .celebration-xp-pill {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+}
+
 /* Mobil İyileştirmeler */
 @media (max-height: 640px) {
   .app-header { padding: 8px 14px; }
