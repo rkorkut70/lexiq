@@ -10003,5 +10003,291 @@ html[data-flip-speed="slow"] .flashcard {
   transform: scale(0.97);
 }
 
+/* ==========================================================================
+   REHBER & ÖZELLİK TANITIM TURU (FEATURE TOUR SPEECH BUBBLES)
+   ========================================================================== */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.tour-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 29, 0.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  transition: opacity 0.3s ease;
+}
+
+.tour-bubble {
+  position: absolute;
+  z-index: 10025;
+  width: min(340px, calc(100vw - 32px));
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: 18px;
+  padding: 16px 18px;
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.25);
+  transition: top 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  will-change: top, left;
+  user-select: none;
+}
+
+.tour-arrow {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #1e293b;
+  z-index: 10026;
+  pointer-events: none;
+  transition: left 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tour-arrow.arrow-top {
+  top: -8px;
+  border-left: 1.5px solid rgba(56, 189, 248, 0.5);
+  border-top: 1.5px solid rgba(56, 189, 248, 0.5);
+  transform: rotate(45deg);
+}
+
+.tour-arrow.arrow-bottom {
+  bottom: -8px;
+  border-right: 1.5px solid rgba(56, 189, 248, 0.5);
+  border-bottom: 1.5px solid rgba(56, 189, 248, 0.5);
+  transform: rotate(45deg);
+}
+
+.tour-arrow.arrow-hidden {
+  display: none !important;
+}
+
+.tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tour-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tour-step-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  white-space: nowrap;
+}
+
+.tour-title {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tour-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.tour-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tour-body {
+  margin-bottom: 14px;
+}
+
+.tour-desc {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.tour-skip-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.15s ease;
+}
+
+.tour-skip-btn:hover {
+  color: #f1f5f9;
+}
+
+.tour-nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tour-prev-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tour-prev-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.tour-next-btn {
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  border: none;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tour-next-btn:hover {
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.6);
+}
+
+.tour-next-btn:active {
+  transform: scale(0.96);
+}
+
+/* Hedef Buton Vurgulama & Nabız Efekti */
+.tour-highlight-target {
+  position: relative !important;
+  z-index: 10022 !important;
+  outline: 3px solid #38bdf8 !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.4), 0 0 25px rgba(56, 189, 248, 0.65) !important;
+  animation: tourPulseHighlight 1.8s infinite ease-in-out !important;
+  pointer-events: auto !important;
+}
+
+@keyframes tourPulseHighlight {
+  0%, 100% {
+    outline-color: #38bdf8;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.35), 0 0 20px rgba(56, 189, 248, 0.55);
+  }
+  50% {
+    outline-color: #818cf8;
+    box-shadow: 0 0 0 7px rgba(129, 140, 248, 0.45), 0 0 32px rgba(129, 140, 248, 0.75);
+  }
+}
+
+/* Aydınlık Mod Uyumluluğu */
+[data-theme="light"] .tour-backdrop {
+  background: rgba(15, 23, 42, 0.55);
+}
+
+[data-theme="light"] .tour-bubble {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: rgba(14, 165, 233, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 0 24px rgba(14, 165, 233, 0.25);
+}
+
+[data-theme="light"] .tour-arrow {
+  background: #ffffff;
+  border-color: rgba(14, 165, 233, 0.5);
+}
+
+[data-theme="light"] .tour-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .tour-desc {
+  color: #475569;
+}
+
+[data-theme="light"] .tour-step-badge {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+  border-color: rgba(14, 165, 233, 0.3);
+}
+
+[data-theme="light"] .tour-close-btn {
+  color: #64748b;
+}
+
+[data-theme="light"] .tour-close-btn:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .tour-footer {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .tour-skip-btn {
+  color: #64748b;
+}
+
+[data-theme="light"] .tour-skip-btn:hover {
+  color: #0f172a;
+}
+
+[data-theme="light"] .tour-prev-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+[data-theme="light"] .tour-prev-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+
 
 

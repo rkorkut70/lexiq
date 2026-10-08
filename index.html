@@ -2681,6 +2681,18 @@
                   </div>
                   <span class="dh-row-arrow">→</span>
                 </button>
+
+                <!-- Tanıtım Rehberini Yeniden Başlat -->
+                <button type="button" id="restartTourBtn" class="data-hub-row-btn">
+                  <div class="dh-row-left">
+                    <span class="dh-row-icon info">💡</span>
+                    <div class="dh-row-text">
+                      <strong>Tanıtım Rehberini Yeniden Başlat</strong>
+                      <small>Uygulama özelliklerini tanıtan konuşma baloncuklarını tekrar göster</small>
+                    </div>
+                  </div>
+                  <span class="dh-row-arrow">→</span>
+                </button>
               </div>
             </div>
 
@@ -2729,6 +2741,31 @@
       <div class="confirm-actions-row">
         <button type="button" class="pill-btn confirm-cancel-btn" id="confirmModalCancelBtn">Vazgeç</button>
         <button type="button" class="pill-btn confirm-ok-btn danger-action" id="confirmModalOkBtn">Onayla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REHBER VE ÖZELLİK TANITIM TURU (FEATURE TOUR SPEECH BUBBLE) -->
+  <div id="lexiqTourOverlay" class="tour-overlay" style="display: none;">
+    <div class="tour-backdrop" id="tourBackdrop"></div>
+    <div class="tour-bubble" id="tourBubble" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+      <div class="tour-arrow" id="tourArrow"></div>
+      <div class="tour-header">
+        <div class="tour-header-left">
+          <span class="tour-step-badge" id="tourStepBadge">1 / 8</span>
+          <h4 class="tour-title" id="tourTitle">Özellik Tanıtımı</h4>
+        </div>
+        <button type="button" class="tour-close-btn" id="tourCloseBtn" aria-label="Turu Kapat" title="Kapat">✕</button>
+      </div>
+      <div class="tour-body">
+        <p class="tour-desc" id="tourDesc">Açıklama metni burada görüntülenecektir.</p>
+      </div>
+      <div class="tour-footer">
+        <button type="button" class="tour-skip-btn" id="tourSkipBtn">Turu Atla</button>
+        <div class="tour-nav-btns">
+          <button type="button" class="tour-prev-btn" id="tourPrevBtn">◀ Geri</button>
+          <button type="button" class="tour-next-btn" id="tourNextBtn">Sonraki ▶</button>
+        </div>
       </div>
     </div>
   </div>

@@ -683,6 +683,20 @@
     restoreFileInput: document.getElementById('restoreFileInput'),
     resetProgressBtn: document.getElementById('resetProgressBtn'),
 
+    // Rehber & Tanıtım Turu (Speech Bubbles)
+    lexiqTourOverlay: document.getElementById('lexiqTourOverlay'),
+    tourBackdrop: document.getElementById('tourBackdrop'),
+    tourBubble: document.getElementById('tourBubble'),
+    tourArrow: document.getElementById('tourArrow'),
+    tourStepBadge: document.getElementById('tourStepBadge'),
+    tourTitle: document.getElementById('tourTitle'),
+    tourDesc: document.getElementById('tourDesc'),
+    tourCloseBtn: document.getElementById('tourCloseBtn'),
+    tourSkipBtn: document.getElementById('tourSkipBtn'),
+    tourPrevBtn: document.getElementById('tourPrevBtn'),
+    tourNextBtn: document.getElementById('tourNextBtn'),
+    restartTourBtn: document.getElementById('restartTourBtn'),
+
     // Onboarding Sihirbazı
     onboardingModal: document.getElementById('onboardingModal'),
     obSteps: document.querySelectorAll('.onboarding-step-view'),
@@ -784,6 +798,11 @@
 
       setLanguage(state.activeLanguage, false);
       switchAppMode(state.activeMode || 'home');
+      if (!localStorage.getItem('lexiq_tour_completed')) {
+        setTimeout(() => {
+          if (typeof startFeatureTour === 'function') startFeatureTour(false);
+        }, 700);
+      }
     }
   }
 
@@ -2807,6 +2826,11 @@
     }
     switchAppMode('home');
     showToast(`Hoş geldin, ${state.userName}! ${state.userAvatar} Öğrenme yolculuğun başlıyor.`);
+    if (!localStorage.getItem('lexiq_tour_completed')) {
+      setTimeout(() => {
+        if (typeof startFeatureTour === 'function') startFeatureTour(false);
+      }, 800);
+    }
   }
 
   // ==========================================
@@ -7961,6 +7985,225 @@
     if (dom.scrambleResetBtn) {
       dom.scrambleResetBtn.addEventListener('click', scrambleReset);
     }
+
+    // ==========================================
+    // REHBER VE ÖZELLİK TANITIM TURU (SPEECH BUBBLES)
+    // ==========================================
+    const TOUR_STEPS = [
+      {
+        targetSelector: '#brandHeaderHomeBtn',
+        title: 'ℹ️ LexiQ Hakkında',
+        desc: 'Uygulama logosuna dokunarak LexiQ hakkında bilgilere, sürüm detaylarına ve geliştirici notlarına ulaşabilirsin.'
+      },
+      {
+        targetSelector: '#leaderboardBtn',
+        title: '🏆 Sıralama Tablosu',
+        desc: 'Sıralama butonuna tıklayarak okulundaki ve genel listedeki yerini, en çok çalışan öğrencileri inceleyebilirsin.'
+      },
+      {
+        targetSelector: '#userProfileBtn',
+        title: '👤 Profil ve Ayarlar',
+        desc: 'İsmin, sınıfın ve avatarın burada yer alır. Tıklayarak profilini düzenleyebilir ve tüm ayarlara erişebilirsin.'
+      },
+      {
+        targetSelector: '#badgesBtn',
+        title: '⭐ XP ve Rozetler',
+        desc: 'Kelime öğrendikçe ve oyunları tamamladıkça kazandığın toplam XP ve başarı rozetlerini buradan görebilirsin.'
+      },
+      {
+        targetSelector: '#headerUnitSelectBtn',
+        title: '📚 Çalışılan Ünite',
+        desc: 'Buraya dokunarak seviyene ve müfredatına uygun farklı üniteler arasında hızlıca geçiş yapabilirsin.'
+      },
+      {
+        targetSelector: '#homeStartBtn',
+        title: '🃏 Kelime Öğren (Kartlar)',
+        desc: 'Seçili ünitenin kelimelerini sesli telaffuzlar, Türkçe karşılıklar ve örnek cümlelerle çalışmak için kartları başlat.'
+      },
+      {
+        targetSelector: '#homeArenaBannerCard',
+        title: '🎮 Kelime Arenası',
+        desc: 'Öğrendiğin kelimeleri test et! Eşleştirme, Dinle & Yaz, Hızlı Test gibi 8 eğlenceli oyun seni bekliyor.'
+      },
+      {
+        targetSelector: '#userProfileBtn',
+        title: '🎉 Tanıtım Tamamlandı!',
+        desc: 'Tüm özellikleri öğrendin! İhtiyacın olduğunda bu rehber baloncuklarını Ayarlar > Sistem menüsünden tekrar başlatabilirsin.'
+      }
+    ];
+
+    let currentTourIndex = 0;
+    let currentHighlightedEl = null;
+
+    function updateTourPosition(targetEl) {
+      if (!dom.tourBubble || !dom.tourArrow) return;
+
+      const bubble = dom.tourBubble;
+      const arrow = dom.tourArrow;
+
+      if (!targetEl) {
+        bubble.style.top = '50%';
+        bubble.style.left = '50%';
+        bubble.style.transform = 'translate(-50%, -50%)';
+        arrow.className = 'tour-arrow arrow-hidden';
+        return;
+      }
+
+      bubble.style.transform = 'none';
+
+      const rect = targetEl.getBoundingClientRect();
+      const bubbleWidth = bubble.offsetWidth || 320;
+      const bubbleHeight = bubble.offsetHeight || 150;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Yatay konumu hesapla (ekran dışına taşmaması için clamp)
+      const targetCenterX = rect.left + rect.width / 2;
+      let bubbleLeft = targetCenterX - bubbleWidth / 2;
+      bubbleLeft = Math.max(16, Math.min(bubbleLeft, viewportWidth - bubbleWidth - 16));
+
+      // Dikey konum: Hedefin altına mı üstüne mi yerleştirelim?
+      const spaceBelow = viewportHeight - rect.bottom;
+      let bubbleTop = 0;
+      let isBelow = true;
+
+      if (spaceBelow >= bubbleHeight + 20 || rect.top < 120) {
+        bubbleTop = rect.bottom + 12;
+        isBelow = true;
+      } else {
+        bubbleTop = Math.max(12, rect.top - bubbleHeight - 12);
+        isBelow = false;
+      }
+
+      bubble.style.left = `${bubbleLeft}px`;
+      bubble.style.top = `${bubbleTop}px`;
+
+      // Konuşma balonu okunun yatay konumu (hedefin ortasını göstersin)
+      let arrowLeft = targetCenterX - bubbleLeft - 7;
+      arrowLeft = Math.max(18, Math.min(arrowLeft, bubbleWidth - 28));
+      arrow.style.left = `${arrowLeft}px`;
+
+      if (isBelow) {
+        arrow.className = 'tour-arrow arrow-top';
+      } else {
+        arrow.className = 'tour-arrow arrow-bottom';
+      }
+    }
+
+    function showTourStep(index) {
+      if (index < 0 || index >= TOUR_STEPS.length) {
+        endTour(true);
+        return;
+      }
+
+      currentTourIndex = index;
+      const step = TOUR_STEPS[index];
+
+      if (currentHighlightedEl) {
+        currentHighlightedEl.classList.remove('tour-highlight-target');
+        currentHighlightedEl = null;
+      }
+
+      const targetEl = document.querySelector(step.targetSelector);
+      if (targetEl) {
+        targetEl.classList.add('tour-highlight-target');
+        currentHighlightedEl = targetEl;
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      if (dom.tourStepBadge) dom.tourStepBadge.textContent = `${index + 1} / ${TOUR_STEPS.length}`;
+      if (dom.tourTitle) dom.tourTitle.textContent = step.title;
+      if (dom.tourDesc) dom.tourDesc.textContent = step.desc;
+
+      if (dom.tourPrevBtn) {
+        dom.tourPrevBtn.style.display = index === 0 ? 'none' : 'inline-block';
+      }
+
+      if (dom.tourNextBtn) {
+        if (index === TOUR_STEPS.length - 1) {
+          dom.tourNextBtn.textContent = 'Harika, Başla! 🚀';
+        } else {
+          dom.tourNextBtn.textContent = 'Sonraki ▶';
+        }
+      }
+
+      if (dom.lexiqTourOverlay) {
+        dom.lexiqTourOverlay.style.display = 'block';
+      }
+
+      setTimeout(() => {
+        updateTourPosition(targetEl);
+      }, 60);
+    }
+
+    function nextTourStep() {
+      if (currentTourIndex < TOUR_STEPS.length - 1) {
+        showTourStep(currentTourIndex + 1);
+      } else {
+        endTour(true);
+        showToast('LexiQ özellikleri hazır! İyi çalışmalar 🎉');
+      }
+    }
+
+    function prevTourStep() {
+      if (currentTourIndex > 0) {
+        showTourStep(currentTourIndex - 1);
+      }
+    }
+
+    function endTour(completed = true) {
+      if (currentHighlightedEl) {
+        currentHighlightedEl.classList.remove('tour-highlight-target');
+        currentHighlightedEl = null;
+      }
+      if (dom.lexiqTourOverlay) {
+        dom.lexiqTourOverlay.style.display = 'none';
+      }
+      if (completed) {
+        localStorage.setItem('lexiq_tour_completed', 'true');
+      }
+    }
+
+    function startFeatureTour(force = false) {
+      if (!force && localStorage.getItem('lexiq_tour_completed') === 'true') {
+        return;
+      }
+
+      if (dom.onboardingModal && dom.onboardingModal.classList.contains('active')) {
+        return;
+      }
+
+      if (typeof switchAppMode === 'function') {
+        switchAppMode('home');
+      }
+
+      setTimeout(() => {
+        showTourStep(0);
+      }, 350);
+    }
+
+    window.startFeatureTour = startFeatureTour;
+
+    if (dom.tourNextBtn) dom.tourNextBtn.addEventListener('click', nextTourStep);
+    if (dom.tourPrevBtn) dom.tourPrevBtn.addEventListener('click', prevTourStep);
+    if (dom.tourSkipBtn) dom.tourSkipBtn.addEventListener('click', () => endTour(true));
+    if (dom.tourCloseBtn) dom.tourCloseBtn.addEventListener('click', () => endTour(true));
+    if (dom.tourBackdrop) dom.tourBackdrop.addEventListener('click', () => endTour(true));
+
+    if (dom.restartTourBtn) {
+      dom.restartTourBtn.addEventListener('click', () => {
+        closeSettingsModal(true);
+        startFeatureTour(true);
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (dom.lexiqTourOverlay && dom.lexiqTourOverlay.style.display !== 'none') {
+        const step = TOUR_STEPS[currentTourIndex];
+        const targetEl = step ? document.querySelector(step.targetSelector) : null;
+        updateTourPosition(targetEl);
+      }
+    });
 
     // Dışarıya ve test simülatörüne oyun başlatma köprüsü sağla
     window.startGameRound = startGameRound;
