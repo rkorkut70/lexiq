@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 'v1.3.8';
+  const APP_VERSION = 'v1.3.9';
   const CURRENT_APP_BUILD = 'lexiq_build_15_clean';
 
   // Build 13 temiz kurulum / sıfırlama güvencesi (Kullanıcı verilerini sıfırla, Hoş Geldin ekranını garantile)
@@ -888,6 +888,26 @@
         }, 700);
       }
     }
+
+    // Uygulama Sürüm Güncelleme Bildirimi Kontrolü
+    function checkAndNotifyAppUpdate() {
+      const lastSeenVersion = localStorage.getItem('lexiq_last_seen_version');
+      if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {
+        setTimeout(() => {
+          const updateModalEl = document.getElementById('appUpdateModal');
+          const versionText = document.getElementById('appUpdateVersionText');
+          if (versionText) versionText.textContent = APP_VERSION;
+          if (updateModalEl) {
+            updateModalEl.style.display = 'flex';
+            playSoundEffect('celebration');
+          } else {
+            showToast(`🎉 LexiQ ${APP_VERSION} sürümüne güncellendi! Yenilikler hazır.`, 'correct');
+          }
+        }, 1100);
+      }
+      localStorage.setItem('lexiq_last_seen_version', APP_VERSION);
+    }
+    checkAndNotifyAppUpdate();
   }
 
   // ==========================================
@@ -8206,6 +8226,19 @@
     // ==========================================
     const settingCheckUpdateBtn = document.getElementById('settingCheckUpdateBtn');
     const aboutCheckUpdateBtn = document.getElementById('aboutCheckUpdateBtn');
+    const appUpdateModal = document.getElementById('appUpdateModal');
+    const closeAppUpdateModalBtn = document.getElementById('closeAppUpdateModalBtn');
+
+    if (closeAppUpdateModalBtn && appUpdateModal) {
+      closeAppUpdateModalBtn.addEventListener('click', () => {
+        appUpdateModal.style.display = 'none';
+      });
+      appUpdateModal.addEventListener('click', (e) => {
+        if (e.target === appUpdateModal) {
+          appUpdateModal.style.display = 'none';
+        }
+      });
+    }
 
     async function checkAppUpdates(btnEl) {
       if (btnEl) {
@@ -8215,11 +8248,18 @@
         setTimeout(() => {
           btnEl.disabled = false;
           btnEl.innerHTML = origHtml;
-          showToast(`✅ Harika! En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`);
-          playSoundEffect('correct');
-        }, 850);
+          const versionText = document.getElementById('appUpdateVersionText');
+          if (versionText) versionText.textContent = APP_VERSION;
+          if (appUpdateModal) {
+            appUpdateModal.style.display = 'flex';
+            playSoundEffect('correct');
+          } else {
+            showToast(`✅ Harika! En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`, 'correct');
+            playSoundEffect('correct');
+          }
+        }, 700);
       } else {
-        showToast(`✅ En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`);
+        showToast(`✅ En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`, 'correct');
       }
     }
 
