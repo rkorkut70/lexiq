@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 'v1.3.7';
+  const APP_VERSION = 'v1.3.8';
   const CURRENT_APP_BUILD = 'lexiq_build_15_clean';
 
   // Build 13 temiz kurulum / sıfırlama güvencesi (Kullanıcı verilerini sıfırla, Hoş Geldin ekranını garantile)
@@ -97,7 +97,8 @@
     userLevel: localStorage.getItem('lexiq_user_level') || 'A2',
     isOnboarded: localStorage.getItem('lexiq_user_onboarded') === 'true',
 
-    // Oyun Aktif Kelime Durumu
+    // Oyun Aktif Kelime Durumu & Arena Tercihleri
+    clozeAutoTranslate: localStorage.getItem('kelime_cloze_auto_translate') === 'true',
     currentAnagramWord: null,
     anagramUserLetters: [],
     currentClozeWord: null,
@@ -150,14 +151,38 @@
     return metCount >= 2;
   }
 
+  function updateLiveXpDisplays(wasDeduction = false) {
+    if (dom.headerXpText) dom.headerXpText.textContent = state.xp;
+    if (dom.arenaXpText) dom.arenaXpText.textContent = state.xp;
+    if (dom.modalTotalXpText) dom.modalTotalXpText.textContent = `${(state.xp || 0).toLocaleString('tr-TR')} XP`;
+    if (dom.arenaUserXp) dom.arenaUserXp.textContent = `⭐ ${state.xp} XP`;
+    if (dom.activeGameLiveXpVal) dom.activeGameLiveXpVal.textContent = state.xp;
+
+    if (dom.activeGameLiveXpBadge && wasDeduction) {
+      dom.activeGameLiveXpBadge.classList.add('xp-decreased');
+      setTimeout(() => {
+        if (dom.activeGameLiveXpBadge) dom.activeGameLiveXpBadge.classList.remove('xp-decreased');
+      }, 500);
+    }
+  }
+
+  function deductWrongAnswerPenalty(penalty = 1) {
+    state.xp = Math.max(0, state.xp - penalty);
+    localStorage.setItem('kelime_xp', state.xp);
+    updateLiveXpDisplays(true);
+    if (typeof window.syncProgressToFirebase === 'function') {
+      window.syncProgressToFirebase(null, true);
+    }
+  }
+
   function useHintWithPenalty(cost = 5, customMsg = null) {
     state.roundUsedHint = true;
     state.xp = Math.max(0, state.xp - cost);
     localStorage.setItem('kelime_xp', state.xp);
-    if (dom.headerXpText) dom.headerXpText.textContent = state.xp;
-    if (dom.modalTotalXpText) dom.modalTotalXpText.textContent = `⭐ ${state.xp} XP`;
-    if (dom.arenaUserXp) dom.arenaUserXp.textContent = `⭐ ${state.xp} XP`;
-    
+    updateLiveXpDisplays(true);
+    if (typeof window.syncProgressToFirebase === 'function') {
+      window.syncProgressToFirebase(null, true);
+    }
     const msg = customMsg || `💡 İpucu kullanıldı: -${cost} XP düşüldü!`;
     showToast(msg);
   }
@@ -290,6 +315,7 @@
     } else {
       showCelebrationBanner(winTitle, '', `+${earned} XP`, winIcon);
     }
+    updateLiveXpDisplays(false);
     checkBadgeUnlocks();
     if (typeof window.syncProgressToFirebase === 'function') {
       window.syncProgressToFirebase(null, true);
@@ -575,6 +601,8 @@
     arenaPoolCountText: document.getElementById('arenaPoolCountText'),
     arenaActiveGameArea: document.getElementById('arenaActiveGameArea'),
     backToGamesMenuBtn: document.getElementById('backToGamesMenuBtn'),
+    activeGameLiveXpBadge: document.getElementById('activeGameLiveXpBadge'),
+    activeGameLiveXpVal: document.getElementById('activeGameLiveXpVal'),
     activeGameEndBtn: document.getElementById('activeGameEndBtn'),
     closeActiveGameBtn: document.getElementById('closeActiveGameBtn'),
     activeGameNameBadge: document.getElementById('activeGameNameBadge'),
@@ -669,6 +697,8 @@
     clozeHintBtn: document.getElementById('clozeHintBtn'),
     clozeSentenceText: document.getElementById('clozeSentenceText'),
     clozeTranslationText: document.getElementById('clozeTranslationText'),
+    clozeToggleTranslationBtn: document.getElementById('clozeToggleTranslationBtn'),
+    settingClozeAutoTranslate: document.getElementById('settingClozeAutoTranslate'),
     clozeOptionsGrid: document.getElementById('clozeOptionsGrid'),
 
     // Modallar
@@ -4169,7 +4199,7 @@
     }
   }
 
-  function showEncouragementBanner(title, subtitle, tagText = 'Tekrar dene... XP gitti', icon = '💪') {
+  function showEncouragementBanner(title, subtitle, tagText = 'Tekrar dene... 1 XP gitti', icon = '💪') {
     const banner = document.getElementById('celebrationBanner');
     const iconEl = document.getElementById('celebrationIcon');
     const titleEl = document.getElementById('celebrationTitle');
@@ -5025,6 +5055,7 @@
       const cfg = GAME_CONFIG[gameName];
       dom.activeGameNameBadge.textContent = cfg ? `${cfg.icon} ${cfg.name}` : (GAME_NAMES[gameName] || 'Arena');
     }
+    updateLiveXpDisplays(false);
 
     // Tüm oyun alanlarını önce gizle
     if (dom.gameMatchView) dom.gameMatchView.style.display = 'none';
@@ -5077,6 +5108,7 @@
     dom.arenaXpText.textContent = state.xp;
     dom.arenaStreakText.textContent = state.streak;
     dom.arenaMultiplierText.textContent = 'x' + mult.toFixed(1);
+    updateLiveXpDisplays(false);
     updateGamesHubLocks();
   }
 
@@ -5451,9 +5483,10 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
       const wordHint = (anagramState.targetWord.kelime || '').replace(/\(.*?\)/g, '').trim();
-      showEncouragementBanner(encMsg, `Hedef: "${wordHint}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Hedef: "${wordHint}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -5534,8 +5567,8 @@
     const pool = getLearnedWordsPool();
     if (pool.length < 3) return;
 
-    // Tek kelimelik ve ideal uzunluktaki (3-9 harfli) kelimeleri öncelikle seç
-    const singleWords = pool.filter(w => !w.kelime.includes(' ') && w.kelime.length >= 3 && w.kelime.length <= 9);
+    // Tek kelimelik ve harf uzunluğu en az 3 olan kelimeleri öncelikle seç
+    const singleWords = pool.filter(w => !w.kelime.includes(' ') && w.kelime.length >= 3);
     const candidates = singleWords.length > 0 ? singleWords : pool;
 
     let candidate = candidates[Math.floor(Math.random() * candidates.length)];
@@ -5551,8 +5584,14 @@
 
     tetrisState.targetLetters = letters;
     tetrisState.filledSlots = new Array(letters.length).fill(false);
-    // Tetris oyun süresi sabit 30 saniye
-    tetrisState.timeLeft = 30;
+    
+    // Süre kelime uzunluğuna göre verilir: 15 sn + harf başına 3 sn; 10 harften fazlaysa ek 10 sn
+    const letterCount = letters.length;
+    let roundDuration = 15 + letterCount * 3;
+    if (letterCount > 10) {
+      roundDuration += 10;
+    }
+    tetrisState.timeLeft = roundDuration;
     tetrisState.active = true;
 
     dom.tetrisMeaningText.textContent = getWordMeaning(candidate);
@@ -5574,7 +5613,9 @@
       if (tetrisState.timeLeft <= 0) {
         stopTetrisGame();
         resetStreak();
-        showToast(`⏱️ Süre doldu! Kelime: "${tetrisState.targetWord.kelime}"`);
+        deductWrongAnswerPenalty(1);
+        const encMsg = getRandomEncouragementMessage();
+        showEncouragementBanner(encMsg, `Süre doldu! Kelime: "${tetrisState.targetWord.kelime}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
         setTimeout(() => {
           if (state.activeMode === 'arena' && state.activeGame === 'tetris') {
             startTetrisRound();
@@ -5690,8 +5731,9 @@
         tetrisState.timeLeft = Math.max(1, tetrisState.timeLeft - 2);
         dom.tetrisTimer.textContent = tetrisState.timeLeft;
         resetStreak();
+        deductWrongAnswerPenalty(1);
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, `"${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+        showEncouragementBanner(encMsg, `"${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
         setTimeout(() => { if (block.parentNode) block.remove(); }, 250);
       }
     }
@@ -5869,6 +5911,15 @@
     dom.clozeSentenceText.innerHTML = sentence;
     dom.clozeTranslationText.textContent = getWordSentenceTranslation(target) || getWordMeaning(target) || '';
 
+    // Çeviri görünürlüğü: Ayarlardan açıksa göster, varsayılan olarak kapalı
+    const autoShowClozeTr = !!state.clozeAutoTranslate;
+    if (dom.clozeTranslationText) {
+      dom.clozeTranslationText.style.display = autoShowClozeTr ? 'block' : 'none';
+    }
+    if (dom.clozeToggleTranslationBtn) {
+      dom.clozeToggleTranslationBtn.classList.toggle('active', autoShowClozeTr);
+    }
+
     // Seçenekleri hazırla: 1 Doğru + 3 Yanlış (Aynı dilden ve kesinlikle hedef dilde geçerli yabancı kelimeler)
     const allLangWords = getWordsData().filter(w => 
       w.dil === target.dil && 
@@ -5947,8 +5998,9 @@
         blank.className = 'cloze-blank blank-revealed';
       }
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
-      showEncouragementBanner(encMsg, `Doğru: "${displayWord}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Doğru: "${displayWord}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -6083,8 +6135,9 @@
         c1.el.classList.add('shake-wrong');
         c2.el.classList.add('shake-wrong');
         resetStreak();
+        deductWrongAnswerPenalty(1);
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, '', 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+        showEncouragementBanner(encMsg, '', 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
         setTimeout(() => {
           c1.el.classList.remove('selected', 'shake-wrong');
@@ -6163,8 +6216,9 @@
       if (tfState.timeLeft <= 0) {
         stopTrueFalseGame();
         resetStreak();
+        deductWrongAnswerPenalty(1);
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, `Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+        showEncouragementBanner(encMsg, `Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
         setTimeout(() => {
           if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
             startTrueFalseRound();
@@ -6212,9 +6266,10 @@
       }, 2200);
     } else {
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
       const trueMeaning = getWordMeaning(tfState.targetWord);
-      showEncouragementBanner(encMsg, `Gerçek Anlam: "${trueMeaning}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Gerçek Anlam: "${trueMeaning}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -6378,10 +6433,11 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
       const targetWordClean = listenState.targetWord.kelime;
       const targetWordMeaning = getWordMeaning(listenState.targetWord);
-      showEncouragementBanner(encMsg, `Kelime: "${targetWordClean}" (${targetWordMeaning})`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Kelime: "${targetWordClean}" (${targetWordMeaning})`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -6477,8 +6533,9 @@
         if (b.textContent === correctMeaning) b.classList.add('correct');
       });
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
-      showEncouragementBanner(encMsg, `Doğru Cevap: "${correctMeaning}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Doğru Cevap: "${correctMeaning}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6640,9 +6697,10 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
+      deductWrongAnswerPenalty(1);
       const encMsg = getRandomEncouragementMessage();
       const correctSentence = scrambleState.originalWords.join(' ');
-      showEncouragementBanner(encMsg, `Cümle: "${correctSentence}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
+      showEncouragementBanner(encMsg, `Cümle: "${correctSentence}"`, 'Tekrar dene... 1 XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -8119,6 +8177,27 @@
             showToast(`Arena yazı boyutu: ${btn.textContent}`);
           }
         });
+      });
+    }
+
+    // Boşluk Doldurma Türkçe Çeviri Aç/Kapat Butonu
+    if (dom.clozeToggleTranslationBtn) {
+      dom.clozeToggleTranslationBtn.addEventListener('click', () => {
+        if (!dom.clozeTranslationText) return;
+        const isShown = dom.clozeTranslationText.style.display !== 'none';
+        dom.clozeTranslationText.style.display = isShown ? 'none' : 'block';
+        dom.clozeToggleTranslationBtn.classList.toggle('active', !isShown);
+      });
+    }
+
+    // Arena Ayarları: Boşluk Doldurma Türkçe Çeviriyi Otomatik Göster
+    const settingClozeAutoTranslate = document.getElementById('settingClozeAutoTranslate') || dom.settingClozeAutoTranslate;
+    if (settingClozeAutoTranslate) {
+      settingClozeAutoTranslate.checked = !!state.clozeAutoTranslate;
+      settingClozeAutoTranslate.addEventListener('change', (e) => {
+        state.clozeAutoTranslate = e.target.checked;
+        localStorage.setItem('kelime_cloze_auto_translate', state.clozeAutoTranslate);
+        showToast(state.clozeAutoTranslate ? 'Boşluk doldurma çevirisi her zaman açık' : 'Boşluk doldurma çevirisi varsayılan olarak gizlendi');
       });
     }
 

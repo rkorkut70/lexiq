@@ -635,6 +635,13 @@
               <span>🎮 Arenaya Dön</span>
             </button>
           </div>
+          <div class="active-game-top-center">
+            <div class="active-game-live-xp" id="activeGameLiveXpBadge" title="Canlı XP Puanınız">
+              <span class="live-xp-star">⭐</span>
+              <span class="live-xp-val" id="activeGameLiveXpVal">0</span>
+              <span class="live-xp-unit">XP</span>
+            </div>
+          </div>
           <div class="active-game-top-actions">
             <!-- Oyun Penceresi Ses Efektlerini Aç / Kapat Butonu -->
             <button id="gameSoundFxToggleBtn" class="active-game-icon-btn game-sound-toggle-btn" type="button" title="Oyun Ses Efektlerini Aç / Kapat" aria-label="Ses Efektleri">
@@ -986,8 +993,14 @@
             </div>
 
             <div class="cloze-sentence-box">
-              <p class="cloze-sentence-text" id="clozeSentenceText">Cümle yükleniyor...</p>
-              <p class="cloze-translation-text" id="clozeTranslationText">Çeviri...</p>
+              <div class="cloze-sentence-row">
+                <p class="cloze-sentence-text" id="clozeSentenceText">Cümle yükleniyor...</p>
+                <button class="cloze-translation-toggle-btn" id="clozeToggleTranslationBtn" type="button" title="Türkçe Çeviriyi Göster / Gizle">
+                  <span class="cloze-tr-icon">🇹🇷</span>
+                  <span class="cloze-tr-label">Çeviri</span>
+                </button>
+              </div>
+              <p class="cloze-translation-text" id="clozeTranslationText" style="display: none;">Çeviri...</p>
             </div>
 
             <div class="cloze-options-grid" id="clozeOptionsGrid">
@@ -1082,7 +1095,7 @@
         <div class="welcome-hero-section">
           <div class="welcome-brand-wrapper">
             <h1 class="welcome-brand-name">Lexi<span class="welcome-brand-q">Q</span></h1>
-            <span class="welcome-version-pill">v1.3.7 Beta</span>
+            <span class="welcome-version-pill">v1.3.8 Beta</span>
           </div>
           <p class="welcome-hero-tagline">Akıllı Tekrar • Kelime Arenası • Kalıcı Başarı</p>
         </div>
@@ -1524,7 +1537,7 @@
         <div class="about-hero-box">
           <div class="about-brand-row">
             <span class="about-brand">Lexi<span class="brand-highlight">Q</span></span>
-            <span class="about-version-pill" id="aboutAppVersion">v1.3.7 Beta</span>
+            <span class="about-version-pill" id="aboutAppVersion">v1.3.8 Beta</span>
           </div>
           <p class="about-tagline">Müfredat Tabanlı Çok Dilli Kelime Arenası</p>
         </div>
@@ -2523,7 +2536,7 @@
             </div>
 
             <!-- Titreşimli Geri Bildirim (Arena) -->
-            <div class="setting-block no-border">
+            <div class="setting-block">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
                   <span class="setting-row-text">📳 Titreşimli Geri Bildirim (Haptik)</span>
@@ -2531,6 +2544,20 @@
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" id="settingGameHaptic" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Boşluk Doldurma Türkçe Çeviri Ayarı -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">🇹🇷 Boşluk Doldurmada Türkçe Çeviriyi Göster</span>
+                  <span class="setting-row-desc">Açıkken her cümlede Türkçe çeviri doğrudan görünür, kapalıyken butonla açılır</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingClozeAutoTranslate">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
