@@ -1178,62 +1178,50 @@
         
 
         <div class="ob-field-group">
-          <label class="ob-field-label" for="obNameInput">Adın veya Takma Adın:</label>
-          <input type="text" id="obNameInput" class="ob-text-input" placeholder="Örn: Ali, Zeynep..." maxlength="20" autocomplete="off">
+          <label class="ob-field-label" for="obNameInput">Adın veya Takma Adın: <span style="color:#ef4444; font-weight:bold;">*</span></label>
+          <input type="text" id="obNameInput" class="ob-text-input" placeholder="Örn: Ali, Zeynep..." maxlength="20" autocomplete="off" required>
+          <div id="obNameError" class="ob-input-error-text" style="display: none;"></div>
         </div>
 
         <div class="ob-field-group">
           <label class="ob-field-label">Kendine Bir Avatar Seç:</label>
-          <div class="ob-avatar-grid" id="obAvatarGrid">
-    <button type="button" class="avatar-chip active" data-avatar="👽">👽</button>
-  <button type="button" class="avatar-chip " data-avatar="👾">👾</button>
-  <button type="button" class="avatar-chip " data-avatar="🤖">🤖</button>
-  <button type="button" class="avatar-chip " data-avatar="👻">👻</button>
-  <button type="button" class="avatar-chip " data-avatar="🤡">🤡</button>
-  <button type="button" class="avatar-chip " data-avatar="💩">💩</button>
-  <button type="button" class="avatar-chip " data-avatar="🎃">🎃</button>
-  <button type="button" class="avatar-chip " data-avatar="👺">👺</button>
-  <button type="button" class="avatar-chip " data-avatar="🐶">🐶</button>
-  <button type="button" class="avatar-chip " data-avatar="🐱">🐱</button>
-  <button type="button" class="avatar-chip " data-avatar="🐭">🐭</button>
-  <button type="button" class="avatar-chip " data-avatar="🐹">🐹</button>
-  <button type="button" class="avatar-chip " data-avatar="🐰">🐰</button>
-  <button type="button" class="avatar-chip " data-avatar="🦊">🦊</button>
-  <button type="button" class="avatar-chip " data-avatar="🐻">🐻</button>
-  <button type="button" class="avatar-chip " data-avatar="🐼">🐼</button>
-  <button type="button" class="avatar-chip " data-avatar="🐨">🐨</button>
-  <button type="button" class="avatar-chip " data-avatar="🐯">🐯</button>
-  <button type="button" class="avatar-chip " data-avatar="🦁">🦁</button>
-  <button type="button" class="avatar-chip " data-avatar="🐮">🐮</button>
-  <button type="button" class="avatar-chip " data-avatar="🐷">🐷</button>
-  <button type="button" class="avatar-chip " data-avatar="🐸">🐸</button>
-  <button type="button" class="avatar-chip " data-avatar="🐵">🐵</button>
-  <button type="button" class="avatar-chip " data-avatar="🐧">🐧</button>
-  <button type="button" class="avatar-chip " data-avatar="🦆">🦆</button>
-  <button type="button" class="avatar-chip " data-avatar="🦉">🦉</button>
-  <button type="button" class="avatar-chip " data-avatar="🦇">🦇</button>
-  <button type="button" class="avatar-chip " data-avatar="🐺">🐺</button>
-  <button type="button" class="avatar-chip " data-avatar="🐴">🐴</button>
-  <button type="button" class="avatar-chip " data-avatar="🦄">🦄</button>
-  <button type="button" class="avatar-chip " data-avatar="🐝">🐝</button>
-  <button type="button" class="avatar-chip " data-avatar="🦋">🦋</button>
-  <button type="button" class="avatar-chip " data-avatar="🐞">🐞</button>
-  <button type="button" class="avatar-chip " data-avatar="🐢">🐢</button>
-  <button type="button" class="avatar-chip " data-avatar="🐍">🐍</button>
-  <button type="button" class="avatar-chip " data-avatar="🦖">🦖</button>
-  <button type="button" class="avatar-chip " data-avatar="🐙">🐙</button>
-  <button type="button" class="avatar-chip " data-avatar="🐠">🐠</button>
-  <button type="button" class="avatar-chip " data-avatar="🐬">🐬</button>
-  <button type="button" class="avatar-chip " data-avatar="🐳">🐳</button>
-  <button type="button" class="avatar-chip " data-avatar="🐆">🐆</button>
-  <button type="button" class="avatar-chip " data-avatar="🦓">🦓</button>
-  <button type="button" class="avatar-chip " data-avatar="🦍">🦍</button>
-  <button type="button" class="avatar-chip " data-avatar="🐘">🐘</button>
-  <button type="button" class="avatar-chip " data-avatar="🦛">🦛</button>
-  <button type="button" class="avatar-chip " data-avatar="🦒">🦒</button>
-  <button type="button" class="avatar-chip " data-avatar="🦘">🦘</button>
-  <button type="button" class="avatar-chip " data-avatar="🦩">🦩</button>
-</div>
+          <div class="ob-avatar-dropdown-wrapper">
+            <!-- Açılır Menüyü Tetikleyen Seçim Kartı -->
+            <button type="button" id="obAvatarTriggerBtn" class="ob-avatar-trigger-btn" aria-haspopup="true" aria-expanded="false">
+              <div class="ob-avatar-trigger-content">
+                <span class="ob-avatar-preview-badge" id="obAvatarPreview">🦊</span>
+                <div class="ob-avatar-trigger-info">
+                  <span class="ob-avatar-trigger-label">Avatarını Belirle</span>
+                  <span class="ob-avatar-trigger-sub" id="obAvatarTriggerSub">Seçili: 🦊 (Değiştirmek için dokun)</span>
+                </div>
+              </div>
+              <span class="ob-avatar-dropdown-arrow" id="obAvatarArrow">▾</span>
+            </button>
+
+            <!-- Açılır Avatar Menüsü Paneli -->
+            <div id="obAvatarDropdownMenu" class="ob-avatar-dropdown-panel" style="display: none;">
+              <div class="ob-avatar-panel-header">
+                <span class="ob-avatar-panel-title">🎭 Beğendiğin Bir Avatar Seç</span>
+                <span class="ob-avatar-panel-current">Seçili: <strong id="obAvatarSelectedIndicator">🦊</strong></span>
+              </div>
+              <div class="ob-avatar-cat-pills" id="obAvatarCatPills">
+                <button type="button" class="ob-avatar-cat-pill active" data-cat="all">✨ Tümü</button>
+                <button type="button" class="ob-avatar-cat-pill" data-cat="animals">🐾 Hayvanlar</button>
+                <button type="button" class="ob-avatar-cat-pill" data-cat="nature">🌿 Doğa</button>
+                <button type="button" class="ob-avatar-cat-pill" data-cat="sci_fi">🚀 Kurgu</button>
+                <button type="button" class="ob-avatar-cat-pill" data-cat="abstract">💎 Sembol</button>
+                <button type="button" class="ob-avatar-cat-pill" data-cat="fun">😎 Eğlence</button>
+              </div>
+              <div class="ob-avatar-grid-scroll" id="obAvatarGrid">
+                <!-- JS ile zengin avatar listesi yerleşecek -->
+              </div>
+              <div class="ob-avatar-panel-footer">
+                <button type="button" id="obAvatarConfirmBtn" class="ob-avatar-confirm-btn">
+                  <span>✓</span> Avatarı Onayla ve Kapat
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="ob-btn-row">

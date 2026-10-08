@@ -483,6 +483,9 @@ window.syncProgressToFirebase = function(customData, immediate = false) {
     };
 
     const payload = {
+      displayName: s.userName || localStorage.getItem('lexiq_user_name') || 'Öğrenci',
+      avatar: s.userAvatar || localStorage.getItem('lexiq_user_avatar') || '🦊',
+      lang: s.activeLanguage || localStorage.getItem('kelime_active_lang') || 'EN-TR',
       learnedMap: s.learnedMap || JSON.parse(localStorage.getItem('kelime_learned_map') || '{}'),
       unlockedBadges: s.unlockedBadges || JSON.parse(localStorage.getItem('kelime_unlocked_badges') || '[]'),
       maxStreak: (s.maxStreak !== undefined) ? s.maxStreak : (parseInt(localStorage.getItem('kelime_max_streak'), 10) || 0),
@@ -527,7 +530,8 @@ window.fetchLeaderboard = async function() {
         uid: doc.id,
         displayName: data.displayName || 'İsimsiz Kahraman',
         avatar: data.avatar || '👤',
-        xp: data.xp || 0
+        xp: data.xp || 0,
+        lang: data.lang || data.activeLanguage || 'EN-TR'
       });
     });
     return leaders;

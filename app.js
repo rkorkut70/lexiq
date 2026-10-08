@@ -791,6 +791,15 @@
     obSteps: document.querySelectorAll('.onboarding-step-view'),
     obStepDots: document.querySelectorAll('.ob-step-dot'),
     obNameInput: document.getElementById('obNameInput'),
+    obNameError: document.getElementById('obNameError'),
+    obAvatarTriggerBtn: document.getElementById('obAvatarTriggerBtn'),
+    obAvatarDropdownMenu: document.getElementById('obAvatarDropdownMenu'),
+    obAvatarPreview: document.getElementById('obAvatarPreview'),
+    obAvatarTriggerSub: document.getElementById('obAvatarTriggerSub'),
+    obAvatarSelectedIndicator: document.getElementById('obAvatarSelectedIndicator'),
+    obAvatarConfirmBtn: document.getElementById('obAvatarConfirmBtn'),
+    obAvatarCatPills: document.querySelectorAll('#obAvatarCatPills .ob-avatar-cat-pill'),
+    obAvatarGrid: document.getElementById('obAvatarGrid'),
     obAvatarChips: document.querySelectorAll('#obAvatarGrid .avatar-chip'),
     obStep1NextBtn: document.getElementById('obStep1NextBtn'),
     obStep1BackBtn: document.getElementById('obStep1BackBtn'),
@@ -1735,7 +1744,126 @@
     }
   }
 
-  
+  // ==========================================
+  // TOPLULUK KURALLARI & 4 DİLLİ İSİM FİLTRESİ (TR, EN, DE, FR)
+  // ==========================================
+  const OFFENSIVE_NAME_SUBSTRINGS = [
+    // Türkçe (TR)
+    'orospu', 'siktir', 'sikis', 'siker', 'siktim', 'sikik', 'yarrak', 'yarak',
+    'tasak', 'amcik', 'amcuk', 'gotveren', 'gotlek', 'pezevenk', 'yavsak',
+    'fahise', 'dalyarak', 'amguard', 'amina', 'aminak', 'kancik',
+    // İngilizce (EN)
+    'fuck', 'fck', 'motherfuck', 'bitch', 'asshole', 'cunt', 'pussy', 'bastard',
+    'nigger', 'nigga', 'faggot', 'cocksuck', 'dickhead', 'whore', 'blowjob', 'slutty',
+    // Almanca (DE)
+    'arschloch', 'ficken', 'gefickt', 'ficker', 'hurensohn', 'schlampe', 'scheisse',
+    'scheiss', 'wichser', 'wixxer', 'miststueck', 'miststuck', 'vollidiot',
+    // Fransızca (FR)
+    'connard', 'connasse', 'salope', 'encule', 'batard', 'niquer', 'trouduc',
+    'foutre', 'chiant', 'bordel'
+  ];
+
+  const OFFENSIVE_NAME_EXACT_WORDS = [
+    // Türkçe (TR)
+    'amk', 'aq', 'oc', 'pic', 'sik', 'got', 'ibne', 'gavat', 'kavat', 'kahpe', 'pust', 'döl', 'dol', 'meme',
+    // İngilizce (EN)
+    'ass', 'dick', 'cock', 'slut', 'porn', 'porno', 'sex', 'sexy', 'nazi', 'hitler', 'fag', 'tit', 'tits', 'penis', 'vagina',
+    // Almanca (DE)
+    'arsch', 'fotze', 'hure', 'nutte', 'schwanz', 'depp', 'penner', 'mist',
+    // Fransızca (FR)
+    'merde', 'putain', 'pute', 'salop', 'conne', 'bite', 'couille', 'couilles', 'chier', 'pd'
+  ];
+
+  const OFFENSIVE_NAME_PATTERNS = [
+    /\bf[\W_]*[u\*][\W_]*[c\*][\W_]*k/i,
+    /\bf[\W_]*[\*]{2,}[\W_]*k/i,
+    /\bf[\W_]*[\*]{2,}[\W_]*ing/i,
+    /\bb[\W_]*[i\*][\W_]*t[\W_]*c[\W_]*h/i,
+    /\bs[\W_]*[i\*][\W_]*k[\W_]*t[\W_]*i[\W_]*r/i,
+    /\ba[\W_]*[\*][\W_]*k/i,
+    /\bo[\W_]*r[\W_]*o[\W_]*s[\W_]*p[\W_]*u/i
+  ];
+
+  function validateAppropriateName(rawName) {
+    if (!rawName || typeof rawName !== 'string') {
+      return { valid: false, message: '⚠️ Lütfen adınızı veya takma adınızı giriniz (en az 2 karakter).' };
+    }
+    const name = rawName.trim();
+    if (name.length < 2) {
+      return { valid: false, message: '⚠️ Lütfen adınızı veya takma adınızı giriniz (en az 2 karakter).' };
+    }
+    if (name.length > 25) {
+      return { valid: false, message: '⚠️ İsim en fazla 25 karakter olabilir.' };
+    }
+
+    // Maskelenmiş desenler
+    for (const pat of OFFENSIVE_NAME_PATTERNS) {
+      if (pat.test(name)) {
+        return { valid: false, message: '⚠️ Lütfen genel ahlak ve topluluk kurallarına uygun, saygılı bir isim belirleyiniz.' };
+      }
+    }
+
+    // Harf normalizasyonu (Türkçe, Fransızca, Almanca karakterler)
+    let norm = name.toLowerCase()
+      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+      .replace(/ß/g, 'ss').replace(/ä/g, 'a').replace(/[éèêë]/g, 'e')
+      .replace(/[àâ]/g, 'a').replace(/ô/g, 'o').replace(/û/g, 'u')
+      .replace(/[îï]/g, 'i');
+
+    let demasked = norm.replace(/[*#_~.\-]/g, '');
+
+    // Leetspeak normalizasyonu (0->o, 1->i, 3->e, 4/@->a, 5/$->s, 7->t, !->i)
+    let leet = demasked
+      .replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e')
+      .replace(/4/g, 'a').replace(/@/g, 'a').replace(/5/g, 's')
+      .replace(/\$/g, 's').replace(/7/g, 't').replace(/!/g, 'i');
+
+    let stripped = leet.replace(/[^a-z0-9]/g, '');
+    let tokens = norm.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+
+    // Kök / alt dize kontrolü
+    for (const sub of OFFENSIVE_NAME_SUBSTRINGS) {
+      if (stripped.includes(sub)) {
+        return { valid: false, message: '⚠️ Lütfen genel ahlak ve topluluk kurallarına uygun, saygılı bir isim belirleyiniz.' };
+      }
+    }
+
+    // Bitişik / arındırılmış sözcük kontrolü (ör. s.i.k -> sik, a m k -> amk)
+    if (OFFENSIVE_NAME_EXACT_WORDS.includes(stripped)) {
+      return { valid: false, message: '⚠️ Lütfen genel ahlak ve topluluk kurallarına uygun, saygılı bir isim belirleyiniz.' };
+    }
+
+    // Kelime kelime eşleşme kontrolü
+    for (const token of tokens) {
+      let tNorm = token
+        .replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e')
+        .replace(/4/g, 'a').replace(/@/g, 'a').replace(/5/g, 's')
+        .replace(/\$/g, 's').replace(/7/g, 't').replace(/!/g, 'i');
+      if (OFFENSIVE_NAME_EXACT_WORDS.includes(token) || OFFENSIVE_NAME_EXACT_WORDS.includes(tNorm)) {
+        return { valid: false, message: '⚠️ Lütfen genel ahlak ve topluluk kurallarına uygun, saygılı bir isim belirleyiniz.' };
+      }
+    }
+
+    return { valid: true };
+  }
+
+  function getLangFlag(langCode) {
+    if (!langCode) return '🇬🇧';
+    if (typeof LANG_META !== 'undefined' && LANG_META[langCode] && LANG_META[langCode].flag) {
+      return LANG_META[langCode].flag;
+    }
+    const clean = String(langCode).trim().toUpperCase();
+    if (clean === 'DE-TR' || clean === 'DE' || clean === 'ALMANCA') return '🇩🇪';
+    if (clean === 'FR-TR' || clean === 'FR' || clean === 'FRANSIZCA') return '🇫🇷';
+    if (clean === 'ES-TR' || clean === 'ES' || clean === 'ISPANYOLCA') return '🇪🇸';
+    if (clean === 'IT-TR' || clean === 'IT' || clean === 'ITALYANCA') return '🇮🇹';
+    if (clean === 'RU-TR' || clean === 'RU' || clean === 'RUSCA') return '🇷🇺';
+    if (clean === 'AR-TR' || clean === 'AR' || clean === 'ARAPCA') return '🇸🇦';
+    if (clean === 'TR-EN' || clean === 'TR' || clean === 'TURKCE') return '🇹🇷';
+    return '🇬🇧';
+  }
+
   // ==========================================
   // ÖĞRENCİ BİLGİLERİ VE PROFİL MODALI
   // ==========================================
@@ -1891,14 +2019,27 @@
     const saveBtn = document.getElementById('profSaveBtn');
     if (saveBtn) {
       saveBtn.onclick = () => {
-        if (nameInput && nameInput.value.trim()) {
-          state.userName = nameInput.value.trim();
-          localStorage.setItem('lexiq_user_name', state.userName);
-          originalNameValue = state.userName;
-          if (heroName) heroName.textContent = state.userName;
+        const val = (nameInput && nameInput.value.trim()) || '';
+        const validation = validateAppropriateName(val);
+        if (!validation.valid) {
+          showToast(validation.message);
+          playSoundEffect('wrong');
+          if (nameInput) {
+            nameInput.classList.add('ob-input-error');
+            nameInput.focus();
+          }
+          return;
         }
+        if (nameInput) nameInput.classList.remove('ob-input-error');
+        state.userName = val;
+        localStorage.setItem('lexiq_user_name', state.userName);
+        originalNameValue = state.userName;
+        if (heroName) heroName.textContent = state.userName;
         localStorage.setItem('lexiq_user_avatar', state.userAvatar);
         if (typeof updateUserProfileUI === "function") { updateUserProfileUI(); } else if (typeof window.updateUserProfileUI === "function") { window.updateUserProfileUI(); }
+        if (typeof window.updateFirebaseProfile === 'function') {
+          window.updateFirebaseProfile(state.userName, state.userAvatar, state.userTrack, state.userLevel, state.activeLanguage);
+        }
         showToast('Profil başarıyla kaydedildi! ✓');
       };
     }
@@ -2760,7 +2901,19 @@
   }
 
   function saveProfileSettings() {
-    const newName = (dom.settingUserNameInput && dom.settingUserNameInput.value.trim()) || 'Öğrenci';
+    const rawName = (dom.settingUserNameInput && dom.settingUserNameInput.value.trim()) || '';
+    const validation = validateAppropriateName(rawName);
+    if (!validation.valid) {
+      showToast(validation.message);
+      playSoundEffect('wrong');
+      if (dom.settingUserNameInput) {
+        dom.settingUserNameInput.classList.add('ob-input-error');
+        dom.settingUserNameInput.focus();
+      }
+      return;
+    }
+    if (dom.settingUserNameInput) dom.settingUserNameInput.classList.remove('ob-input-error');
+    const newName = rawName;
     let newAvatar = state.userAvatar;
     const activeAvatarBtn = document.querySelector('#settingAvatarGrid .setting-avatar-btn.active');
     if (activeAvatarBtn) {
@@ -2817,7 +2970,7 @@
   // ==========================================
   const obState = {
     step: 1,
-    name: 'Öğrenci',
+    name: '',
     avatar: '🦊',
     lang: 'EN-TR',
     track: '4A',
@@ -2826,6 +2979,135 @@
     dailyGoal: 15,
     streakPledgeDays: 5
   };
+
+  let activeObAvatarCat = 'all';
+
+  function updateOnboardingAvatarUI(avatar) {
+    const previewEl = document.getElementById('obAvatarPreview');
+    const subEl = document.getElementById('obAvatarTriggerSub');
+    const indicatorEl = document.getElementById('obAvatarSelectedIndicator');
+    if (previewEl) previewEl.textContent = avatar;
+    if (subEl) subEl.textContent = `Seçili: ${avatar} (Değiştirmek için dokun)`;
+    if (indicatorEl) indicatorEl.textContent = avatar;
+
+    const grid = document.getElementById('obAvatarGrid');
+    if (grid) {
+      grid.querySelectorAll('.avatar-chip').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-avatar') === avatar);
+      });
+    }
+  }
+
+  function renderOnboardingAvatarDropdown(catId = null) {
+    if (catId) activeObAvatarCat = catId;
+    const grid = document.getElementById('obAvatarGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    let list = [];
+    if (activeObAvatarCat === 'all') {
+      const set = new Set();
+      if (typeof AVATAR_CATEGORIES !== 'undefined') {
+        AVATAR_CATEGORIES.forEach(cat => {
+          if (cat.avatars) cat.avatars.forEach(av => set.add(av));
+        });
+      }
+      list = Array.from(set);
+      if (list.length === 0) {
+        list = ['🦊', '🦁', '🐺', '🐼', '🐨', '🐯', '🐱', '🐶', '🦉', '🦄', '🐻', '🐰', '🐸', '🐵', '🦅', '🐧', '🐙', '🐬', '🦋', '🚀', '👽', '🤖', '👾', '💎', '👑', '🎯', '🔥', '✨', '⚡', '🏆', '😎', '🤠', '🥳', '🧐', '🦸', '🥷', '🧙', '🍕'];
+      }
+    } else {
+      const found = typeof AVATAR_CATEGORIES !== 'undefined' ? AVATAR_CATEGORIES.find(c => c.id === activeObAvatarCat) : null;
+      list = (found && found.avatars) ? found.avatars : [];
+    }
+
+    const currentSelected = obState.avatar || '🦊';
+    list.forEach(av => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `avatar-chip ${currentSelected === av ? 'active' : ''}`;
+      btn.setAttribute('data-avatar', av);
+      btn.textContent = av;
+      btn.onclick = () => {
+        obState.avatar = av;
+        updateOnboardingAvatarUI(av);
+      };
+      grid.appendChild(btn);
+    });
+
+    const pills = document.querySelectorAll('#obAvatarCatPills .ob-avatar-cat-pill');
+    pills.forEach(pill => {
+      pill.classList.toggle('active', pill.getAttribute('data-cat') === activeObAvatarCat);
+    });
+  }
+
+  function setupOnboardingAvatarDropdownEvents() {
+    const triggerBtn = document.getElementById('obAvatarTriggerBtn');
+    const menu = document.getElementById('obAvatarDropdownMenu');
+    const arrow = document.getElementById('obAvatarArrow');
+    const confirmBtn = document.getElementById('obAvatarConfirmBtn');
+    const catPills = document.querySelectorAll('#obAvatarCatPills .ob-avatar-cat-pill');
+
+    function openDropdown() {
+      if (!menu) return;
+      menu.style.display = 'flex';
+      if (triggerBtn) {
+        triggerBtn.classList.add('open');
+        triggerBtn.setAttribute('aria-expanded', 'true');
+      }
+      if (arrow) arrow.textContent = '▴';
+      renderOnboardingAvatarDropdown(activeObAvatarCat);
+    }
+
+    function closeDropdown() {
+      if (!menu) return;
+      menu.style.display = 'none';
+      if (triggerBtn) {
+        triggerBtn.classList.remove('open');
+        triggerBtn.setAttribute('aria-expanded', 'false');
+      }
+      if (arrow) arrow.textContent = '▾';
+    }
+
+    if (triggerBtn) {
+      triggerBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (menu && menu.style.display === 'flex') {
+          closeDropdown();
+        } else {
+          openDropdown();
+        }
+      };
+    }
+
+    if (confirmBtn) {
+      confirmBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDropdown();
+        playSoundEffect('correct');
+        showToast(`Avatar seçildi: ${obState.avatar || '🦊'} ✓`);
+      };
+    }
+
+    catPills.forEach(pill => {
+      pill.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const cat = pill.getAttribute('data-cat') || 'all';
+        renderOnboardingAvatarDropdown(cat);
+      };
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menu || menu.style.display !== 'flex') return;
+      const wrap = document.querySelector('.ob-avatar-dropdown-wrapper');
+      if (wrap && !wrap.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+  }
 
   function startOnboardingFlow() {
     window.startOnboardingFlow = startOnboardingFlow;
@@ -2844,12 +3126,8 @@
     }
 
     if (dom.obNameInput) dom.obNameInput.value = obState.name;
-
-    if (dom.obAvatarChips) {
-      dom.obAvatarChips.forEach(chip => {
-        chip.classList.toggle('active', chip.getAttribute('data-avatar') === obState.avatar);
-      });
-    }
+    updateOnboardingAvatarUI(obState.avatar);
+    renderOnboardingAvatarDropdown(activeObAvatarCat);
 
     if (dom.obLangOptions) {
       dom.obLangOptions.forEach(card => {
@@ -2873,6 +3151,14 @@
     obState.step = stepNum;
 
     // İçerikleri görünür yapmadan ÖNCE hazırla (Böylece ekranda çift boyama / blink olmaz)
+    if (stepNum === 1) {
+      updateOnboardingAvatarUI(obState.avatar || '🦊');
+      renderOnboardingAvatarDropdown(activeObAvatarCat);
+      const nameInput = dom.obNameInput || document.getElementById('obNameInput');
+      if (nameInput) {
+        nameInput.value = obState.name || '';
+      }
+    }
     if (stepNum === 3) {
       renderOnboardingTracks();
     }
@@ -7343,22 +7629,40 @@
     // İLK KURULUM SİHİRBAZI (ONBOARDING) OLAY DİNLEYİCİLERİ
     // ==========================================
     // 1. Adım Avatar Seçimi & İleri
-    if (dom.obAvatarChips) {
-      dom.obAvatarChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          dom.obAvatarChips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          obState.avatar = chip.getAttribute('data-avatar');
-        });
-      });
+    setupOnboardingAvatarDropdownEvents();
+
+    function handleObStep1Next() {
+      const nameInput = dom.obNameInput || document.getElementById('obNameInput');
+      const errorEl = document.getElementById('obNameError');
+      const val = nameInput ? nameInput.value.trim() : '';
+
+      const validation = validateAppropriateName(val);
+      if (!validation.valid) {
+        if (nameInput) {
+          nameInput.classList.add('ob-input-error');
+          nameInput.focus();
+        }
+        if (errorEl) {
+          errorEl.textContent = validation.message;
+          errorEl.style.display = 'flex';
+        }
+        showToast(validation.message);
+        playSoundEffect('wrong');
+        return;
+      }
+
+      if (nameInput) nameInput.classList.remove('ob-input-error');
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+
+      obState.name = val;
+      goToOnboardingStep(2);
     }
 
     if (dom.obStep1NextBtn) {
-      dom.obStep1NextBtn.addEventListener('click', () => {
-        const val = dom.obNameInput ? dom.obNameInput.value.trim() : '';
-        obState.name = val || 'Öğrenci';
-        goToOnboardingStep(2);
-      });
+      dom.obStep1NextBtn.addEventListener('click', handleObStep1Next);
     }
 
     if (dom.obStep1BackBtn) {
@@ -7368,11 +7672,17 @@
     }
 
     if (dom.obNameInput) {
+      dom.obNameInput.addEventListener('input', () => {
+        const errorEl = document.getElementById('obNameError');
+        if (errorEl && errorEl.style.display !== 'none') {
+          errorEl.style.display = 'none';
+          dom.obNameInput.classList.remove('ob-input-error');
+        }
+      });
       dom.obNameInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-          const val = dom.obNameInput.value.trim();
-          obState.name = val || 'Öğrenci';
-          goToOnboardingStep(2);
+          e.preventDefault();
+          handleObStep1Next();
         }
       });
     }
@@ -7781,14 +8091,18 @@
                 if (user.xp >= 10000) badge = 'Şampiyon';
                 
                 const isMe = (window.fbUser && user.uid === window.fbUser.uid) ? 'background: rgba(37, 99, 235, 0.1); border-left: 4px solid var(--accent);' : '';
+                const userLang = user.lang || (isMe ? state.activeLanguage : 'EN-TR');
+                const flagIcon = getLangFlag(userLang);
+                const langTitle = (typeof LANG_META !== 'undefined' && LANG_META[userLang] && LANG_META[userLang].name) ? LANG_META[userLang].name : userLang;
                 
                 listContainer.innerHTML += `
                   <div class="leaderboard-item rank-${rank}" style="${isMe}">
                     <div class="lb-rank">${rank}</div>
                     <div class="lb-avatar">${user.avatar || '👻'}</div>
                     <div class="lb-info">
-                      <div style="display:flex; align-items:center; gap:4px;">
+                      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                         <div class="lb-name">${user.displayName || 'Öğrenci'}</div>
+                        <span class="lb-lang-flag" title="${langTitle}" aria-label="${langTitle}" style="font-size:1.1rem; line-height:1; display:inline-flex; align-items:center; cursor:help;">${flagIcon}</span>
                         ${isMe ? '<span style="font-size:0.7rem; font-weight:800; color:var(--accent); flex-shrink:0;">(Sen)</span>' : ''}
                       </div>
                       <div class="lb-badge">${badge}</div>
@@ -8012,6 +8326,15 @@
         if (typeof renderBadgesView === 'function') renderBadgesView();
         refreshWordsList();
 
+        obState.name = '';
+        obState.avatar = '🦊';
+        if (dom.obNameInput) {
+          dom.obNameInput.value = '';
+          dom.obNameInput.classList.remove('ob-input-error');
+        }
+        const errEl = document.getElementById('obNameError');
+        if (errEl) errEl.style.display = 'none';
+
         if (obStepIndicator) obStepIndicator.style.display = 'flex';
         goToOnboardingStep(1);
       });
@@ -8030,16 +8353,19 @@
         const password = authPassword ? authPassword.value : '';
         const name = authName ? authName.value.trim() : '';
 
-        if (!isLoginMode && !name) {
-          if (authError) {
-            authError.textContent = 'Lütfen adınızı ve soyadınızı giriniz.';
-            authError.style.display = 'block';
+        if (!isLoginMode) {
+          const valCheck = validateAppropriateName(name);
+          if (!valCheck.valid) {
+            if (authError) {
+              authError.textContent = valCheck.message;
+              authError.style.display = 'block';
+            }
+            if (authSubmitBtn) {
+              authSubmitBtn.disabled = false;
+              authSubmitBtn.textContent = 'Kayıt Ol';
+            }
+            return;
           }
-          if (authSubmitBtn) {
-            authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = 'Kayıt Ol';
-          }
-          return;
         }
 
         let res;
