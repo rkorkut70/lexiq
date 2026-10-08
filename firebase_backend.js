@@ -399,6 +399,54 @@ window.logoutUser = async function() {
   }
 };
 
+// Şifre Sıfırlama E-postası Gönder (Şifremi Unuttum)
+window.resetPasswordWithEmail = async function(email) {
+  if (!auth) {
+    return { success: false, error: "Firebase kimlik doğrulama servisi başlatılamadı." };
+  }
+  if (!email || !email.includes('@')) {
+    return { success: false, error: "Lütfen geçerli bir e-posta adresi giriniz." };
+  }
+  try {
+    await auth.sendPasswordResetEmail(email.trim());
+    return { success: true };
+  } catch (error) {
+    console.error("Şifre sıfırlama hatası:", error);
+    return { success: false, error: getAuthErrorMessage(error) };
+  }
+};
+
+// Şifre Değiştir (Mevcut Şifre + Yeni Şifre)
+window.changeUserPassword = async function(currentPassword, newPassword) {
+  if (!auth || !auth.currentUser) {
+    return { success: false, error: "Oturum açmış bir kullanıcı bulunamadı." };
+  }
+  if (!currentPassword) {
+    return { success: false, error: "Lütfen mevcut şifrenizi giriniz." };
+  }
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Yeni şifreniz en az 6 karakter olmalıdır." };
+  }
+  try {
+    const user = auth.currentUser;
+    const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+    
+    // 1. Mevcut şifreyi doğrula (re-authenticate)
+    await user.reauthenticateWithCredential(credential);
+    
+    // 2. Yeni şifreyi güncelle
+    await user.updatePassword(newPassword);
+    return { success: true };
+  } catch (error) {
+    console.error("Şifre değiştirme hatası:", error);
+    const code = error.code || "";
+    if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+      return { success: false, error: "Mevcut şifrenizi hatalı girdiniz. Lütfen kontrol ediniz veya 'Şifremi Unuttum' seçeneğini kullanınız." };
+    }
+    return { success: false, error: getAuthErrorMessage(error) };
+  }
+};
+
 // XP Artırma Fonksiyonu (Oyun bitimlerinde çağrılır)
 window.addXPToFirebase = function(xpGained) {
   if (!window.fbUser || !db || xpGained <= 0) return;

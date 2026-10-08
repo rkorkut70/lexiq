@@ -1772,6 +1772,12 @@
     if (accountStatus) {
       accountStatus.textContent = isFbLoggedIn ? `Kayıtlı: ${fbUser.email || state.userEmail}` : 'Misafir Kullanıcı (Bulut kapalı)';
     }
+
+    const profSecurityCard = document.getElementById('profSecurityCard');
+    if (profSecurityCard) {
+      profSecurityCard.style.display = isFbLoggedIn ? 'flex' : 'none';
+    }
+
     const profGuestLogoutBtn = document.getElementById('profGuestLogoutBtn');
     if (loginOutBtn) {
       if (isFbLoggedIn) {
@@ -2505,6 +2511,10 @@
       if (logoutBtnText) {
         logoutBtnText.textContent = isAuth ? 'Hesaptan Çıkış Yap' : 'Misafir Oturumunu Kapat (Sıfırla)';
       }
+    }
+    const settingSecurityBlock = document.getElementById('settingSecurityBlock');
+    if (settingSecurityBlock) {
+      settingSecurityBlock.style.display = isAuth ? 'block' : 'none';
     }
     const leaderboardAuthStatus = document.getElementById('leaderboardAuthStatus');
     if (leaderboardAuthStatus) {
@@ -7852,6 +7862,8 @@
         }
         if (authNameGroup) authNameGroup.style.display = 'none';
         if (authSubmitBtn) authSubmitBtn.textContent = 'Giriş Yap';
+        const forgotWrap = document.getElementById('authForgotPasswordWrap');
+        if (forgotWrap) forgotWrap.style.display = 'flex';
         const title = document.getElementById('authModalTitle');
         const desc = document.getElementById('authModalDesc');
         if (title) title.textContent = 'Tekrar Hoş Geldiniz';
@@ -7868,6 +7880,8 @@
         }
         if (authNameGroup) authNameGroup.style.display = 'block';
         if (authSubmitBtn) authSubmitBtn.textContent = 'Kayıt Ol';
+        const forgotWrap = document.getElementById('authForgotPasswordWrap');
+        if (forgotWrap) forgotWrap.style.display = 'none';
         const title = document.getElementById('authModalTitle');
         const desc = document.getElementById('authModalDesc');
         if (title) title.textContent = 'Hesap Oluştur';
@@ -7877,6 +7891,52 @@
 
     if (authTabLogin) authTabLogin.addEventListener('click', () => setAuthMode(true));
     if (authTabRegister) authTabRegister.addEventListener('click', () => setAuthMode(false));
+
+    // Giriş Ekranı: Şifremi Unuttum Butonu
+    const authForgotPasswordBtn = document.getElementById('authForgotPasswordBtn');
+    if (authForgotPasswordBtn) {
+      authForgotPasswordBtn.addEventListener('click', async () => {
+        const email = authEmail ? authEmail.value.trim() : '';
+        if (!email || !email.includes('@')) {
+          if (authError) {
+            authError.style.display = 'block';
+            authError.style.background = 'rgba(239, 68, 68, 0.15)';
+            authError.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            authError.style.color = '#ef4444';
+            authError.textContent = 'Lütfen önce yukarıdaki kutucuğa e-posta adresinizi giriniz.';
+          }
+          if (authEmail) authEmail.focus();
+          return;
+        }
+
+        authForgotPasswordBtn.disabled = true;
+        authForgotPasswordBtn.textContent = 'Gönderiliyor...';
+
+        const res = await window.resetPasswordWithEmail(email);
+        authForgotPasswordBtn.disabled = false;
+        authForgotPasswordBtn.textContent = 'Şifremi Unuttum?';
+
+        if (res && res.success) {
+          if (authError) {
+            authError.style.display = 'block';
+            authError.style.background = 'rgba(16, 185, 129, 0.15)';
+            authError.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            authError.style.color = '#10b981';
+            authError.textContent = `📧 Şifre sıfırlama bağlantısı ${email} adresine gönderildi! Lütfen gelen kutunuzu (ve spam klasörünü) kontrol ediniz.`;
+          }
+          showToast('📧 Şifre sıfırlama e-postası gönderildi!', 'correct');
+          playSoundEffect('correct');
+        } else {
+          if (authError) {
+            authError.style.display = 'block';
+            authError.style.background = 'rgba(239, 68, 68, 0.15)';
+            authError.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            authError.style.color = '#ef4444';
+            authError.textContent = (res && res.error) ? res.error : 'Şifre sıfırlama e-postası gönderilemedi.';
+          }
+        }
+      });
+    }
 
     const obQuickLoginBtn = document.getElementById('obQuickLoginBtn');
     if (obQuickLoginBtn) {
@@ -8075,6 +8135,143 @@
         closeSettingsModal();
         setAuthMode(true);
         openAuthModal();
+      });
+    }
+
+    // ==========================================
+    // ŞİFRE DEĞİŞTİRME SİSTEMİ (CHANGE PASSWORD)
+    // ==========================================
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const closeChangePasswordModalBtn = document.getElementById('closeChangePasswordModalBtn');
+    const profOpenChangePasswordBtn = document.getElementById('profOpenChangePasswordBtn');
+    const settingOpenChangePasswordBtn = document.getElementById('settingOpenChangePasswordBtn');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const cpCurrentPassword = document.getElementById('cpCurrentPassword');
+    const cpNewPassword = document.getElementById('cpNewPassword');
+    const cpConfirmPassword = document.getElementById('cpConfirmPassword');
+    const cpErrorMsg = document.getElementById('cpErrorMsg');
+    const cpSuccessMsg = document.getElementById('cpSuccessMsg');
+    const cpSubmitBtn = document.getElementById('cpSubmitBtn');
+    const cpForgotPasswordBtn = document.getElementById('cpForgotPasswordBtn');
+
+    function openChangePasswordModal() {
+      if (changePasswordForm) changePasswordForm.reset();
+      if (cpErrorMsg) { cpErrorMsg.style.display = 'none'; cpErrorMsg.textContent = ''; }
+      if (cpSuccessMsg) { cpSuccessMsg.style.display = 'none'; cpSuccessMsg.textContent = ''; }
+      if (cpSubmitBtn) { cpSubmitBtn.disabled = false; cpSubmitBtn.textContent = '🔑 Şifreyi Güncelle'; }
+      if (changePasswordModal) {
+        changePasswordModal.style.display = 'flex';
+        changePasswordModal.classList.add('active');
+      }
+    }
+
+    function closeChangePasswordModal() {
+      if (changePasswordModal) {
+        changePasswordModal.classList.remove('active');
+        setTimeout(() => { changePasswordModal.style.display = 'none'; }, 200);
+      }
+    }
+
+    if (profOpenChangePasswordBtn) profOpenChangePasswordBtn.addEventListener('click', openChangePasswordModal);
+    if (settingOpenChangePasswordBtn) settingOpenChangePasswordBtn.addEventListener('click', openChangePasswordModal);
+    if (closeChangePasswordModalBtn) closeChangePasswordModalBtn.addEventListener('click', closeChangePasswordModal);
+    if (changePasswordModal) {
+      changePasswordModal.addEventListener('click', (e) => {
+        if (e.target === changePasswordModal) closeChangePasswordModal();
+      });
+    }
+
+    // Modal içindeki Şifremi Unuttum butonu
+    if (cpForgotPasswordBtn) {
+      cpForgotPasswordBtn.addEventListener('click', async () => {
+        const userEmail = (window.fbUser && window.fbUser.email) || localStorage.getItem('lexiq_user_email');
+        if (!userEmail) {
+          if (cpErrorMsg) {
+            cpErrorMsg.style.display = 'block';
+            cpErrorMsg.textContent = 'Kayıtlı e-posta adresiniz bulunamadı.';
+          }
+          return;
+        }
+
+        cpForgotPasswordBtn.disabled = true;
+        cpForgotPasswordBtn.textContent = 'Gönderiliyor...';
+
+        const res = await window.resetPasswordWithEmail(userEmail);
+        cpForgotPasswordBtn.disabled = false;
+        cpForgotPasswordBtn.textContent = 'Şifremi Unuttum?';
+
+        if (res && res.success) {
+          if (cpSuccessMsg) {
+            cpSuccessMsg.style.display = 'block';
+            cpSuccessMsg.textContent = `📧 Şifre sıfırlama bağlantısı ${userEmail} adresinize gönderildi! Lütfen e-postanızı kontrol ediniz.`;
+          }
+          if (cpErrorMsg) cpErrorMsg.style.display = 'none';
+          showToast(`📧 Sıfırlama bağlantısı gönderildi: ${userEmail}`, 'correct');
+          playSoundEffect('correct');
+        } else {
+          if (cpErrorMsg) {
+            cpErrorMsg.style.display = 'block';
+            cpErrorMsg.textContent = res ? res.error : 'Şifre sıfırlama e-postası gönderilemedi.';
+          }
+        }
+      });
+    }
+
+    // Şifre Değiştirme Form Gönderimi
+    if (changePasswordForm) {
+      changePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (cpErrorMsg) cpErrorMsg.style.display = 'none';
+        if (cpSuccessMsg) cpSuccessMsg.style.display = 'none';
+
+        const curPass = cpCurrentPassword ? cpCurrentPassword.value : '';
+        const newPass = cpNewPassword ? cpNewPassword.value : '';
+        const confPass = cpConfirmPassword ? cpConfirmPassword.value : '';
+
+        if (!curPass) {
+          if (cpErrorMsg) { cpErrorMsg.style.display = 'block'; cpErrorMsg.textContent = 'Lütfen mevcut şifrenizi giriniz.'; }
+          return;
+        }
+        if (newPass.length < 6) {
+          if (cpErrorMsg) { cpErrorMsg.style.display = 'block'; cpErrorMsg.textContent = 'Yeni şifreniz en az 6 karakter olmalıdır.'; }
+          return;
+        }
+        if (newPass !== confPass) {
+          if (cpErrorMsg) { cpErrorMsg.style.display = 'block'; cpErrorMsg.textContent = 'Yeni şifreler birbiriyle uyuşmuyor!'; }
+          return;
+        }
+
+        if (cpSubmitBtn) {
+          cpSubmitBtn.disabled = true;
+          cpSubmitBtn.textContent = '⏳ Güncelleniyor...';
+        }
+
+        const res = await window.changeUserPassword(curPass, newPass);
+
+        if (res && res.success) {
+          if (cpSuccessMsg) {
+            cpSuccessMsg.style.display = 'block';
+            cpSuccessMsg.textContent = '✅ Şifreniz başarıyla güncellendi!';
+          }
+          if (cpSubmitBtn) {
+            cpSubmitBtn.textContent = '✅ Güncellendi';
+          }
+          playSoundEffect('celebration');
+          showToast('✅ Şifreniz başarıyla güncellendi!', 'correct');
+          setTimeout(() => {
+            closeChangePasswordModal();
+          }, 1400);
+        } else {
+          if (cpSubmitBtn) {
+            cpSubmitBtn.disabled = false;
+            cpSubmitBtn.textContent = '🔑 Şifreyi Güncelle';
+          }
+          if (cpErrorMsg) {
+            cpErrorMsg.style.display = 'block';
+            cpErrorMsg.textContent = res ? res.error : 'Şifre güncellenemedi.';
+          }
+          playSoundEffect('wrong');
+        }
       });
     }
 

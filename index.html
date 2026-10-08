@@ -15,7 +15,7 @@
   <meta http-equiv="Expires" content="0">
   <title>LexiQ • Çok Dilli Akıllı Kelime Kartları</title>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="style.css?v=1791309000000">
+  <link rel="stylesheet" href="style.css?v=1791310000000">
 </head>
 <body>
   <div class="app-container">
@@ -1459,6 +1459,12 @@
           <input type="password" id="authPassword" placeholder="Şifreniz (En az 6 karakter)" class="auth-input" required />
         </div>
         
+        <div style="display:flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 6px;" id="authForgotPasswordWrap">
+          <button type="button" id="authForgotPasswordBtn" style="background: none; border: none; color: #38bdf8; font-size: 0.82rem; font-weight: 700; cursor: pointer; padding: 4px;">
+            Şifremi Unuttum?
+          </button>
+        </div>
+        
         <div id="authError" class="auth-error-msg" style="display:none;"></div>
         
         <button type="submit" id="authSubmitBtn" class="btn btn-primary auth-submit-btn">Giriş Yap</button>
@@ -2069,6 +2075,20 @@
             <span class="status-indicator-dot"></span>
             <span class="student-account-status" id="profAccountStatusText">Misafir Kullanıcı (Bulut kapalı)</span>
           </div>
+
+          <!-- ŞİFRE DEĞİŞTİRME & HESAP GÜVENLİĞİ (GİRİŞ YAPMIŞ HESAPLAR İÇİN) -->
+          <div class="student-security-card" id="profSecurityCard" style="display: none; margin-top: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 14px; padding: 10px 14px; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.15rem;">🔐</span>
+              <div>
+                <strong style="font-size: 0.85rem; color: var(--text-main); display: block;">Hesap Şifresi</strong>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Şifrenizi güvenle güncelleyin</span>
+              </div>
+            </div>
+            <button type="button" id="profOpenChangePasswordBtn" class="pill-btn" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; background: rgba(56, 189, 248, 0.14); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); cursor: pointer;">
+              Şifre Değiştir
+            </button>
+          </div>
         </div>
 
         <!-- 2. İSTATİSTİK SAYACI (4'LÜ SADE KARTLAR) -->
@@ -2343,6 +2363,16 @@
                 <option value="20">20 Kelime / Gün</option>
                 <option value="30">30 Kelime / Gün</option>
               </select>
+            </div>
+
+            <!-- HESAP GÜVENLİĞİ / ŞİFRE DEĞİŞTİR -->
+            <div class="setting-block" id="settingSecurityBlock" style="display: none;">
+              <div class="setting-block-header">
+                <span class="setting-block-label">🔐 Hesap Güvenliği</span>
+              </div>
+              <button type="button" id="settingOpenChangePasswordBtn" class="pill-btn" style="width: 100%; padding: 10px; font-size: 0.88rem; font-weight: 700; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); cursor: pointer;">
+                🔑 Şifremi Değiştir
+              </button>
             </div>
 
             <button type="button" id="saveProfileSettingsBtn" class="pill-btn primary-action-btn" style="width: 100%; margin-top: 10px;">
@@ -2925,8 +2955,54 @@
     </div>
   </div>
 
+  <!-- ŞİFRE DEĞİŞTİRME MODALI -->
+  <div id="changePasswordModal" class="modal-overlay" style="z-index: 10055; display: none;">
+    <div class="modal-card change-password-modal-card" style="max-width: 420px; padding: 24px 22px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(56, 189, 248, 0.15); border: 1.5px solid rgba(56, 189, 248, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">🔐</div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Şifre Değiştir</h3>
+            <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-muted);">Hesap güvenliğiniz için şifrenizi güncelleyin</p>
+          </div>
+        </div>
+        <button type="button" id="closeChangePasswordModalBtn" class="icon-btn" aria-label="Kapat" style="border: none; background: transparent; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <form id="changePasswordForm" style="display: flex; flex-direction: column; gap: 12px;">
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Mevcut Şifre</label>
+          <input type="password" id="cpCurrentPassword" class="auth-input" placeholder="Mevcut şifrenizi girin" required style="width: 100%; box-sizing: border-box;" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: -6px;">
+          <button type="button" id="cpForgotPasswordBtn" style="background: none; border: none; color: #38bdf8; font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 2px;">
+            Şifremi Unuttum?
+          </button>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Yeni Şifre</label>
+          <input type="password" id="cpNewPassword" class="auth-input" placeholder="Yeni şifreniz (En az 6 karakter)" minlength="6" required style="width: 100%; box-sizing: border-box;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Yeni Şifre (Tekrar)</label>
+          <input type="password" id="cpConfirmPassword" class="auth-input" placeholder="Yeni şifrenizi tekrar girin" minlength="6" required style="width: 100%; box-sizing: border-box;" />
+        </div>
+
+        <div id="cpErrorMsg" class="auth-error-msg" style="display: none; padding: 10px; border-radius: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; font-size: 0.82rem; line-height: 1.5;"></div>
+        <div id="cpSuccessMsg" style="display: none; padding: 10px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; font-size: 0.82rem; font-weight: 700; line-height: 1.5;"></div>
+
+        <button type="submit" id="cpSubmitBtn" class="pill-btn primary-action-btn" style="width: 100%; padding: 12px; font-size: 0.92rem; font-weight: 800; margin-top: 4px; cursor: pointer;">
+          🔑 Şifreyi Güncelle
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- UYGULAMA İÇİ ÖZEL ONAY VE ÇIKIŞ MODALI (CUSTOM CONFIRM & EXIT MODAL) -->
-  <div id="customConfirmModal" class="modal-overlay" style="z-index: 10050; display: none;">
+  <div id="customConfirmModal" class="modal-overlay" style="z-index: 10080; display: none;">
     <div class="modal-card custom-confirm-card">
       <div class="confirm-icon-wrap" id="confirmModalIcon">👋</div>
       <h3 class="confirm-title" id="confirmModalTitle">Çıkış Yap</h3>
@@ -3061,11 +3137,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-  <script src="firebase_backend.js?v=1791299900000"></script>
+  <script src="firebase_backend.js?v=1791310000000"></script>
 
   <!-- Kelime Verisi ve Uygulama Mantığı (Sadece Standart Vanilla JS) -->
   <script src="words_data.js?v=1791299900000"></script>
-  <script src="app.js?v=1791309000000"></script>
+  <script src="app.js?v=1791310000000"></script>
 
   </body>
 </html>
