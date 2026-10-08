@@ -2173,16 +2173,13 @@
         </button>
       </div>
 
-      <!-- Ayarlar Sekmeleri (5 Modern Sekme) -->
+      <!-- Ayarlar Sekmeleri (4 Modern Sekme) -->
       <div class="settings-tabs-nav" id="settingsTabsNav">
         <button type="button" class="settings-tab-btn active" data-tab="cards">
           <span>🎨 Kart</span>
         </button>
-        <button type="button" class="settings-tab-btn" data-tab="audio">
-          <span>🔊 Ses</span>
-        </button>
-        <button type="button" class="settings-tab-btn" data-tab="study">
-          <span>📚 Çalışma</span>
+        <button type="button" class="settings-tab-btn" data-tab="arena">
+          <span>⚔️ Arena</span>
         </button>
         <button type="button" class="settings-tab-btn" data-tab="reminder">
           <span>⏰ Hatırlatıcı</span>
@@ -2347,10 +2344,10 @@
               </div>
             </div>
 
-            <!-- Yazı Boyutu (5 Kademeli Kompakt Seçim) -->
+            <!-- Kart Yazı Boyutu (5 Kademeli Kompakt Seçim) -->
             <div class="setting-block">
               <div class="setting-block-header">
-                <span class="setting-block-label">Yazı Boyutu</span>
+                <span class="setting-block-label">Kart Yazı Boyutu</span>
               </div>
               <div class="setting-segment-compact font-sizes" id="fontSizeSegmentGroup">
                 <button type="button" class="setting-segment-btn" data-size="xsmall" title="Daha Küçük">Daha Küçük</button>
@@ -2372,6 +2369,15 @@
               </select>
             </div>
 
+            <!-- Gösterilecek Kartlar (Çalışma sekmesinden taşındı) -->
+            <div class="setting-block">
+              <span class="setting-block-label">Gösterilecek Kartlar</span>
+              <select id="settingCardFilter" class="setting-select-box">
+                <option value="pending">Sadece Öğrenilecekler (Varsayılan)</option>
+                <option value="learned">Öğrenilenleri İncele</option>
+              </select>
+            </div>
+
             <!-- Kart Çevirme & Animasyon Hızı -->
             <div class="setting-block">
               <span class="setting-block-label">Kart Çevirme Hızı</span>
@@ -2382,28 +2388,16 @@
               </div>
             </div>
 
-            <!-- Kart Seçenekleri -->
-            <div class="setting-block no-border">
-              <div class="setting-compact-row">
-                <span class="setting-row-text">Çizgili Defter Dokusu</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settingLinedPaper">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-
-              <div class="setting-compact-row">
-                <span class="setting-row-text">Ters Kart Modu (Anlam → Kelime)</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settingReverseMode">
-                  <span class="toggle-slider"></span>
-                </label>
+            <!-- Telaffuz Hızı (Ses sekmesinden taşındı) -->
+            <div class="setting-block">
+              <span class="setting-block-label">Telaffuz Hızı</span>
+              <div class="setting-segment-compact" id="speechSpeedSegmentGroup">
+                <button type="button" class="setting-segment-btn active" data-speed="1.0">Normal (1.0x)</button>
+                <button type="button" class="setting-segment-btn" data-speed="0.75">Yavaş (0.75x)</button>
               </div>
             </div>
-          </div>
 
-          <!-- 2. SEKME: SES & TELAFFUZ -->
-          <div class="settings-tab-panel" id="tabPanelAudio">
+            <!-- Kart Akış & Ses Seçenekleri -->
             <div class="setting-block">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
@@ -2415,68 +2409,18 @@
                   <span class="toggle-slider"></span>
                 </label>
               </div>
-            </div>
 
-            <div class="setting-block">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
-                  <span class="setting-row-text">Oyun & Başarı Ses Efektleri</span>
-                  <span class="setting-row-desc">XP kazanımı, zafer ve tebrik sesleri</span>
+                  <span class="setting-row-text">🗣️ Örnek Cümleyi Seslendir</span>
+                  <span class="setting-row-desc">Kart çevrildiğinde örnek cümleyi telaffuz eder</span>
                 </div>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="settingSoundFx" checked>
+                  <input type="checkbox" id="settingReadExampleAudio">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
-            </div>
 
-            <div class="setting-block">
-              <span class="setting-block-label">Telaffuz Hızı</span>
-              <div class="setting-segment-compact" id="speechSpeedSegmentGroup">
-                <button type="button" class="setting-segment-btn active" data-speed="1.0">Normal (1.0x)</button>
-                <button type="button" class="setting-segment-btn" data-speed="0.75">Yavaş (0.75x)</button>
-              </div>
-            </div>
-
-            <!-- Titreşimli Geri Bildirim (Haptic Feedback) -->
-            <div class="setting-block no-border">
-              <div class="setting-compact-row">
-                <div class="setting-row-info">
-                  <span class="setting-row-text">📳 Titreşimli Geri Bildirim (Haptik)</span>
-                  <span class="setting-row-desc">Kart çevirme, doğru/yanlış ve buton dokunuşlarında hafif titreşim</span>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settingHapticFeedback" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. SEKME: ÇALIŞMA (ÖĞRENME VE KART AKIŞI) -->
-          <div class="settings-tab-panel" id="tabPanelStudy">
-            <div class="setting-block">
-              <span class="setting-block-label">Gösterilecek Kartlar</span>
-              <select id="settingCardFilter" class="setting-select-box">
-                <option value="pending">Sadece Öğrenilecekler (Varsayılan)</option>
-                <option value="learned">Öğrenilenleri İncele</option>
-              </select>
-            </div>
-
-            <div class="setting-block">
-              <div class="setting-compact-row">
-                <div class="setting-row-info">
-                  <span class="setting-row-text">Kartları Karıştır (Rastgele)</span>
-                  <span class="setting-row-desc">Müfredatı karışık sırayla getirir</span>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="settingShuffle">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-block">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
                   <span class="setting-row-text">Otomatik Slayt (Eller Serbest)</span>
@@ -2487,31 +2431,106 @@
                   <span class="toggle-slider"></span>
                 </label>
               </div>
-            </div>
 
-            <!-- SRS Zorluk Odaklı Çalışma Modu -->
-            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Kartları Karıştır (Rastgele)</span>
+                  <span class="setting-row-desc">Müfredatı karışık sırayla getirir</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingShuffle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
               <div class="setting-compact-row">
                 <div class="setting-row-info">
                   <span class="setting-row-text">🧠 Akıllı Tekrar (Zor Kelimelere Öncelik)</span>
-                  <span class="setting-row-desc">Sık hata yapılan veya henüz pekişmemiş kelimeleri öne alır</span>
+                  <span class="setting-row-desc">Sık hata yapılan veya pekişmemiş kelimeleri öne alır</span>
                 </div>
                 <label class="toggle-switch">
                   <input type="checkbox" id="settingSrsPriority">
                   <span class="toggle-slider"></span>
                 </label>
               </div>
+
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Ters Kart Modu (Anlam → Kelime)</span>
+                  <span class="setting-row-desc">Önce Türkçe anlamı göster, arkada yabancı kelimeyi aç</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingReverseMode">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">Çizgili Defter Dokusu</span>
+                  <span class="setting-row-desc">Kart yüzeyine defter çizgisi efekti verir</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingLinedPaper">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
             </div>
 
-            <!-- Örnek Cümleyi de Seslendir -->
+            <!-- Titreşimli Geri Bildirim (Kart) -->
             <div class="setting-block no-border">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
-                  <span class="setting-row-text">🗣️ Örnek Cümleyi Seslendir</span>
-                  <span class="setting-row-desc">Kart çevrildiğinde İngilizce örnek cümleyi de telaffuz eder</span>
+                  <span class="setting-row-text">📳 Titreşimli Geri Bildirim (Haptik)</span>
+                  <span class="setting-row-desc">Kart çevirme, geçiş ve buton dokunuşlarında hafif titreşim</span>
                 </div>
                 <label class="toggle-switch">
-                  <input type="checkbox" id="settingReadExampleAudio">
+                  <input type="checkbox" id="settingCardHaptic" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. SEKME: ARENA & OYUNLAR -->
+          <div class="settings-tab-panel" id="tabPanelArena">
+            <!-- Oyun Yazı Boyutu -->
+            <div class="setting-block">
+              <div class="setting-block-header">
+                <span class="setting-block-label">Arena Yazı Boyutu</span>
+              </div>
+              <div class="setting-segment-compact font-sizes" id="gameFontSizeSegmentGroup">
+                <button type="button" class="setting-segment-btn" data-size="xsmall" title="Daha Küçük">Daha Küçük</button>
+                <button type="button" class="setting-segment-btn" data-size="small" title="Küçük">Küçük</button>
+                <button type="button" class="setting-segment-btn active" data-size="normal" title="Normal">Normal</button>
+                <button type="button" class="setting-segment-btn" data-size="large" title="Büyük">Büyük</button>
+                <button type="button" class="setting-segment-btn" data-size="xlarge" title="Çok Büyük">Çok Büyük</button>
+              </div>
+            </div>
+
+            <!-- Oyun & Başarı Ses Efektleri -->
+            <div class="setting-block">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">🔊 Oyun & Başarı Ses Efektleri</span>
+                  <span class="setting-row-desc">XP kazanımı, zafer, tebrik ve doğru/yanlış ses efektleri</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingSoundFx" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Titreşimli Geri Bildirim (Arena) -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">📳 Titreşimli Geri Bildirim (Haptik)</span>
+                  <span class="setting-row-desc">Doğru/yanlış cevaplarda ve oyun buton dokunuşlarında hafif titreşim</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingGameHaptic" checked>
                   <span class="toggle-slider"></span>
                 </label>
               </div>

@@ -4849,12 +4849,16 @@ html[data-card-theme="dark"] .card-face {
 }
 
 /* ==========================================================================
-   YAZI BOYUTU (5 KADEMELİ: DAHA KÜÇÜK, KÜÇÜK, NORMAL, BÜYÜK, ÇOK BÜYÜK)
+   YAZI BOYUTU (KARTLAR: 5 KADEMELİ - ÖN & ARKA YÜZ ORANTILI DEĞİŞİR)
    ========================================================================== */
+[data-card-font="xsmall"] .card-word,
+[data-card-font="xsmall"] #cardTargetWord,
 [data-card-font="xsmall"] .card-target-word {
   font-size: 1.45rem !important;
 }
-[data-card-font="xsmall"] .card-meaning {
+[data-card-font="xsmall"] .card-meaning,
+[data-card-font="xsmall"] #cardMeaning,
+[data-card-font="xsmall"] #cardMeaningText {
   font-size: 1.3rem !important;
 }
 [data-card-font="xsmall"] .example-sentence {
@@ -4864,10 +4868,14 @@ html[data-card-theme="dark"] .card-face {
   font-size: 0.74rem !important;
 }
 
+[data-card-font="small"] .card-word,
+[data-card-font="small"] #cardTargetWord,
 [data-card-font="small"] .card-target-word {
   font-size: 1.7rem !important;
 }
-[data-card-font="small"] .card-meaning {
+[data-card-font="small"] .card-meaning,
+[data-card-font="small"] #cardMeaning,
+[data-card-font="small"] #cardMeaningText {
   font-size: 1.55rem !important;
 }
 [data-card-font="small"] .example-sentence {
@@ -4877,34 +4885,144 @@ html[data-card-theme="dark"] .card-face {
   font-size: 0.8rem !important;
 }
 
+[data-card-font="normal"] .card-word,
+[data-card-font="normal"] #cardTargetWord,
 [data-card-font="normal"] .card-target-word {
   font-size: 2.1rem;
 }
-[data-card-font="normal"] .card-meaning {
+[data-card-font="normal"] .card-meaning,
+[data-card-font="normal"] #cardMeaning,
+[data-card-font="normal"] #cardMeaningText {
   font-size: 1.85rem;
 }
 [data-card-font="normal"] .example-sentence {
   font-size: 1.0rem;
 }
 
+[data-card-font="large"] .card-word,
+[data-card-font="large"] #cardTargetWord,
 [data-card-font="large"] .card-target-word {
   font-size: 2.45rem !important;
 }
-[data-card-font="large"] .card-meaning {
+[data-card-font="large"] .card-meaning,
+[data-card-font="large"] #cardMeaning,
+[data-card-font="large"] #cardMeaningText {
   font-size: 2.2rem !important;
 }
 [data-card-font="large"] .example-sentence {
   font-size: 1.15rem !important;
 }
 
+[data-card-font="xlarge"] .card-word,
+[data-card-font="xlarge"] #cardTargetWord,
 [data-card-font="xlarge"] .card-target-word {
   font-size: 2.85rem !important;
 }
-[data-card-font="xlarge"] .card-meaning {
+[data-card-font="xlarge"] .card-meaning,
+[data-card-font="xlarge"] #cardMeaning,
+[data-card-font="xlarge"] #cardMeaningText {
   font-size: 2.55rem !important;
 }
 [data-card-font="xlarge"] .example-sentence {
   font-size: 1.3rem !important;
+}
+
+/* ==========================================================================
+   YAZI BOYUTU (ARENA & OYUNLAR: 5 KADEMELİ)
+   ========================================================================== */
+[data-game-font="xsmall"] .quiz-target-word,
+[data-game-font="xsmall"] .tf-target-word,
+[data-game-font="xsmall"] .game-prompt-meaning,
+[data-game-font="xsmall"] .tetris-meaning {
+  font-size: 1.45rem !important;
+}
+[data-game-font="xsmall"] .quiz-opt-btn,
+[data-game-font="xsmall"] .cloze-opt-btn,
+[data-game-font="xsmall"] .cloze-sentence-text,
+[data-game-font="xsmall"] .scramble-translation-text,
+[data-game-font="xsmall"] .tf-displayed-meaning,
+[data-game-font="xsmall"] .match-card-text {
+  font-size: 0.84rem !important;
+}
+[data-game-font="xsmall"] .letter-chip,
+[data-game-font="xsmall"] .scramble-chip {
+  font-size: 0.95rem !important;
+}
+
+[data-game-font="small"] .quiz-target-word,
+[data-game-font="small"] .tf-target-word,
+[data-game-font="small"] .game-prompt-meaning,
+[data-game-font="small"] .tetris-meaning {
+  font-size: 1.7rem !important;
+}
+[data-game-font="small"] .quiz-opt-btn,
+[data-game-font="small"] .cloze-opt-btn,
+[data-game-font="small"] .cloze-sentence-text,
+[data-game-font="small"] .scramble-translation-text,
+[data-game-font="small"] .tf-displayed-meaning,
+[data-game-font="small"] .match-card-text {
+  font-size: 0.94rem !important;
+}
+[data-game-font="small"] .letter-chip,
+[data-game-font="small"] .scramble-chip {
+  font-size: 1.05rem !important;
+}
+
+[data-game-font="normal"] .quiz-target-word,
+[data-game-font="normal"] .tf-target-word,
+[data-game-font="normal"] .game-prompt-meaning,
+[data-game-font="normal"] .tetris-meaning {
+  font-size: 2.0rem;
+}
+[data-game-font="normal"] .quiz-opt-btn,
+[data-game-font="normal"] .cloze-opt-btn,
+[data-game-font="normal"] .cloze-sentence-text,
+[data-game-font="normal"] .scramble-translation-text,
+[data-game-font="normal"] .tf-displayed-meaning,
+[data-game-font="normal"] .match-card-text {
+  font-size: 1.05rem;
+}
+[data-game-font="normal"] .letter-chip,
+[data-game-font="normal"] .scramble-chip {
+  font-size: 1.15rem;
+}
+
+[data-game-font="large"] .quiz-target-word,
+[data-game-font="large"] .tf-target-word,
+[data-game-font="large"] .game-prompt-meaning,
+[data-game-font="large"] .tetris-meaning {
+  font-size: 2.35rem !important;
+}
+[data-game-font="large"] .quiz-opt-btn,
+[data-game-font="large"] .cloze-opt-btn,
+[data-game-font="large"] .cloze-sentence-text,
+[data-game-font="large"] .scramble-translation-text,
+[data-game-font="large"] .tf-displayed-meaning,
+[data-game-font="large"] .match-card-text {
+  font-size: 1.2rem !important;
+}
+[data-game-font="large"] .letter-chip,
+[data-game-font="large"] .scramble-chip {
+  font-size: 1.3rem !important;
+}
+
+[data-game-font="xlarge"] .quiz-target-word,
+[data-game-font="xlarge"] .tf-target-word,
+[data-game-font="xlarge"] .game-prompt-meaning,
+[data-game-font="xlarge"] .tetris-meaning {
+  font-size: 2.7rem !important;
+}
+[data-game-font="xlarge"] .quiz-opt-btn,
+[data-game-font="xlarge"] .cloze-opt-btn,
+[data-game-font="xlarge"] .cloze-sentence-text,
+[data-game-font="xlarge"] .scramble-translation-text,
+[data-game-font="xlarge"] .tf-displayed-meaning,
+[data-game-font="xlarge"] .match-card-text {
+  font-size: 1.35rem !important;
+}
+[data-game-font="xlarge"] .letter-chip,
+[data-game-font="xlarge"] .scramble-chip {
+  font-size: 1.45rem !important;
 }
 
 /* Çizgili Defter / Not Kartı Dokusu */

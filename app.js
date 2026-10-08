@@ -39,6 +39,9 @@
     activeTheme: localStorage.getItem('kelime_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
     cardTheme: localStorage.getItem('kelime_card_theme') || 'white',
     cardFont: localStorage.getItem('kelime_card_font') || 'normal',
+    gameFont: localStorage.getItem('kelime_game_font') || 'normal',
+    cardHaptic: localStorage.getItem('kelime_card_haptic') !== 'false',
+    gameHaptic: localStorage.getItem('kelime_game_haptic') !== 'false',
     fontFamily: localStorage.getItem('kelime_font_family') || 'system',
     flipSpeed: localStorage.getItem('kelime_flip_speed') || 'normal',
     linedPaper: localStorage.getItem('kelime_lined_paper') === 'true',
@@ -703,6 +706,7 @@
     flipSpeedBtns: document.querySelectorAll('#cardFlipSpeedSegmentGroup .setting-segment-btn'),
     settingLinedPaper: document.getElementById('settingLinedPaper'),
     settingReverseMode: document.getElementById('settingReverseMode'),
+    settingCardFilter: document.getElementById('settingCardFilter'),
     settingAutoplayAudio: document.getElementById('settingAutoplayAudio'),
     speechSpeedBtns: document.querySelectorAll('#speechSpeedSegmentGroup .setting-segment-btn'),
     settingShuffle: document.getElementById('settingShuffle'),
@@ -785,6 +789,7 @@
     applyTheme(state.activeTheme);
     applyCardTheme(state.cardTheme);
     applyCardFont(state.cardFont);
+    applyGameFont(state.gameFont);
     applyFontFamily(state.fontFamily);
     applyFlipSpeed(state.flipSpeed);
     applyStudyReminder(state.studyReminder);
@@ -904,6 +909,18 @@
     if (dom.fontSizeBtns) {
       dom.fontSizeBtns.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-size') === state.cardFont);
+      });
+    }
+  }
+
+  function applyGameFont(size) {
+    state.gameFont = size || 'normal';
+    dom.html.setAttribute('data-game-font', state.gameFont);
+    localStorage.setItem('kelime_game_font', state.gameFont);
+    const gameFontBtns = document.querySelectorAll('#gameFontSizeSegmentGroup .setting-segment-btn');
+    if (gameFontBtns) {
+      gameFontBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-size') === state.gameFont);
       });
     }
   }
@@ -1626,11 +1643,12 @@
     const panelMap = {
       profile: 'tabPanelProfile',
       cards: 'tabPanelCards',
-      audio: 'tabPanelAudio',
-      study: 'tabPanelStudy',
+      arena: 'tabPanelArena',
       reminder: 'tabPanelReminder',
-      flow: 'tabPanelStudy', // geriye dönük uyumluluk
-      data: 'tabPanelData'
+      data: 'tabPanelData',
+      audio: 'tabPanelCards', // geriye dönük uyumluluk
+      study: 'tabPanelCards', // geriye dönük uyumluluk
+      flow: 'tabPanelCards'   // geriye dönük uyumluluk
     };
     const targetPanelId = panelMap[tabName] || 'tabPanelCards';
     if (dom.settingsTabPanels) {
@@ -2130,6 +2148,7 @@
       populateProfileSettingsTab();
       applyCardTheme(state.cardTheme);
       applyCardFont(state.cardFont);
+      applyGameFont(state.gameFont);
       applyFontFamily(state.fontFamily);
       applyFlipSpeed(state.flipSpeed);
       applyStudyReminder(state.studyReminder);
@@ -2140,8 +2159,15 @@
       if (dom.settingAutoSlideshow) dom.settingAutoSlideshow.checked = state.slideshowActive;
       if (dom.settingSrsPriority) dom.settingSrsPriority.checked = state.srsPriority;
       if (dom.settingReadExampleAudio) dom.settingReadExampleAudio.checked = state.readExampleAudio;
+      if (dom.settingCardFilter) dom.settingCardFilter.value = state.activeFilter;
+      const settingCardHaptic = document.getElementById('settingCardHaptic');
+      if (settingCardHaptic) settingCardHaptic.checked = state.cardHaptic;
+      const settingGameHaptic = document.getElementById('settingGameHaptic');
+      if (settingGameHaptic) settingGameHaptic.checked = state.gameHaptic;
       const settingHaptic = document.getElementById('settingHapticFeedback');
       if (settingHaptic) settingHaptic.checked = hapticEnabled;
+      const settingSoundFx = document.getElementById('settingSoundFx');
+      if (settingSoundFx) settingSoundFx.checked = soundFxEnabled;
       applySpeechSpeed(state.speechSpeed);
 
       dom.settingsModal.classList.add('active');
@@ -4005,12 +4031,13 @@
       }
 
       // Haptik eşleşmesi
+      const hapticCategory = (state.activeMode === 'arena') ? 'game' : 'card';
       if (type === 'xp' || type === 'win' || type === 'bonus') {
-        triggerHapticFeedback('success');
+        triggerHapticFeedback('success', hapticCategory);
       } else if (type === 'correct') {
-        triggerHapticFeedback('light');
+        triggerHapticFeedback('light', hapticCategory);
       } else if (type === 'wrong' || type === 'error') {
-        triggerHapticFeedback('warning');
+        triggerHapticFeedback('warning', hapticCategory);
       }
     } catch(e) {}
   }
@@ -4020,8 +4047,10 @@
   // ==========================================
   let hapticEnabled = localStorage.getItem('kelime_haptic_feedback') !== 'false';
 
-  function triggerHapticFeedback(pattern = 'light') {
+  function triggerHapticFeedback(pattern = 'light', category = 'card') {
     if (!hapticEnabled) return;
+    if (category === 'card' && state.cardHaptic === false) return;
+    if (category === 'game' && state.gameHaptic === false) return;
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try {
         if (pattern === 'light') {
@@ -6750,6 +6779,21 @@
       });
     }
 
+    // Gösterilecek Kartlar Filtresi
+    if (dom.settingCardFilter) {
+      dom.settingCardFilter.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'learned' || val === 'pending') {
+          state.activeFilter = val;
+          localStorage.setItem('kelime_active_filter', val);
+          state.currentIndex = 0;
+          updateCardTabsUI();
+          refreshWordsList();
+          showToast(val === 'learned' ? 'Öğrenilen kelimeler listeleniyor' : 'Öğrenilecek kelimeler listeleniyor');
+        }
+      });
+    }
+
     // Otomatik Seslendirme
     if (dom.settingAutoplayAudio) {
       dom.settingAutoplayAudio.addEventListener('change', (e) => {
@@ -8034,6 +8078,53 @@
         } else {
           showToast('🔕 Titreşimli geri bildirim kapatıldı');
         }
+      });
+    }
+
+    // Kart Titreşimi Seçeneği
+    const settingCardHaptic = document.getElementById('settingCardHaptic');
+    if (settingCardHaptic) {
+      settingCardHaptic.checked = state.cardHaptic;
+      settingCardHaptic.addEventListener('change', (e) => {
+        state.cardHaptic = e.target.checked;
+        localStorage.setItem('kelime_card_haptic', state.cardHaptic);
+        if (state.cardHaptic) {
+          triggerHapticFeedback('light', 'card');
+          showToast('📳 Kart titreşimi açıldı');
+        } else {
+          showToast('🔕 Kart titreşimi kapatıldı');
+        }
+      });
+    }
+
+    // Oyun Titreşimi Seçeneği
+    const settingGameHaptic = document.getElementById('settingGameHaptic');
+    if (settingGameHaptic) {
+      settingGameHaptic.checked = state.gameHaptic;
+      settingGameHaptic.addEventListener('change', (e) => {
+        state.gameHaptic = e.target.checked;
+        localStorage.setItem('kelime_game_haptic', state.gameHaptic);
+        if (state.gameHaptic) {
+          triggerHapticFeedback('light', 'game');
+          showToast('📳 Oyun titreşimi açıldı');
+        } else {
+          showToast('🔕 Oyun titreşimi kapatıldı');
+        }
+      });
+    }
+
+    // Arena / Oyun Yazı Boyutu Seçimi
+    const gameFontBtns = document.querySelectorAll('#gameFontSizeSegmentGroup .setting-segment-btn');
+    if (gameFontBtns) {
+      gameFontBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const size = btn.getAttribute('data-size');
+          if (size) {
+            applyGameFont(size);
+            triggerHapticFeedback('light', 'game');
+            showToast(`Arena yazı boyutu: ${btn.textContent}`);
+          }
+        });
       });
     }
 
