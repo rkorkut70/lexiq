@@ -5167,8 +5167,17 @@ html[data-card-theme="dark"] .card-face {
 .goal-complete-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   width: 100%;
+  max-width: 270px;
+  margin: 0 auto;
+}
+
+.goal-complete-actions .pill-btn {
+  width: 100%;
+  max-width: 250px;
+  box-sizing: border-box;
 }
 
 .goal-complete-actions .primary-action-btn {
@@ -5231,9 +5240,11 @@ html[data-card-theme="dark"] .card-face {
 .completed-hero-actions {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: clamp(5px, 1.1vh, 8px);
   width: 100%;
-  max-width: 380px;
+  max-width: 270px;
+  margin: 0 auto;
   flex-shrink: 0;
 }
 
@@ -5247,6 +5258,7 @@ html[data-card-theme="dark"] .card-face {
   justify-content: center;
   gap: 8px;
   width: 100%;
+  max-width: 250px;
   box-sizing: border-box;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
