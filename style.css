@@ -6247,20 +6247,20 @@ body[data-theme="dark"] .drawer-home-btn,
   letter-spacing: 0.02em;
 }
 
-/* YENİ: Tek Parça Bilgilendirme ve Vitrin Paneli (Akıllı Hatırlatıcı Dahil 4'lü Grid) */
+/* YENİ: Tek Parça Bilgilendirme ve Vitrin Paneli (Kompakt ve Tıklanamaz Bilgi Paneli) */
 .welcome-showcase-card {
   display: flex;
   flex-direction: column;
-  gap: clamp(10px, 1.6vh, 14px);
+  gap: clamp(8px, 1.3vh, 11px);
   width: 100%;
   max-width: 390px;
-  padding: clamp(12px, 2vh, 16px) clamp(12px, 3vw, 18px);
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.92) 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
-  box-shadow: 0 14px 32px -6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  padding: clamp(10px, 1.5vh, 13px) clamp(10px, 2.5vw, 15px);
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.65) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-sizing: border-box;
 }
 
@@ -6268,82 +6268,94 @@ body[data-theme="dark"] .drawer-home-btn,
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  font-size: clamp(0.8rem, 2vw, 0.88rem);
-  font-weight: 800;
+  gap: 6px;
+  font-size: clamp(0.74rem, 1.8vw, 0.82rem);
+  font-weight: 700;
   color: #93c5fd;
   letter-spacing: 0.015em;
 }
 
 .welcome-showcase-sparkle {
-  font-size: 1rem;
-  filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.7));
+  font-size: 0.88rem;
+  filter: drop-shadow(0 0 6px rgba(147, 197, 253, 0.6));
 }
 
-/* 4 Kolonlu / 2x2 Dengeli Özellik Izgarası */
+/* 4 Kolonlu / 2x2 Kompakt Özellik Bilgi Hapları (Buton Algısını Önleyen Yatay ve Küçük Tasarım) */
 .welcome-showcase-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
 .welcome-grid-stat {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: rgba(15, 23, 42, 0.65);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
-  padding: clamp(8px, 1.4vh, 11px) 6px;
-  gap: 2px;
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.welcome-grid-stat.highlight {
-  background: rgba(37, 99, 235, 0.12);
-  border-color: rgba(59, 130, 246, 0.28);
+  border-radius: 10px;
+  padding: 6px 8px;
+  gap: 7px;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+  box-sizing: border-box;
 }
 
 .welcome-grid-stat .wps-icon {
-  font-size: clamp(1.2rem, 2.4vh, 1.4rem);
-  line-height: 1.1;
-  margin-bottom: 2px;
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+.welcome-grid-stat .wps-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
 }
 
 .welcome-grid-stat .wps-val {
-  font-size: clamp(0.74rem, 1.8vw, 0.82rem);
-  font-weight: 800;
-  color: #f8fafc;
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #f1f5f9;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .welcome-grid-stat .wps-desc {
-  font-size: clamp(0.6rem, 1.4vw, 0.66rem);
+  font-size: 0.6rem;
   color: #94a3b8;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .welcome-showcase-tags {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
+  margin-top: 2px;
 }
 
 .wst-badge {
-  font-size: clamp(0.62rem, 1.4vw, 0.7rem);
-  font-weight: 700;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 999px;
-  padding: 3px 9px;
+  padding: 2px 7px;
   letter-spacing: 0.01em;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Yenilenmiş Aksiyon Butonları */
