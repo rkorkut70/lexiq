@@ -4090,14 +4090,20 @@
   }
 
   let toastTimer = null;
-  function showToast(msg) {
+  function showToast(msg, type = '') {
     if (!dom.toast) return;
     dom.toast.textContent = msg;
+    dom.toast.className = 'toast';
+    if (type === 'correct') {
+      dom.toast.classList.add('toast-correct');
+    } else if (type === 'wrong') {
+      dom.toast.classList.add('toast-wrong');
+    }
     dom.toast.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       dom.toast.classList.remove('show');
-    }, 2400);
+    }, 2200);
   }
 
   function formatDate(dateStr) {
@@ -4144,6 +4150,16 @@
     }
   }
 
+  function getTodaySolvedCorrectWordIds() {
+    const key = `lexiq_arena_solved_correct_${getTodayDateKey()}`;
+    try {
+      const data = JSON.parse(localStorage.getItem(key) || '[]');
+      return new Set(Array.isArray(data) ? data : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
   function markWordPracticedInGame(wordId) {
     if (!wordId) return;
     const key = `lexiq_arena_practiced_${getTodayDateKey()}`;
@@ -4152,41 +4168,99 @@
     try {
       localStorage.setItem(key, JSON.stringify(Array.from(set)));
     } catch (e) {}
-
-    // Günlük öğrenilen kelimelerin tümü pratik edildi mi kontrol et
-    checkDailyLearnedWordsPracticedMilestone();
   }
 
-  function hasCompletedDailyArenaMilestoneToday() {
-    const key = `lexiq_arena_milestone_shown_${getTodayDateKey()}`;
-    return localStorage.getItem(key) === 'true';
+  function onWordSolvedCorrectlyInGame(wordId) {
+    if (!wordId) return;
+    markWordPracticedInGame(wordId);
+
+    const key = `lexiq_arena_solved_correct_${getTodayDateKey()}`;
+    const set = getTodaySolvedCorrectWordIds();
+    set.add(wordId);
+    try {
+      localStorage.setItem(key, JSON.stringify(Array.from(set)));
+    } catch (e) {}
+
+    checkDailyPracticeMilestones();
   }
 
-  function showDailyPracticeCompletedModal(count) {
+  function showDailyPracticeMilestoneModal(type, currentCount, targetCount) {
     if (!dom.dailyPracticeCompletedModal) return;
-    if (dom.dailyPracticedCountText) {
-      dom.dailyPracticedCountText.textContent = count;
+
+    const iconEl = document.getElementById('dailyPracticeModalIcon');
+    const titleEl = document.getElementById('dailyPracticeModalTitle');
+    const msgEl = document.getElementById('dailyPracticeModalMessage');
+    const continueBtn = document.getElementById('dailyPracticedContinueAllBtn');
+    const goLearnBtn = document.getElementById('dailyPracticedGoLearnBtn');
+
+    if (type === 'half') {
+      if (iconEl) iconEl.textContent = '⚡';
+      if (titleEl) {
+        titleEl.textContent = 'Harika İlerleme! (%50 Pekiştirildi)';
+        titleEl.style.color = '#38bdf8';
+      }
+      if (msgEl) {
+        msgEl.innerHTML = `Bugün öğrendiğin <strong>${targetCount}</strong> kelimenin <strong>${currentCount}</strong> tanesini oyunlarda başarıyla doğru yanıtladın! 🎯<br><br>Kalan <strong>${targetCount - currentCount}</strong> kelimeyi de pekiştirmek için oynamaya devam etmek ister misin?`;
+      }
+      if (continueBtn) {
+        continueBtn.innerHTML = '🎮 Oyuna Devam Et';
+        continueBtn.dataset.milestoneType = 'half';
+      }
+      if (goLearnBtn) {
+        goLearnBtn.innerHTML = '📚 Yeni Kelimeler Öğren (Kartlara Git)';
+      }
+    } else {
+      // type === 'full'
+      if (iconEl) iconEl.textContent = '🏆';
+      if (titleEl) {
+        titleEl.textContent = 'Tebrikler! Günlük Pekiştirme Tamamlandı! 🎉';
+        titleEl.style.color = '#fbbf24';
+      }
+      if (msgEl) {
+        msgEl.innerHTML = `Bugün öğrendiğin <strong>${targetCount}</strong> kelimenin <strong>HEPSİNİ</strong> oyunlarda doğru yaparak başarıyla pekiştirdin! 🌟<br><br>Sürekli aynı kelimeleri oynamak yerine ilerlemen için şimdi ne yapmak istersin?`;
+      }
+      if (continueBtn) {
+        continueBtn.innerHTML = '🚀 Tüm Öğrenilen Kelimelerle Oyna';
+        continueBtn.dataset.milestoneType = 'full';
+      }
+      if (goLearnBtn) {
+        goLearnBtn.innerHTML = '📚 Yeni Kelimeler Öğren (Kartlara Git)';
+      }
     }
+
     playSoundEffect('correct');
     dom.dailyPracticeCompletedModal.style.display = 'flex';
   }
 
-  function checkDailyLearnedWordsPracticedMilestone() {
-    if (hasCompletedDailyArenaMilestoneToday()) return;
-
+  function checkDailyPracticeMilestones() {
     const todayLearned = getTodayLearnedWordsList();
     if (!todayLearned || todayLearned.length < 3) return;
 
-    const practicedSet = getTodayPracticedWordIds();
-    const allPracticed = todayLearned.every(w => practicedSet.has(w.id));
+    const solvedSet = getTodaySolvedCorrectWordIds();
+    const todaySolvedCount = todayLearned.filter(w => solvedSet.has(w.id)).length;
+    const targetCount = todayLearned.length;
 
-    if (allPracticed) {
-      const key = `lexiq_arena_milestone_shown_${getTodayDateKey()}`;
-      localStorage.setItem(key, 'true');
+    const halfTarget = Math.ceil(targetCount / 2);
+    const dateKey = getTodayDateKey();
+    const halfKey = `lexiq_arena_half_shown_${dateKey}`;
+    const fullKey = `lexiq_arena_full_shown_${dateKey}`;
 
+    // %100 Kilometre Taşı (Öğrenilen tüm kelimeler doğru yapıldı)
+    if (todaySolvedCount >= targetCount && localStorage.getItem(fullKey) !== 'true') {
+      localStorage.setItem(fullKey, 'true');
       setTimeout(() => {
-        showDailyPracticeCompletedModal(todayLearned.length);
-      }, 500);
+        showDailyPracticeMilestoneModal('full', todaySolvedCount, targetCount);
+      }, 700);
+      return;
+    }
+
+    // %50 Kilometre Taşı (Yarısı doğru yapıldı)
+    if (todaySolvedCount >= halfTarget && todaySolvedCount < targetCount && localStorage.getItem(halfKey) !== 'true') {
+      localStorage.setItem(halfKey, 'true');
+      setTimeout(() => {
+        showDailyPracticeMilestoneModal('half', todaySolvedCount, targetCount);
+      }, 700);
+      return;
     }
   }
 
@@ -5176,8 +5250,9 @@
     if (userWord === target) {
       slots.forEach(s => s.classList.add('correct'));
       speakWord(anagramState.targetWord.kelime, anagramState.targetWord.dil, dom.anagramAudioBtn);
-      const earned = recordGameWin('truefalse', 10);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`);
+      const earned = recordGameWin('anagram', 10);
+      onWordSolvedCorrectlyInGame(anagramState.targetWord.id);
+      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'anagram') {
@@ -5187,7 +5262,7 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(getRandomEncouragementMessage());
+      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -5411,7 +5486,8 @@
           stopTetrisGame();
           speakWord(tetrisState.targetWord.kelime, tetrisState.targetWord.dil);
           const earned = recordGameWin('tetris', 20);
-          showToast(`+${earned} XP! "${tetrisState.targetWord.kelime}" tamamlandı! 🕹️ ${getRandomCelebrationMessage()}`);
+          onWordSolvedCorrectlyInGame(tetrisState.targetWord.id);
+          showToast(`+${earned} XP! "${tetrisState.targetWord.kelime}" tamamlandı! 🕹️ ${getRandomCelebrationMessage()}`, 'correct');
           setTimeout(() => {
             if (state.activeMode === 'arena' && state.activeGame === 'tetris') {
               startTetrisRound();
@@ -5424,7 +5500,7 @@
         tetrisState.timeLeft = Math.max(1, tetrisState.timeLeft - 2);
         dom.tetrisTimer.textContent = tetrisState.timeLeft;
         resetStreak();
-        showToast(`"${chosenLetter}" harfi gerekmiyor! (-2 sn) ${getRandomEncouragementMessage()}`);
+        showToast(`❌ "${chosenLetter}" harfi gerekmiyor! (-2 sn) ${getRandomEncouragementMessage()}`, 'wrong');
         setTimeout(() => { if (block.parentNode) block.remove(); }, 250);
       }
     }
@@ -5660,8 +5736,9 @@
         blank.className = 'cloze-blank blank-correct';
       }
       speakWord(targetWord.kelime, targetWord.dil);
-      const earned = recordGameWin('anagram', 15);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`);
+      const earned = recordGameWin('cloze', 15);
+      onWordSolvedCorrectlyInGame(targetWord.id);
+      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -5681,7 +5758,7 @@
         blank.className = 'cloze-blank blank-revealed';
       }
       resetStreak();
-      showToast(`Doğru cevap: ${displayWord}. ${getRandomEncouragementMessage()}`);
+      showToast(`❌ Doğru: ${displayWord}. ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -5802,9 +5879,10 @@
           matchState.isLocked = false;
 
           const earned = recordGameWin('match', 15);
+          onWordSolvedCorrectlyInGame(c1.item.pairId);
 
           if (matchState.matchedPairs >= matchState.totalPairs) {
-            showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🃏`);
+            showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🃏`, 'correct');
             setTimeout(() => {
               if (state.activeMode === 'arena' && state.activeGame === 'match') {
                 startMatchRound();
@@ -5816,7 +5894,7 @@
         c1.el.classList.add('shake-wrong');
         c2.el.classList.add('shake-wrong');
         resetStreak();
-        showToast(getRandomEncouragementMessage());
+        showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
 
         setTimeout(() => {
           c1.el.classList.remove('selected', 'shake-wrong');
@@ -5895,7 +5973,7 @@
       if (tfState.timeLeft <= 0) {
         stopTrueFalseGame();
         resetStreak();
-        showToast(`⏱️ Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`);
+        showToast(`⏱️ Süre doldu! Doğru: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}. ${getRandomEncouragementMessage()}`, 'wrong');
         setTimeout(() => {
           if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
             startTrueFalseRound();
@@ -5933,8 +6011,9 @@
 
     if (isUserCorrect) {
       speakWord(tfState.targetWord.kelime, tfState.targetWord.dil, dom.tfAudioBtn);
-      const earned = recordGameWin('quiz', 15);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`);
+      const earned = recordGameWin('truefalse', 15);
+      onWordSolvedCorrectlyInGame(tfState.targetWord.id);
+      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -5943,7 +6022,7 @@
       }, 2200);
     } else {
       resetStreak();
-      showToast(`Yanlış! Gerçek anlam: "${getWordMeaning(tfState.targetWord)}". ${getRandomEncouragementMessage()}`);
+      showToast(`❌ Doğru anlam: "${getWordMeaning(tfState.targetWord)}". ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -6096,8 +6175,9 @@
     if (userWord === target) {
       slots.forEach(s => s.classList.add('correct'));
       speakWord(listenState.targetWord.kelime, listenState.targetWord.dil, dom.listenPlayAudioBtn);
-      const earned = addXp(15);
-      showToast(`+${earned} XP! 🎧 ${getRandomCelebrationMessage()}`);
+      const earned = recordGameWin('listen', 15);
+      onWordSolvedCorrectlyInGame(listenState.targetWord.id);
+      showToast(`+${earned} XP! 🎧 ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'listen') {
@@ -6107,7 +6187,7 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(getRandomEncouragementMessage());
+      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -6189,8 +6269,9 @@
     if (selectedMeaning === correctMeaning) {
       buttonEl.classList.add('correct');
       speakWord(quizState.targetWord.kelime, quizState.targetWord.dil, dom.quizAudioBtn);
-      const earned = recordGameWin('cloze', 15);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🎯`);
+      const earned = recordGameWin('quiz', 15);
+      onWordSolvedCorrectlyInGame(quizState.targetWord.id);
+      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🎯`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6203,7 +6284,7 @@
         if (b.textContent === correctMeaning) b.classList.add('correct');
       });
       resetStreak();
-      showToast(`Yanlış! Doğru anlamı: "${correctMeaning}". ${getRandomEncouragementMessage()}`);
+      showToast(`❌ Doğru: "${correctMeaning}". ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6350,7 +6431,8 @@
       slots.forEach(s => s.classList.add('correct'));
       speakWord(targetSentence, scrambleState.targetWord.dil, dom.scrambleAudioBtn);
       const earned = recordGameWin('scramble', 25);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 📝`);
+      onWordSolvedCorrectlyInGame(scrambleState.targetWord.id);
+      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 📝`, 'correct');
 
       // Cümleyi ve Türkçe çevirisini incelemek için kelime uzunluğuna göre cömert bekleme süresi
       const wordCount = scrambleState.originalWords.length;
@@ -6365,7 +6447,7 @@
     } else {
       slots.forEach(s => s.classList.add('shake'));
       resetStreak();
-      showToast(getRandomEncouragementMessage());
+      showToast(`❌ ${getRandomEncouragementMessage()}`, 'wrong');
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -8040,16 +8122,32 @@
       });
     }
 
-    // Günlük Pratik Tamamlandı Tebrik Modalı Butonları
+    // Günlük Pratik ve Pekiştirme Rehberlik Modalı Butonları
     if (dom.dailyPracticedContinueAllBtn) {
       dom.dailyPracticedContinueAllBtn.addEventListener('click', () => {
-        state.arenaUseAllLearnedWordsPool = true;
+        const type = dom.dailyPracticedContinueAllBtn.dataset.milestoneType;
         if (dom.dailyPracticeCompletedModal) {
           dom.dailyPracticeCompletedModal.style.display = 'none';
         }
         playSoundEffect('correct');
-        showCelebrationBanner('Tüm Kelimeler Devrede! 🚀', 'Artık öğrendiğin tüm kelimelerle yarışıyorsun', 'Hazır!', '🔥');
-        showToast('Tüm öğrenilen kelimeler arenaya dahil edildi!');
+        if (type === 'full') {
+          state.arenaUseAllLearnedWordsPool = true;
+          showCelebrationBanner('Tüm Kelimeler Devrede! 🚀', 'Artık öğrendiğin tüm kelimelerle yarışıyorsun', 'Hazır!', '🔥');
+          showToast('Tüm öğrenilen kelimeler arenaya dahil edildi!', 'correct');
+        } else {
+          showToast('🚀 Harika, kelimeleri pekiştirmeye devam!', 'correct');
+        }
+      });
+    }
+
+    const dailyPracticedGoLearnBtn = document.getElementById('dailyPracticedGoLearnBtn');
+    if (dailyPracticedGoLearnBtn) {
+      dailyPracticedGoLearnBtn.addEventListener('click', () => {
+        if (dom.dailyPracticeCompletedModal) {
+          dom.dailyPracticeCompletedModal.style.display = 'none';
+        }
+        switchAppMode('flashcards');
+        showToast('📚 Yeni kelimeler öğrenme ekranı açıldı.');
       });
     }
 
@@ -8058,7 +8156,7 @@
         if (dom.dailyPracticeCompletedModal) {
           dom.dailyPracticeCompletedModal.style.display = 'none';
         }
-        showGamesMenu();
+        switchAppMode('home');
       });
     }
 
