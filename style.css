@@ -10460,12 +10460,49 @@ html[data-flip-speed="slow"] .flashcard {
 }
 
 .confirm-message {
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   color: var(--text-muted, #94a3b8);
-  line-height: 1.65;
+  line-height: 1.6;
   margin: 0;
-  white-space: pre-line;
   word-break: break-word;
+}
+
+.confirm-message-line {
+  font-size: 0.94rem;
+  color: var(--text-main, #e2e8f0);
+  line-height: 1.6;
+  margin: 4px 0;
+}
+
+.confirm-message-line:first-child {
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.dynamic-icon-stage-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.dynamic-icon-stage-card:active {
+  transform: scale(0.96) !important;
+}
+
+/* Canlı Logo Animasyonu */
+@keyframes brandLqPulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 18px rgba(249, 115, 22, 0.6), 0 0 30px rgba(249, 115, 22, 0.3);
+    transform: scale(1.05);
+  }
+}
+
+.brand-highlight {
+  display: inline-block;
+  animation: brandLqPulse 3.5s infinite ease-in-out;
 }
 
 .confirm-actions-row {

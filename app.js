@@ -1529,7 +1529,18 @@
 
       if (iconEl) iconEl.textContent = icon;
       if (titleEl) titleEl.textContent = title;
-      if (msgEl) msgEl.textContent = message;
+      if (msgEl) {
+        if (typeof message === 'string') {
+          const lines = message.split('\n').map(l => l.trim()).filter(Boolean);
+          if (lines.length > 1) {
+            msgEl.innerHTML = lines.map((l, idx) => `<p style="margin: ${idx === 0 ? '0 0 6px 0' : '4px 0'}; line-height: 1.55;">${l}</p>`).join('');
+          } else {
+            msgEl.textContent = message;
+          }
+        } else {
+          msgEl.textContent = message;
+        }
+      }
       if (okBtn) {
         okBtn.textContent = okText;
         okBtn.className = isDanger ? 'pill-btn confirm-ok-btn danger-action' : 'pill-btn confirm-ok-btn';
@@ -4516,11 +4527,15 @@
     }
 
     modalEl.style.display = 'flex';
+    modalEl.classList.add('active');
   }
 
   function closeStreakPledgeModal() {
     const modalEl = document.getElementById('streakPledgeModal');
-    if (modalEl) modalEl.style.display = 'none';
+    if (modalEl) {
+      modalEl.classList.remove('active');
+      setTimeout(() => { modalEl.style.display = 'none'; }, 200);
+    }
   }
 
   function updateStreakPledgeSettingsUI() {
@@ -8493,11 +8508,13 @@
 
     if (closeAppUpdateModalBtn && appUpdateModal) {
       closeAppUpdateModalBtn.addEventListener('click', () => {
-        appUpdateModal.style.display = 'none';
+        appUpdateModal.classList.remove('active');
+        setTimeout(() => { appUpdateModal.style.display = 'none'; }, 200);
       });
       appUpdateModal.addEventListener('click', (e) => {
         if (e.target === appUpdateModal) {
-          appUpdateModal.style.display = 'none';
+          appUpdateModal.classList.remove('active');
+          setTimeout(() => { appUpdateModal.style.display = 'none'; }, 200);
         }
       });
     }
@@ -8512,14 +8529,20 @@
           btnEl.innerHTML = origHtml;
           const versionText = document.getElementById('appUpdateVersionText');
           if (versionText) versionText.textContent = APP_VERSION;
+
+          const modalTitle = document.querySelector('#appUpdateModal .confirm-title');
+          const modalIcon = document.querySelector('#appUpdateModal .confirm-icon-wrap');
+          if (modalTitle) modalTitle.textContent = '🎉 Tebrikler! LexiQ Güncel';
+          if (modalIcon) modalIcon.textContent = '✅';
+
           if (appUpdateModal) {
             appUpdateModal.style.display = 'flex';
-            playSoundEffect('correct');
-          } else {
-            showToast(`✅ Harika! En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`, 'correct');
+            appUpdateModal.classList.add('active');
             playSoundEffect('correct');
           }
-        }, 700);
+          showToast(`✅ Harika! LexiQ en güncel sürümde (${APP_VERSION}). Yeni bir güncelleme bulunmuyor.`, 'correct');
+          playSoundEffect('correct');
+        }, 650);
       } else {
         showToast(`✅ En güncel sürümü (${APP_VERSION}) kullanıyorsunuz.`, 'correct');
       }
@@ -9257,10 +9280,14 @@
     // ANDROID GERİ TUŞU / UYGULAMADAN ÇIKIŞ DİYALOĞU
     // ==========================================
     window.handleAppBackPress = function() {
-      // Açık modal varsa kapat
-      const openModals = Array.from(document.querySelectorAll('.modal-overlay')).filter(m => m.style.display !== 'none');
+      // Gerçekten açık olan aktif modal varsa onu kapat
+      const openModals = Array.from(document.querySelectorAll('.modal-overlay')).filter(m => {
+        return m.classList.contains('active') && m.id !== 'customConfirmModal';
+      });
       if (openModals.length > 0) {
-        openModals[openModals.length - 1].style.display = 'none';
+        const topModal = openModals[openModals.length - 1];
+        topModal.classList.remove('active');
+        setTimeout(() => { topModal.style.display = 'none'; }, 150);
         return true;
       }
       if (state.activeMode !== 'home') {
@@ -9270,11 +9297,11 @@
 
       // Ana sayfadayken çekici çıkış onay ekranı göster
       showAppConfirm({
-        title: "LexiQ'ten Çıkış",
-        message: "Bugünkü kelime çalışmaların ve kazandığın puanlar güvende! 🎯\n\nUygulamadan çıkmak istediğine emin misin?",
+        title: "LexiQ'ten Çıkış Yapılsın mı?",
+        message: "Bugünkü kelime çalışmaların ve kazandığın puanlar güvende! 🎯\nUygulamadan şimdi çıkmak istediğine emin misin?",
         icon: "👋",
         okText: "Uygulamadan Çık",
-        cancelText: "Kal ve Çalış",
+        cancelText: "Uygulamada Kal",
         isDanger: false
       }).then(confirmed => {
         if (confirmed) {
@@ -9289,6 +9316,66 @@
       });
       return true;
     };
+
+    // ==========================================
+    // DİNAMİK SİMGE VE İNAKTİVİTE TESTİ (DUOLINGO STİLİ)
+    // ==========================================
+    const testDynamicIconBtn = document.getElementById('testDynamicIconBtn');
+    const resetDynamicIconBtn = document.getElementById('resetDynamicIconBtn');
+    const dynamicIconStageCards = document.querySelectorAll('.dynamic-icon-stage-card');
+
+    const stageNames = [
+      'Normal (Mavi LQ • "LexiQ")',
+      '2 Gün (Hafif Turuncu LQ)',
+      '4 Gün (Alev Turuncusu LQ • "Özledik 🥺")',
+      '6+ Gün (Kırmızı LQ + ⚠️ • "Geri Dön! ⚠️")'
+    ];
+
+    let currentTestStage = 0;
+
+    function applyDynamicIconStage(stage) {
+      currentTestStage = stage;
+      dynamicIconStageCards.forEach(c => {
+        const s = parseInt(c.dataset.stage, 10);
+        if (s === stage) {
+          c.style.transform = 'scale(1.04)';
+          c.style.boxShadow = '0 0 16px rgba(249, 115, 22, 0.4)';
+        } else {
+          c.style.transform = 'none';
+          c.style.boxShadow = 'none';
+        }
+      });
+
+      if (window.AndroidTTS && typeof window.AndroidTTS.setDynamicIconStage === 'function') {
+        window.AndroidTTS.setDynamicIconStage(stage);
+        showToast(`📱 Ana ekran simgesi: ${stageNames[stage]} aşamasına alındı!`, 'correct');
+        playSoundEffect('correct');
+      } else {
+        showToast(`📱 Simge simülasyonu: ${stageNames[stage]} (Android cihazda simge değişir)`, 'correct');
+      }
+    }
+
+    if (dynamicIconStageCards) {
+      dynamicIconStageCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const stage = parseInt(card.dataset.stage, 10) || 0;
+          applyDynamicIconStage(stage);
+        });
+      });
+    }
+
+    if (testDynamicIconBtn) {
+      testDynamicIconBtn.addEventListener('click', () => {
+        const nextStage = (currentTestStage + 1) % 4;
+        applyDynamicIconStage(nextStage);
+      });
+    }
+
+    if (resetDynamicIconBtn) {
+      resetDynamicIconBtn.addEventListener('click', () => {
+        applyDynamicIconStage(0);
+      });
+    }
 
     // Dışarıya ve test simülatörüne oyun başlatma köprüsü sağla
     window.startGameRound = startGameRound;

@@ -15,7 +15,7 @@
   <meta http-equiv="Expires" content="0">
   <title>LexiQ • Çok Dilli Akıllı Kelime Kartları</title>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="style.css?v=1791301000000">
+  <link rel="stylesheet" href="style.css?v=1791309000000">
 </head>
 <body>
   <div class="app-container">
@@ -2728,6 +2728,60 @@
                 </div>
               </div>
             </div>
+
+            <!-- 3. DUOLINGO BENZERİ DİNAMİK SİMGE VE İNAKTİVİTE UYARISI -->
+            <div class="setting-block" id="settingDynamicIconBlock" style="margin-top: 14px;">
+              <div class="setting-block-header">
+                <span class="setting-block-label" style="display:flex; align-items:center; gap:6px;">
+                  <span>🔥</span> Akıllı Dinamik Simge (İnaktivite Takibi)
+                </span>
+                <span style="font-size:0.75rem; color:#f97316; font-weight:800;">Duolingo Stili</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin:0 0 10px 0;">
+                Uygulamaya birkaç gün girilmediğinde cihaz ana ekranındaki <strong>LexiQ (LQ)</strong> simgesi ve altındaki isim otomatik evrilerek sizi uyarır:
+              </p>
+
+              <!-- Simge Evreleri Şeması -->
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; text-align: center;">
+                <div class="dynamic-icon-stage-card" data-stage="0" style="padding: 8px 4px; border-radius: 12px; border: 1.5px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.08); cursor: pointer;" title="Normal Durum (0-1 gün)">
+                  <div style="font-size: 1.4rem; margin-bottom: 2px;">🟦</div>
+                  <strong style="font-size: 0.74rem; color: #38bdf8; display: block;">Normal</strong>
+                  <span style="font-size: 0.64rem; color: var(--text-muted);">0-1 Gün</span>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 2px;">"LexiQ"</div>
+                </div>
+
+                <div class="dynamic-icon-stage-card" data-stage="1" style="padding: 8px 4px; border-radius: 12px; border: 1.5px solid rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.08); cursor: pointer;" title="2 Gün İnaktif">
+                  <div style="font-size: 1.4rem; margin-bottom: 2px;">🟧</div>
+                  <strong style="font-size: 0.74rem; color: #fb923c; display: block;">2 Gün</strong>
+                  <span style="font-size: 0.64rem; color: var(--text-muted);">Isınan LQ</span>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 2px;">Hafif Turuncu</div>
+                </div>
+
+                <div class="dynamic-icon-stage-card" data-stage="2" style="padding: 8px 4px; border-radius: 12px; border: 1.5px solid rgba(249, 115, 22, 0.4); background: rgba(249, 115, 22, 0.08); cursor: pointer;" title="4 Gün İnaktif">
+                  <div style="font-size: 1.4rem; margin-bottom: 2px;">🔥</div>
+                  <strong style="font-size: 0.74rem; color: #f97316; display: block;">4 Gün</strong>
+                  <span style="font-size: 0.64rem; color: var(--text-muted);">Alev LQ</span>
+                  <div style="font-size: 0.62rem; color: #fbbf24; font-weight:700; margin-top: 2px;">"Özledik 🥺"</div>
+                </div>
+
+                <div class="dynamic-icon-stage-card" data-stage="3" style="padding: 8px 4px; border-radius: 12px; border: 1.5px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08); cursor: pointer;" title="6+ Gün İnaktif">
+                  <div style="font-size: 1.4rem; margin-bottom: 2px;">⚠️</div>
+                  <strong style="font-size: 0.74rem; color: #ef4444; display: block;">6+ Gün</strong>
+                  <span style="font-size: 0.64rem; color: var(--text-muted);">Kırmızı LQ</span>
+                  <div style="font-size: 0.62rem; color: #ef4444; font-weight:700; margin-top: 2px;">"Geri Dön! ⚠️"</div>
+                </div>
+              </div>
+
+              <!-- Test Butonları -->
+              <div style="display: flex; gap: 8px;">
+                <button type="button" id="testDynamicIconBtn" class="pill-btn" style="flex: 1; padding: 9px; font-size: 0.8rem; font-weight: 700; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--border-color); color: var(--text-main);">
+                  📱 Simgeleri Test Et (Döngü)
+                </button>
+                <button type="button" id="resetDynamicIconBtn" class="pill-btn primary-action-btn" style="padding: 9px 14px; font-size: 0.8rem; font-weight: 700;">
+                  🔄 Normale Döndür
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- 5. SEKME: VERİ & SİSTEM YÖNETİMİ (YENİLENMİŞ MODERN TASARIM) -->
@@ -3011,7 +3065,7 @@
 
   <!-- Kelime Verisi ve Uygulama Mantığı (Sadece Standart Vanilla JS) -->
   <script src="words_data.js?v=1791299900000"></script>
-  <script src="app.js?v=1791299900000"></script>
+  <script src="app.js?v=1791309000000"></script>
 
   </body>
 </html>
