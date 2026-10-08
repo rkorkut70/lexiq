@@ -8,7 +8,7 @@
   'use strict';
 
   const APP_VERSION = 'v1.3.6';
-  const CURRENT_APP_BUILD = 'lexiq_build_14_clean';
+  const CURRENT_APP_BUILD = 'lexiq_build_15_clean';
 
   // Build 13 temiz kurulum / sıfırlama güvencesi (Kullanıcı verilerini sıfırla, Hoş Geldin ekranını garantile)
   if (!localStorage.getItem(CURRENT_APP_BUILD)) {
@@ -7506,7 +7506,7 @@
             if (nativeVer) ver = nativeVer;
           } catch (e) {}
         }
-        welcomeVerEl.textContent = ver;
+        welcomeVerEl.textContent = ver.includes('Beta') ? ver : (ver + ' Beta');
       }
     }
     function openAboutModal() {
