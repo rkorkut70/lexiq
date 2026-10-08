@@ -1587,9 +1587,41 @@ body[data-theme="dark"] .status-learned,
   color: var(--text-main);
 }
 
-.lang-desc {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+/* ==========================================================================
+   ÜNİTE SEÇİMİ MODALI (#unitModal) - SAĞLAM & OPAK MODAL YAPISI
+   ========================================================================== */
+#unitModal {
+  z-index: 10025;
+}
+
+#unitModal .modal-card {
+  max-width: 500px;
+  width: 95%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  padding: 20px 18px;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] #unitModal .modal-card {
+  background: #111827;
+  border-color: #27374d;
+}
+
+#unitModal .modal-options-list {
+  flex: 1;
+  max-height: 60vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .unit-option-card {
@@ -8474,11 +8506,20 @@ body[data-theme="dark"], .dark-theme {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.student-hero-main-row {
+.student-hero-main-row,
+.student-hero-top-row {
   display: flex;
   align-items: center;
-  gap: clamp(10px, 2.5vw, 16px);
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
+}
+
+.student-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .student-avatar-badge {
@@ -8542,20 +8583,22 @@ body[data-theme="dark"], .dark-theme {
 .student-name-edit-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
+  margin-top: 10px;
+  box-sizing: border-box;
 }
 
 .student-name-input {
   background: var(--bg-surface);
   border: 1.5px solid var(--border-color);
-  border-radius: 10px;
-  padding: 6px 10px;
+  border-radius: 12px;
+  padding: 9px 12px;
   color: var(--text-main);
-  font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+  font-size: 0.95rem;
   font-weight: 700;
   outline: none;
-  width: 100%;
+  flex: 1;
   min-width: 0;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -8571,20 +8614,21 @@ body[data-theme="dark"], .dark-theme {
   background: var(--accent);
   color: #ffffff;
   border: none;
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 7px 11px;
-  border-radius: 9px;
+  padding: 9px 16px;
+  border-radius: 12px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  margin-left: auto;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
   transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .student-name-save-pill:hover {
   background: var(--accent-hover, #1d4ed8);
-  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
 }
 
 .student-name-save-pill:active {

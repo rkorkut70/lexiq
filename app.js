@@ -6815,17 +6815,48 @@
       });
     }
 
-    // Ünite Butonları & Modalı
+    // Ünite Butonları & Modalı (Açılış dokunma sızıntısını engelleyen koruma ile)
+    let unitModalOpenedAt = 0;
+
+    function handleUnitBtnClick(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      unitModalOpenedAt = Date.now();
+      openUnitModal();
+    }
+
+    if (dom.headerUnitSelectBtn) {
+      dom.headerUnitSelectBtn.addEventListener('click', handleUnitBtnClick);
+    }
+    if (dom.unitSelectBtn) {
+      dom.unitSelectBtn.addEventListener('click', handleUnitBtnClick);
+    }
+
+    // Delegasyon güvencesi (herhangi bir alt elemana tıklanırsa)
     document.addEventListener('click', (e) => {
-      if (e.target.closest('#headerUnitSelectBtn') || e.target.closest('#unitSelectBtn')) {
+      const btn = e.target.closest('#headerUnitSelectBtn') || e.target.closest('#unitSelectBtn');
+      if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        unitModalOpenedAt = Date.now();
         openUnitModal();
       }
     });
-    if (dom.unitSelectBtn) dom.unitSelectBtn.addEventListener('click', openUnitModal);
-    if (dom.closeUnitModalBtn) dom.closeUnitModalBtn.addEventListener('click', closeUnitModal);
+
+    if (dom.closeUnitModalBtn) {
+      dom.closeUnitModalBtn.addEventListener('click', (e) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        closeUnitModal();
+      });
+    }
+
     if (dom.unitModal) {
       dom.unitModal.addEventListener('click', (e) => {
         if (e.target === dom.unitModal) {
+          // Dokunmatik ekranda açılış tıklamasının arkadaki overlay'e sızarak modalı anında kapatmasını engelle
+          if (Date.now() - unitModalOpenedAt < 350) return;
           closeUnitModal();
         }
       });

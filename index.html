@@ -1074,7 +1074,7 @@
           <img src="school_logo.jpg" alt="ADÜ YDYO Logo" class="welcome-school-logo">
           <div class="welcome-school-text">
             <span class="welcome-school-title">ADÜ YABANCI DİLLER YÜKSEKOKULU</span>
-            <span class="welcome-school-sub">Resmi Kelime Öğrenme Platformu</span>
+            <span class="welcome-school-sub">Kelime Öğrenme Platformu</span>
           </div>
         </div>
 
@@ -1994,29 +1994,33 @@
       <div class="student-profile-body">
         <!-- 1. KİMLİK KARTI (SADE, KOMPAKT & ENTEGRE) -->
         <div class="student-hero-card">
-          <div class="student-hero-main-row">
-            <button type="button" class="student-avatar-badge student-avatar-clickable" id="profHeroAvatarBtn" title="Avatarı Değiştir">
-              <span id="profHeroAvatar">🦊</span>
-              <span class="avatar-edit-icon" title="Değiştir">✏️</span>
-            </button>
-            <div class="student-hero-details">
-              <div class="student-name-edit-wrap">
-                <input type="text" id="profNameInput" class="student-name-input" placeholder="Öğrenci Adı" maxlength="20" title="Öğrenci Adı">
-                <button type="button" id="profSaveBtn" class="student-name-save-pill" title="Değişiklikleri Kaydet">
-                  <span>Kaydet</span>
-                </button>
-              </div>
-              <span id="profHeroName" style="display: none;">Öğrenci</span>
+          <!-- Üst Satır: Avatar, Rozetler ve Sağda Aksiyon Butonları -->
+          <div class="student-hero-top-row">
+            <div class="student-hero-identity">
+              <button type="button" class="student-avatar-badge student-avatar-clickable" id="profHeroAvatarBtn" title="Avatarı Değiştir">
+                <span id="profHeroAvatar">🦊</span>
+                <span class="avatar-edit-icon" title="Değiştir">✏️</span>
+              </button>
               <div class="student-hero-badges">
                 <span class="student-track-badge" id="profHeroTrackBadge">4A (A2 Temel)</span>
                 <span class="student-lang-badge" id="profHeroLangBadge">🇬🇧 İngilizce</span>
               </div>
             </div>
-            <div class="student-hero-action" style="display: flex; gap: 8px; align-items: center;">
+            <div class="student-hero-action">
               <button type="button" id="profLoginOrOutBtn" class="student-login-toggle-btn">Giriş / Kayıt</button>
               <button type="button" id="profGuestLogoutBtn" class="student-login-toggle-btn is-logout" style="display: none;">Çıkış Yap</button>
             </div>
           </div>
+
+          <!-- Genişletilmiş İsim Düzenleme Alanı (Tam Genişlik & Sağa Yanaşık Kaydet) -->
+          <div class="student-name-edit-wrap">
+            <input type="text" id="profNameInput" class="student-name-input" placeholder="Öğrenci Adı" maxlength="20" title="Öğrenci Adı">
+            <button type="button" id="profSaveBtn" class="student-name-save-pill" title="Değişiklikleri Kaydet">
+              <span>Kaydet</span>
+            </button>
+          </div>
+          <span id="profHeroName" style="display: none;">Öğrenci</span>
+
           <div class="student-hero-status-row">
             <span class="status-indicator-dot"></span>
             <span class="student-account-status" id="profAccountStatusText">Misafir Kullanıcı (Bulut kapalı)</span>
