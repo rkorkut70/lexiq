@@ -191,6 +191,12 @@ async function syncUserData(user) {
     timeTracking: syncedTimeTracking
   };
 
+  const localDayStreak = parseInt(localStorage.getItem('lexiq_day_streak') || '1', 10);
+  const localMaxDayStreak = parseInt(localStorage.getItem('lexiq_max_day_streak') || '1', 10);
+  const bestDayStreak = Math.max(docData?.dayStreak || 1, localDayStreak);
+  const bestMaxDayStreak = Math.max(docData?.maxDayStreak || 1, localMaxDayStreak, bestDayStreak);
+  const resolvedLastStudyDate = docData?.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
+
   // LocalStorage güncelle
   localStorage.setItem('lexiq_user_name', resolvedName);
   localStorage.setItem('lexiq_user_avatar', resolvedAvatar);
@@ -210,6 +216,9 @@ async function syncUserData(user) {
   localStorage.setItem('lexiq_first_started_at', bestFirstStart.toString());
   localStorage.setItem('lexiq_registered_at', bestRegAt.toString());
   localStorage.setItem('lexiq_unit_durations', JSON.stringify(mergedUnitDurations));
+  localStorage.setItem('lexiq_day_streak', bestDayStreak.toString());
+  localStorage.setItem('lexiq_max_day_streak', bestMaxDayStreak.toString());
+  if (resolvedLastStudyDate) localStorage.setItem('lexiq_last_study_date', resolvedLastStudyDate);
   const hasOnboarded = !!((docData && docData.track && docData.lang) || localStorage.getItem('lexiq_user_onboarded') === 'true');
   if (hasOnboarded) {
     localStorage.setItem('lexiq_user_onboarded', 'true');
@@ -231,6 +240,9 @@ async function syncUserData(user) {
         learnedMap: mergedLearnedMap,
         unlockedBadges: mergedBadges,
         maxStreak: bestMaxStreak,
+        dayStreak: bestDayStreak,
+        maxDayStreak: bestMaxDayStreak,
+        lastStudyDate: resolvedLastStudyDate,
         arenaWordsSolved: bestArenaSolved,
         gameStats: mergedGameStats,
         cleanWins: bestCleanWins,
@@ -426,6 +438,9 @@ window.syncProgressToFirebase = function(customData, immediate = false) {
       learnedMap: s.learnedMap || JSON.parse(localStorage.getItem('kelime_learned_map') || '{}'),
       unlockedBadges: s.unlockedBadges || JSON.parse(localStorage.getItem('kelime_unlocked_badges') || '[]'),
       maxStreak: (s.maxStreak !== undefined) ? s.maxStreak : (parseInt(localStorage.getItem('kelime_max_streak'), 10) || 0),
+      dayStreak: (s.dayStreak !== undefined) ? s.dayStreak : (parseInt(localStorage.getItem('lexiq_day_streak'), 10) || 1),
+      maxDayStreak: (s.maxDayStreak !== undefined) ? s.maxDayStreak : (parseInt(localStorage.getItem('lexiq_max_day_streak'), 10) || 1),
+      lastStudyDate: s.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '',
       arenaWordsSolved: (s.arenaWordsSolved !== undefined) ? s.arenaWordsSolved : (parseInt(localStorage.getItem('kelime_arena_solved'), 10) || 0),
       xp: (s.xp !== undefined) ? s.xp : (parseInt(localStorage.getItem('kelime_xp'), 10) || 0),
       gameStats: Object.assign({}, localGameStats, (s.gameStats || {})),

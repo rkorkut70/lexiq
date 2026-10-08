@@ -74,6 +74,9 @@
     xp: parseInt(localStorage.getItem('kelime_xp'), 10) || 0,
     streak: 0,
     maxStreak: parseInt(localStorage.getItem('kelime_max_streak'), 10) || 0,
+    dayStreak: parseInt(localStorage.getItem('lexiq_day_streak'), 10) || 1,
+    maxDayStreak: parseInt(localStorage.getItem('lexiq_max_day_streak'), 10) || 1,
+    lastStudyDate: localStorage.getItem('lexiq_last_study_date') || '',
     arenaWordsSolved: parseInt(localStorage.getItem('kelime_arena_solved'), 10) || 0,
     unlockedBadges: JSON.parse(localStorage.getItem('kelime_unlocked_badges') || '[]'),
     activeMode: 'home', // 'home' | 'flashcards' | 'arena'
@@ -290,10 +293,14 @@
     { id: 'game_cloze_master', name: 'Metin Dedektifi', icon: '📝', desc: '15 kez Boşluk Doldurma çöz', type: 'diamond', category: 'game', check: (s) => (s.gameStats?.cloze || 0) >= 15 },
     { id: 'game_quiz_master', name: 'Test Profesörü', icon: '🎓', desc: '30 kez 4 Şıklı Testi doğru yanıtla', type: 'legend', category: 'game', check: (s) => (s.gameStats?.quiz || 0) >= 30 },
 
-    // --- 4. SERİ & ODAKLANMA (6 ROZET) ---
+    // --- 4. SERİ & ODAKLANMA (10 ROZET) ---
     { id: 'streak_fire', name: 'Ateşli Seri', icon: '🔥', desc: 'Arenada ardı ardına 5 doğru yap', type: 'streak', category: 'streak', check: (s) => s.streak >= 5 || s.maxStreak >= 5 },
     { id: 'streak_inferno', name: 'Şimşek Fırtınası', icon: '⚡', desc: 'Arenada ardı ardına 10 doğru yap', type: 'streak', category: 'streak', check: (s) => s.streak >= 10 || s.maxStreak >= 10 },
     { id: 'streak_unstoppable', name: 'Durdurulamaz', icon: '☄️', desc: 'Arenada ardı ardına 20 doğru yap', type: 'streak', category: 'streak', check: (s) => s.streak >= 20 || s.maxStreak >= 20 },
+    { id: 'daily_streak_3', name: '3 Günlük İstikrar', icon: '🌱', desc: '3 gün aralıksız kelime çalış', type: 'bronze', category: 'streak', check: (s) => (s.dayStreak || 0) >= 3 || (s.maxDayStreak || 0) >= 3 },
+    { id: 'daily_streak_7', name: 'Haftalık Şampiyon', icon: '🌟', desc: '7 gün aralıksız kelime çalış', type: 'gold', category: 'streak', check: (s) => (s.dayStreak || 0) >= 7 || (s.maxDayStreak || 0) >= 7 },
+    { id: 'daily_streak_14', name: '2 Haftalık Azim', icon: '👑', desc: '14 gün aralıksız kelime çalış', type: 'diamond', category: 'streak', check: (s) => (s.dayStreak || 0) >= 14 || (s.maxDayStreak || 0) >= 14 },
+    { id: 'daily_streak_30', name: 'Aylık Efsane', icon: '🏆', desc: '30 gün aralıksız kelime çalış', type: 'legend', category: 'streak', check: (s) => (s.dayStreak || 0) >= 30 || (s.maxDayStreak || 0) >= 30 },
     { id: 'pure_mind', name: 'Saf Zihin', icon: '🧘', desc: 'Hiç ipucu kullanmadan 10 arena oyunu kazan', type: 'diamond', category: 'streak', check: (s) => (s.cleanWins || 0) >= 10 },
     { id: 'vocab_monster', name: 'Kelime Canavarı', icon: '📚', desc: 'Arenada 20 kelimeyi başarıyla çöz', type: 'gold', category: 'streak', check: (s) => s.arenaWordsSolved >= 20 },
     { id: 'arena_gladiator', name: 'Arena Gladyatörü', icon: '⚔️', desc: 'Arenada 100 kelimeyi başarıyla çöz', type: 'titanium', category: 'streak', check: (s) => s.arenaWordsSolved >= 100 },
@@ -739,6 +746,7 @@
   // BAŞLATMA & KURULUM
   // ==========================================
   function init() {
+    checkDailyStreakHealth();
     applyTheme(state.activeTheme);
     applyCardTheme(state.cardTheme);
     applyCardFont(state.cardFont);
@@ -1684,7 +1692,7 @@
 
     if (statLearned) statLearned.textContent = getLearnedCount(state);
     if (statXp) statXp.textContent = state.xp;
-    if (statStreak) statStreak.textContent = state.maxStreak;
+    if (statStreak) statStreak.textContent = `${state.dayStreak || 1} Gün`;
     if (statBadges) statBadges.textContent = `${visibleUnlockedCount} / ${visibleBadges.length}`;
 
     // İsim Input
@@ -3378,6 +3386,7 @@
       };
       if (!state.sessionLearnedIds) state.sessionLearnedIds = new Set();
       state.sessionLearnedIds.add(wordId);
+      updateDailyStudyStreak();
       const wasLearned = !!(state.learnedMap[wordId] && state.learnedMap[wordId].learned);
       if (!wasLearned) {
         addXp(10);
@@ -4123,6 +4132,76 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
+  function checkDailyStreakHealth() {
+    const today = getTodayDateKey();
+    const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
+    if (!lastDate) {
+      if (!state.dayStreak) state.dayStreak = 1;
+      return;
+    }
+
+    try {
+      const lastD = new Date(lastDate + 'T00:00:00');
+      const todayD = new Date(today + 'T00:00:00');
+      const diffDays = Math.round((todayD.getTime() - lastD.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 1) {
+        state.dayStreak = 0;
+        localStorage.setItem('lexiq_day_streak', '0');
+      }
+    } catch (e) {}
+  }
+
+  function updateDailyStudyStreak() {
+    const today = getTodayDateKey();
+    const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
+
+    if (!lastDate) {
+      state.dayStreak = 1;
+      state.maxDayStreak = Math.max(state.maxDayStreak || 1, 1);
+      state.lastStudyDate = today;
+      localStorage.setItem('lexiq_day_streak', String(state.dayStreak));
+      localStorage.setItem('lexiq_max_day_streak', String(state.maxDayStreak));
+      localStorage.setItem('lexiq_last_study_date', today);
+      checkBadgeUnlocks();
+      if (dom.homeStatStreak) dom.homeStatStreak.textContent = `🔥 ${state.dayStreak} Gün Seri`;
+      if (typeof window.syncProgressToFirebase === 'function') window.syncProgressToFirebase();
+      return;
+    }
+
+    if (lastDate === today) {
+      return;
+    }
+
+    try {
+      const lastD = new Date(lastDate + 'T00:00:00');
+      const todayD = new Date(today + 'T00:00:00');
+      const diffDays = Math.round((todayD.getTime() - lastD.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        state.dayStreak = (state.dayStreak || 0) + 1;
+        if (state.dayStreak > (state.maxDayStreak || 0)) {
+          state.maxDayStreak = state.dayStreak;
+        }
+        showToast(`🔥 Tebrikler! Günlük çalışma serin ${state.dayStreak} güne çıktı!`, 'correct');
+      } else if (diffDays > 1) {
+        state.dayStreak = 1;
+        showToast('🔥 Yeni günlük çalışma serisi başladı! (1. Gün)', 'correct');
+      }
+    } catch (e) {
+      state.dayStreak = 1;
+    }
+
+    state.lastStudyDate = today;
+    localStorage.setItem('lexiq_day_streak', String(state.dayStreak));
+    localStorage.setItem('lexiq_max_day_streak', String(state.maxDayStreak));
+    localStorage.setItem('lexiq_last_study_date', today);
+    checkBadgeUnlocks();
+    if (dom.homeStatStreak) dom.homeStatStreak.textContent = `🔥 ${state.dayStreak} Gün Seri`;
+    updateUserProfileUI();
+    if (typeof window.syncProgressToFirebase === 'function') window.syncProgressToFirebase();
+  }
+
   function getTodayLearnedWordsList() {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -4173,6 +4252,7 @@
   function onWordSolvedCorrectlyInGame(wordId) {
     if (!wordId) return;
     markWordPracticedInGame(wordId);
+    updateDailyStudyStreak();
 
     const key = `lexiq_arena_solved_correct_${getTodayDateKey()}`;
     const set = getTodaySolvedCorrectWordIds();
@@ -4389,9 +4469,10 @@
       }
     }
 
-    // Seri Bilgisi
+    // Seri Bilgisi (Günlük Çalışma Serisi)
     if (dom.homeStatStreak) {
-      dom.homeStatStreak.textContent = state.streak > 0 ? `🔥 ${state.streak} Gün Seri` : '🔥 1 Gün Seri';
+      const dStreak = (typeof state.dayStreak === 'number' && state.dayStreak > 0) ? state.dayStreak : 1;
+      dom.homeStatStreak.textContent = `🔥 ${dStreak} Gün Seri`;
     }
 
     // Toplam Öğrenilen Kelime Bilgisi
@@ -4983,6 +5064,11 @@
         current = s.arenaWordsSolved || 0;
         target = 100;
         unit = 'kelime';
+      } else if (badge.id.startsWith('daily_streak_')) {
+        current = Math.max(s.dayStreak || 0, s.maxDayStreak || 0);
+        const match = badge.desc.match(/([0-9]+)\s*gün/i);
+        if (match) target = parseInt(match[1], 10);
+        unit = 'gün';
       } else {
         current = Math.max(s.streak || 0, s.maxStreak || 0);
         const match = badge.desc.match(/([0-9]+)\s*doğru/);
