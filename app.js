@@ -286,9 +286,9 @@
       localStorage.setItem('kelime_xp', state.xp);
       if (dom.headerXpText) dom.headerXpText.textContent = state.xp;
       if (dom.modalTotalXpText) dom.modalTotalXpText.textContent = `${(state.xp || 0).toLocaleString('tr-TR')} XP`;
-      showCelebrationBanner(winTitle, `${earned} XP + 5 XP Saf Zihin Bonusu`, `+${earned + bonus} XP`, winIcon);
+      showCelebrationBanner(winTitle, 'Saf Zihin Bonusu (+5 XP)', `+${earned + bonus} XP`, winIcon);
     } else {
-      showCelebrationBanner(winTitle, `${earned} XP Kazandınız`, `+${earned} XP`, winIcon);
+      showCelebrationBanner(winTitle, '', `+${earned} XP`, winIcon);
     }
     checkBadgeUnlocks();
     if (typeof window.syncProgressToFirebase === 'function') {
@@ -4147,7 +4147,13 @@
       banner.classList.remove('is-wrong');
       if (iconEl) iconEl.textContent = icon;
       titleEl.textContent = title;
-      subEl.textContent = subtitle;
+      if (subtitle) {
+        subEl.textContent = subtitle;
+        subEl.style.display = 'block';
+      } else {
+        subEl.textContent = '';
+        subEl.style.display = 'none';
+      }
       xpPill.textContent = xpText;
       banner.classList.add('show');
 
@@ -4163,7 +4169,7 @@
     }
   }
 
-  function showEncouragementBanner(title, subtitle, tagText = 'Tekrar Dene', icon = '💪') {
+  function showEncouragementBanner(title, subtitle, tagText = 'Tekrar dene... XP gitti', icon = '💪') {
     const banner = document.getElementById('celebrationBanner');
     const iconEl = document.getElementById('celebrationIcon');
     const titleEl = document.getElementById('celebrationTitle');
@@ -4174,7 +4180,13 @@
       banner.classList.add('is-wrong');
       if (iconEl) iconEl.textContent = icon;
       titleEl.textContent = title;
-      subEl.textContent = subtitle;
+      if (subtitle) {
+        subEl.textContent = subtitle;
+        subEl.style.display = 'block';
+      } else {
+        subEl.textContent = '';
+        subEl.style.display = 'none';
+      }
       xpPill.textContent = tagText;
       banner.classList.add('show');
 
@@ -5430,7 +5442,6 @@
       speakWord(anagramState.targetWord.kelime, anagramState.targetWord.dil, dom.anagramAudioBtn);
       const earned = recordGameWin('anagram', 10);
       onWordSolvedCorrectlyInGame(anagramState.targetWord.id);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'anagram') {
@@ -5442,8 +5453,7 @@
       resetStreak();
       const encMsg = getRandomEncouragementMessage();
       const wordHint = (anagramState.targetWord.kelime || '').replace(/\(.*?\)/g, '').trim();
-      showEncouragementBanner(encMsg, `Hedef Kelime: "${wordHint}"`, 'Tekrar Dene', getRandomEncouragementIcon());
-      showToast(`❌ ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Hedef: "${wordHint}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -5668,7 +5678,6 @@
           speakWord(tetrisState.targetWord.kelime, tetrisState.targetWord.dil);
           const earned = recordGameWin('tetris', 20);
           onWordSolvedCorrectlyInGame(tetrisState.targetWord.id);
-          showToast(`+${earned} XP! "${tetrisState.targetWord.kelime}" tamamlandı! 🕹️ ${getRandomCelebrationMessage()}`, 'correct');
           setTimeout(() => {
             if (state.activeMode === 'arena' && state.activeGame === 'tetris') {
               startTetrisRound();
@@ -5682,8 +5691,7 @@
         dom.tetrisTimer.textContent = tetrisState.timeLeft;
         resetStreak();
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, `"${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'Dikkat', getRandomEncouragementIcon());
-        showToast(`❌ "${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'wrong');
+        showEncouragementBanner(encMsg, `"${chosenLetter}" harfi gerekmiyor! (-2 sn)`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
         setTimeout(() => { if (block.parentNode) block.remove(); }, 250);
       }
     }
@@ -5711,8 +5719,7 @@
     if (allDone) {
       stopTetrisGame();
       speakWord(tetrisState.targetWord.kelime, tetrisState.targetWord.dil);
-      const earned = recordGameWin('listen', 20);
-      showToast(`+${earned} XP! "${tetrisState.targetWord.kelime}" tamamlandı! 🕹️ ${getRandomCelebrationMessage()}`);
+      const earned = recordGameWin('tetris', 20);
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'tetris') {
           startTetrisRound();
@@ -5921,7 +5928,6 @@
       speakWord(targetWord.kelime, targetWord.dil);
       const earned = recordGameWin('cloze', 15);
       onWordSolvedCorrectlyInGame(targetWord.id);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -5942,8 +5948,7 @@
       }
       resetStreak();
       const encMsg = getRandomEncouragementMessage();
-      showEncouragementBanner(encMsg, `Doğru cevap: "${displayWord}"`, 'Devam Et', getRandomEncouragementIcon());
-      showToast(`❌ Doğru: ${displayWord}. ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Doğru: "${displayWord}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'cloze') {
@@ -6067,7 +6072,6 @@
           onWordSolvedCorrectlyInGame(c1.item.pairId);
 
           if (matchState.matchedPairs >= matchState.totalPairs) {
-            showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🃏`, 'correct');
             setTimeout(() => {
               if (state.activeMode === 'arena' && state.activeGame === 'match') {
                 startMatchRound();
@@ -6080,8 +6084,7 @@
         c2.el.classList.add('shake-wrong');
         resetStreak();
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, 'Bu kartlar eşleşmiyor, tekrar dene!', 'Odaklan', getRandomEncouragementIcon());
-        showToast(`❌ ${encMsg}`, 'wrong');
+        showEncouragementBanner(encMsg, '', 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
         setTimeout(() => {
           c1.el.classList.remove('selected', 'shake-wrong');
@@ -6161,8 +6164,7 @@
         stopTrueFalseGame();
         resetStreak();
         const encMsg = getRandomEncouragementMessage();
-        showEncouragementBanner(encMsg, `Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'Zaman', getRandomEncouragementIcon());
-        showToast(`⏱️ Süre doldu! Doğru: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'wrong');
+        showEncouragementBanner(encMsg, `Süre doldu! Doğru cevap: ${tfState.isCorrectMatch ? 'DOĞRU' : 'YANLIŞ'}`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
         setTimeout(() => {
           if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
             startTrueFalseRound();
@@ -6202,7 +6204,6 @@
       speakWord(tfState.targetWord.kelime, tfState.targetWord.dil, dom.tfAudioBtn);
       const earned = recordGameWin('truefalse', 15);
       onWordSolvedCorrectlyInGame(tfState.targetWord.id);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -6213,8 +6214,7 @@
       resetStreak();
       const encMsg = getRandomEncouragementMessage();
       const trueMeaning = getWordMeaning(tfState.targetWord);
-      showEncouragementBanner(encMsg, `Gerçek Anlam: "${trueMeaning}"`, 'Devam Et', getRandomEncouragementIcon());
-      showToast(`❌ Doğru anlam: "${trueMeaning}". ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Gerçek Anlam: "${trueMeaning}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'truefalse') {
@@ -6369,7 +6369,6 @@
       speakWord(listenState.targetWord.kelime, listenState.targetWord.dil, dom.listenPlayAudioBtn);
       const earned = recordGameWin('listen', 15);
       onWordSolvedCorrectlyInGame(listenState.targetWord.id);
-      showToast(`+${earned} XP! 🎧 ${getRandomCelebrationMessage()}`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'listen') {
@@ -6382,8 +6381,7 @@
       const encMsg = getRandomEncouragementMessage();
       const targetWordClean = listenState.targetWord.kelime;
       const targetWordMeaning = getWordMeaning(listenState.targetWord);
-      showEncouragementBanner(encMsg, `Kelime: "${targetWordClean}" (${targetWordMeaning})`, 'Tekrar Dinle', getRandomEncouragementIcon());
-      showToast(`❌ ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Kelime: "${targetWordClean}" (${targetWordMeaning})`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
@@ -6467,7 +6465,6 @@
       speakWord(quizState.targetWord.kelime, quizState.targetWord.dil, dom.quizAudioBtn);
       const earned = recordGameWin('quiz', 15);
       onWordSolvedCorrectlyInGame(quizState.targetWord.id);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 🎯`, 'correct');
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6481,8 +6478,7 @@
       });
       resetStreak();
       const encMsg = getRandomEncouragementMessage();
-      showEncouragementBanner(encMsg, `Doğru Cevap: "${correctMeaning}"`, 'Devam Et', getRandomEncouragementIcon());
-      showToast(`❌ Doğru: "${correctMeaning}". ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Doğru Cevap: "${correctMeaning}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         if (state.activeMode === 'arena' && state.activeGame === 'quiz') {
@@ -6630,7 +6626,6 @@
       speakWord(targetSentence, scrambleState.targetWord.dil, dom.scrambleAudioBtn);
       const earned = recordGameWin('scramble', 25);
       onWordSolvedCorrectlyInGame(scrambleState.targetWord.id);
-      showToast(`+${earned} XP! ${getRandomCelebrationMessage()} 📝`, 'correct');
 
       // Cümleyi ve Türkçe çevirisini incelemek için kelime uzunluğuna göre cömert bekleme süresi
       const wordCount = scrambleState.originalWords.length;
@@ -6647,8 +6642,7 @@
       resetStreak();
       const encMsg = getRandomEncouragementMessage();
       const correctSentence = scrambleState.originalWords.join(' ');
-      showEncouragementBanner(encMsg, `Cümle: "${correctSentence}"`, 'Sırayı Düzelt', getRandomEncouragementIcon());
-      showToast(`❌ ${encMsg}`, 'wrong');
+      showEncouragementBanner(encMsg, `Cümle: "${correctSentence}"`, 'Tekrar dene... XP gitti', getRandomEncouragementIcon());
 
       setTimeout(() => {
         slots.forEach(s => s.classList.remove('shake'));
