@@ -126,7 +126,10 @@
               <span class="greeting-avatar" id="homeUserAvatar">🦊</span>
               <span class="greeting-text">Merhaba, <strong id="homeUserName">Öğrenci</strong>!</span>
             </div>
-            <span class="home-unit-badge" id="homeUnitBadge">🇬🇧 İngilizce • A2</span>
+            <div class="home-unit-badge" id="homeUnitBadge">
+              <span class="hub-lang-row">🇬🇧 İngilizce → Türkçe</span>
+              <span class="hub-level-tag">A2</span>
+            </div>
           </div>
 
           <div class="home-hero-body">
@@ -1327,6 +1330,34 @@
             <button type="button" class="goal-chip" data-goal="20">20 Kelime</button>
             <button type="button" class="goal-chip" data-goal="999">Tüm Ünite</button>
           </div>
+        </div>
+
+        <!-- İsteğe Bağlı Günlük Seri Çalışma Sözü (Streak Pledge) -->
+        <div class="ob-field-group" style="margin-top: 14px;">
+          <label class="ob-field-label" style="display: flex; align-items: center; justify-content: space-between;">
+            <span>🔥 Günlük Seri Sözü (İsteğe Bağlı):</span>
+            <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 800; background: rgba(251, 191, 36, 0.15); padding: 2px 8px; border-radius: 10px;">Duolingo Modeli</span>
+          </label>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin: 2px 0 10px 0; line-height: 1.4;">
+            Her gün aralıksız çalışma sözü vererek alışkanlık kazan.
+          </p>
+          <div class="ob-streak-pledge-grid" id="obStreakPledgeGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+            <button type="button" class="ob-streak-chip" data-streak-days="3">
+              <strong>3 Gün</strong>
+              <small style="display:block; font-size:0.68rem; opacity:0.85;">🎯 Hızlı Başlangıç</small>
+            </button>
+            <button type="button" class="ob-streak-chip active" data-streak-days="5">
+              <strong>5 Gün ⭐</strong>
+              <small style="display:block; font-size:0.68rem; opacity:0.85;">🔥 Kararlı</small>
+            </button>
+            <button type="button" class="ob-streak-chip" data-streak-days="7">
+              <strong>7 Gün</strong>
+              <small style="display:block; font-size:0.68rem; opacity:0.85;">⚡ Şampiyon</small>
+            </button>
+          </div>
+          <button type="button" id="obSkipStreakPledgeBtn" style="background:none; border:none; color:var(--text-muted); font-size:0.78rem; text-decoration:underline; cursor:pointer; width:100%; text-align:center; padding: 4px;">
+            Şimdilik söz verme (Daha sonra ayarlardan başlatabilirsin)
+          </button>
         </div>
 
         <div class="ob-btn-row">
@@ -2566,6 +2597,64 @@
 
           <!-- 4. SEKME: HATIRLATICI (GELİŞMİŞ AKILLI ALARM & BİLDİRİM SİSTEMİ) -->
           <div class="settings-tab-panel" id="tabPanelReminder">
+            <!-- GÜNLÜK SERİ ÇALIŞMA SÖZÜ (STREAK TAAHHÜDÜ) -->
+            <div class="setting-block" id="settingStreakPledgeBlock" style="margin-bottom: 20px; background: rgba(255, 255, 255, 0.02); border: 1.5px solid var(--border-color); border-radius: 18px; padding: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <div>
+                  <span class="setting-block-label" style="font-size: 0.96rem; color: #fbbf24; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                    <span>🔥</span> Günlük Seri Sözü (Streak Taahhüdü)
+                  </span>
+                  <span class="setting-row-desc" style="display: block; font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                    Duolingo tarzı arka arkaya çalışma sözü vererek disiplin kazan
+                  </span>
+                </div>
+              </div>
+
+              <!-- Aktif Taahhüt Durumu (JS ile doldurulur) -->
+              <div id="settingStreakPledgeActiveBox" style="display: none; background: rgba(249, 115, 22, 0.08); border: 1.5px solid rgba(249, 115, 22, 0.35); border-radius: 16px; padding: 14px; margin-top: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span id="settingStreakPledgeStatusTitle" style="font-weight: 800; font-size: 0.9rem; color: #fbbf24;">
+                    🎯 5 Günlük Seri Sözü Devam Ediyor
+                  </span>
+                  <span style="font-size: 0.72rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 2px 8px; border-radius: 8px; font-weight: 800;">
+                    🔒 İptal Edilemez
+                  </span>
+                </div>
+                <!-- Gün Göstergesi Kutuları (3, 5 ya da 7 adet) -->
+                <div id="settingStreakPledgeDaysTrack" class="streak-modal-days-track" style="margin: 12px 0;"></div>
+                <p style="font-size: 0.76rem; color: var(--text-muted); margin: 6px 0 12px 0; line-height: 1.4;">
+                  Başlatılan bir seri sözü ortasında iptal edilemez. Gün hesabı her gece 00:00'da yenilenir.
+                </p>
+                <button type="button" class="pill-btn" id="settingViewStreakModalBtn" style="width: 100%; padding: 10px; font-size: 0.86rem; font-weight: 700; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.4); color: #f97316; border-radius: 12px; cursor: pointer;">
+                  🔥 Seri Durumunu Detaylı Gör
+                </button>
+              </div>
+
+              <!-- Yeni Taahhüt Başlatma Kutusu (Aktif Taahhüt Yokken) -->
+              <div id="settingStreakPledgeSelectBox" style="background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 14px; margin-top: 10px;">
+                <span style="display:block; font-size: 0.82rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">
+                  Hedef Gün Sayısı Seç:
+                </span>
+                <div class="streak-pledge-buttons-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+                  <button type="button" class="setting-streak-opt-btn" data-days="3">
+                    <strong>3 Gün</strong>
+                    <small style="display:block; font-size:0.68rem; opacity:0.85;">🎯 Hızlı Başlangıç</small>
+                  </button>
+                  <button type="button" class="setting-streak-opt-btn active" data-days="5">
+                    <strong>5 Gün ⭐</strong>
+                    <small style="display:block; font-size:0.68rem; opacity:0.85;">🔥 Kararlı</small>
+                  </button>
+                  <button type="button" class="setting-streak-opt-btn" data-days="7">
+                    <strong>7 Gün</strong>
+                    <small style="display:block; font-size:0.68rem; opacity:0.85;">⚡ Şampiyon</small>
+                  </button>
+                </div>
+                <button type="button" id="settingStartStreakPledgeBtn" class="pill-btn primary-action-btn" style="width: 100%; padding: 11px; font-size: 0.88rem; font-weight: 800; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; border: none; border-radius: 12px; cursor: pointer;">
+                  🔥 Seri Çalışma Sözünü Başlat
+                </button>
+              </div>
+            </div>
+
             <div class="setting-block no-border">
               <div class="setting-compact-row">
                 <div class="setting-row-info">
@@ -2782,12 +2871,14 @@
     </div>
   </div>
 
-  <!-- UYGULAMA İÇİ ÖZEL ONAY MODALI (CUSTOM CONFIRM MODAL) -->
+  <!-- UYGULAMA İÇİ ÖZEL ONAY VE ÇIKIŞ MODALI (CUSTOM CONFIRM & EXIT MODAL) -->
   <div id="customConfirmModal" class="modal-overlay" style="z-index: 10050; display: none;">
     <div class="modal-card custom-confirm-card">
-      <div class="confirm-icon-wrap" id="confirmModalIcon">⚠️</div>
-      <h3 class="confirm-title" id="confirmModalTitle">Emin misiniz?</h3>
-      <p class="confirm-message" id="confirmModalMessage">Bu işlem geri alınamaz.</p>
+      <div class="confirm-icon-wrap" id="confirmModalIcon">👋</div>
+      <h3 class="confirm-title" id="confirmModalTitle">Çıkış Yap</h3>
+      <div class="confirm-message-box">
+        <p class="confirm-message" id="confirmModalMessage">Uygulamadan çıkmak istediğinize emin misiniz?</p>
+      </div>
       <div class="confirm-actions-row">
         <button type="button" class="pill-btn confirm-cancel-btn" id="confirmModalCancelBtn">Vazgeç</button>
         <button type="button" class="pill-btn confirm-ok-btn danger-action" id="confirmModalOkBtn">Onayla</button>
@@ -2867,6 +2958,47 @@
       <button type="button" class="pill-btn primary-action-btn" id="closeAppUpdateModalBtn" style="width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4); cursor: pointer;">
         🚀 Harika, Keşfetmeye Başla!
       </button>
+    </div>
+  </div>
+
+  <!-- DUOLINGO BENZERİ GÜNLÜK SERİ SÖZÜ BİLGİLENDİRME MODALI -->
+  <div id="streakPledgeModal" class="modal-overlay" style="z-index: 10070; display: none;">
+    <div class="modal-card streak-pledge-modal-card" style="max-width: 440px; text-align: center; padding: 26px 20px; border-radius: 24px;">
+      <!-- Üst Alev İkonu & Başlık -->
+      <div class="streak-flame-icon-wrap" style="font-size: 3.2rem; margin-bottom: 4px; filter: drop-shadow(0 0 16px rgba(249, 115, 22, 0.5)); animation: bounceFlame 2s infinite ease-in-out;">
+        🔥
+      </div>
+      <h3 class="streak-pledge-title" id="streakModalTitle" style="font-size: 1.35rem; font-weight: 800; color: #fbbf24; margin: 0 0 4px 0;">
+        5 Günlük Seri Sözün
+      </h3>
+      <p class="streak-pledge-subtitle" id="streakModalSubtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 0 0 18px 0; line-height: 1.5;">
+        Her gün düzenli çalışarak serini koru!
+      </p>
+
+      <!-- Tam Olarak Verilen Söz Kadar (3, 5 ya da 7) Gün Öğesi -->
+      <div class="streak-days-track-container" style="background: rgba(255, 255, 255, 0.04); border: 1.5px solid var(--border-color); border-radius: 18px; padding: 16px 10px; margin-bottom: 16px;">
+        <div id="streakModalDaysTrack" class="streak-modal-days-track">
+          <!-- Dinamik JS tarafından oluşturulur: 3, 5 ya da 7 adet öğe -->
+        </div>
+      </div>
+
+      <!-- Durum Mesajı ve Bilgilendirme -->
+      <div class="streak-status-banner" id="streakModalStatusBanner" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 12px 14px; margin-bottom: 20px; text-align: left; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.5rem;" id="streakModalStatusIcon">🎯</span>
+        <div style="font-size: 0.86rem; line-height: 1.4; color: var(--text-main);" id="streakModalStatusText">
+          Bugünün hedefini tamamlamak için kartlarda çalış veya arenada bir oyuna başla!
+        </div>
+      </div>
+
+      <!-- Aksiyon Butonları -->
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" class="pill-btn primary-action-btn" id="streakModalActionBtn" style="width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 16px rgba(234, 88, 12, 0.4); cursor: pointer;">
+          🚀 Şimdi Çalışmaya Başla
+        </button>
+        <button type="button" class="pill-btn" id="closeStreakModalBtn" style="width: 100%; padding: 10px; font-size: 0.88rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 14px; cursor: pointer;">
+          Tamam, Anladım
+        </button>
+      </div>
     </div>
   </div>
 

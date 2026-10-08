@@ -5807,17 +5807,42 @@ html[data-card-theme="dark"] .card-face {
 }
 
 .home-unit-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.24);
-  backdrop-filter: blur(8px);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px 5px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.home-unit-badge .hub-lang-row {
+  display: block;
   font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-weight: 700;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 0, 0, 0.15);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.home-unit-badge .hub-level-tag {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 900;
+  color: #991b1b; /* Koyu Kırmızı Harf */
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1px 12px;
+  border-radius: 6px;
+  margin-top: 3px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .home-hero-body {
@@ -10383,86 +10408,111 @@ html[data-flip-speed="slow"] .flashcard {
 }
 
 /* ==========================================================================
-   UYGULAMA İÇİ ÖZEL ONAY MODALI (CUSTOM APP CONFIRMATION MODAL)
+   UYGULAMA İÇİ ÖZEL ONAY VE ÇIKIŞ MODALI (CUSTOM APP CONFIRMATION & EXIT MODAL)
    ========================================================================== */
 .custom-confirm-card {
-  max-width: 380px !important;
-  width: 90% !important;
-  border-radius: 24px !important;
-  background: var(--bg-surface, #ffffff) !important;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15)) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
-  padding: 24px 20px !important;
+  max-width: 410px !important;
+  width: 92% !important;
+  border-radius: 28px !important;
+  background: var(--bg-card, #1e293b) !important;
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.14)) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+  padding: 28px 22px 22px 22px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   text-align: center !important;
   gap: 12px !important;
+  position: relative !important;
 }
 
 .confirm-icon-wrap {
-  width: 58px;
-  height: 58px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.16), rgba(249, 115, 22, 0.22));
+  border: 2px solid rgba(239, 68, 68, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.85rem;
+  font-size: 2.2rem;
   margin-bottom: 2px;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.25);
+  animation: bounceFlame 2.5s infinite ease-in-out;
 }
 
 .confirm-title {
-  font-size: 1.15rem;
+  font-size: 1.28rem;
   font-weight: 800;
-  color: var(--text-main, #0f172a);
+  color: var(--text-main, #ffffff);
   margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.confirm-message-box {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 16px 14px;
+  margin: 4px 0;
+  text-align: center;
 }
 
 .confirm-message {
-  font-size: 0.88rem;
-  color: var(--text-muted, #64748b);
-  line-height: 1.55;
+  font-size: 0.92rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.65;
   margin: 0;
   white-space: pre-line;
+  word-break: break-word;
 }
 
 .confirm-actions-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .confirm-cancel-btn {
   flex: 1;
-  padding: 12px;
+  padding: 13px;
   border-radius: 14px;
-  background: var(--bg-card, #f1f5f9);
-  color: var(--text-main, #334155);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main, #ffffff);
   font-weight: 700;
-  font-size: 0.9rem;
-  border: 1px solid var(--border-color, #cbd5e1);
+  font-size: 0.92rem;
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.15));
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .confirm-ok-btn {
-  flex: 1.2;
-  padding: 12px;
+  flex: 1.25;
+  padding: 13px;
   border-radius: 14px;
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #ffffff;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
-  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .confirm-ok-btn:active {
   transform: scale(0.97);
+}
+
+.confirm-ok-btn.primary-action {
+  background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4) !important;
 }
 
 /* ==========================================================================
@@ -10748,6 +10798,176 @@ html[data-flip-speed="slow"] .flashcard {
 [data-theme="light"] .tour-prev-btn:hover {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+/* ============================================================
+   DUOLINGO BENZERİ GÜNLÜK SERİ SÖZÜ (STREAK PLEDGE) STİLLERİ
+   ============================================================ */
+@keyframes bounceFlame {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.08);
+  }
+}
+
+@keyframes pulsePledgeToday {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.6);
+    transform: scale(1.04);
+  }
+}
+
+.streak-pledge-modal-card {
+  max-width: 440px;
+  width: 92%;
+  border-radius: 24px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+}
+
+.streak-modal-days-track {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.streak-day-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  min-width: 52px;
+  flex: 1 1 auto;
+  max-width: 80px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 1. Tamamlanan Gün: YEŞİL */
+.streak-day-badge.sdb-completed {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border: 2px solid #34d399 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.streak-day-badge.sdb-completed .sdb-icon-circle {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.streak-day-badge.sdb-completed .sdb-status-tag {
+  background: rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+
+/* 2. Tamamlanmayan / Kaçırılan Gün: KIRMIZI */
+.streak-day-badge.sdb-missed {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  border: 2px solid #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.streak-day-badge.sdb-missed .sdb-icon-circle {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.streak-day-badge.sdb-missed .sdb-status-tag {
+  background: rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+
+/* 3. Bugün: Bekliyor / Hedef */
+.streak-day-badge.sdb-current {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.35)) !important;
+  border: 2.5px solid #f59e0b !important;
+  color: #fbbf24 !important;
+  animation: pulsePledgeToday 2s infinite ease-in-out;
+}
+
+.streak-day-badge.sdb-current .sdb-icon-circle {
+  background: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.streak-day-badge.sdb-current .sdb-status-tag {
+  background: #f59e0b;
+  color: #000000;
+  font-weight: 800;
+}
+
+/* 4. Gelecek Günler: Kilitli / Gri */
+.streak-day-badge.sdb-future {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1.5px dashed var(--border-color) !important;
+  color: var(--text-muted) !important;
+  opacity: 0.75;
+}
+
+.streak-day-badge.sdb-future .sdb-icon-circle {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+}
+
+.streak-day-badge.sdb-future .sdb-status-tag {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.sdb-day-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.sdb-icon-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin: 2px 0;
+}
+
+.sdb-status-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+/* Onboarding ve Ayarlar Seçim Çipleri */
+.ob-streak-chip, .setting-streak-opt-btn {
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.ob-streak-chip.active, .setting-streak-opt-btn.active {
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
 }
 
 

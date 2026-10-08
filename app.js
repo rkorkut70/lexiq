@@ -87,6 +87,13 @@
     roundUsedHint: false,
     cleanWins: parseInt(localStorage.getItem('kelime_clean_wins'), 10) || 0,
     gameStats: JSON.parse(localStorage.getItem('kelime_game_stats') || '{}'),
+    streakPledge: (function() {
+      try {
+        return JSON.parse(localStorage.getItem('lexiq_streak_pledge') || 'null');
+      } catch (e) {
+        return null;
+      }
+    })(),
  // null | 'match' | 'truefalse' | 'tetris' | 'anagram' | 'listen' | 'quiz' | 'scramble' | 'cloze'
     
     // Kullanıcı Profil & İlk Kurulum (Onboarding) Durumu
@@ -908,6 +915,8 @@
       localStorage.setItem('lexiq_last_seen_version', APP_VERSION);
     }
     checkAndNotifyAppUpdate();
+    checkDailyStreakFirstLaunch();
+    updateStreakPledgeSettingsUI();
   }
 
   // ==========================================
@@ -1620,12 +1629,12 @@
     const isFbLoggedIn = typeof fbUser !== 'undefined' && fbUser !== null;
 
     if (!isFbLoggedIn || isGuestExplicit) {
-      // Misafir Çıkışı: Tam olarak Ayarlar > Sistem > Fabrika Ayarlarına Dön gibi cihazdaki verileri temizleyip karşılama ekranına döndürür
+      // Misafir Çıkışı
       const confirmed = await showAppConfirm({
-        title: 'Misafir Oturumunu Kapat',
-        message: 'Misafir oturumundan çıkış yaptığınızda bu cihazdaki tüm öğrenme geçmişiniz, puanlarınız ve profiliniz sıfırlanarak Hoş Geldin ekranına dönülecektir (Fabrika Ayarlarına Dönüş).\n\nÇıkış yapmak istediğinize emin misiniz?',
-        icon: '🚪',
-        okText: 'Çıkış Yap ve Sıfırla',
+        title: 'Oturumu Kapat',
+        message: 'Misafir modundan çıkış yaptığınızda bu cihazdaki kelime ilerlemeniz sıfırlanır ve başlangıç ekranına dönülür.\n\nÇıkış yapmak istediğinize emin misiniz?',
+        icon: '👋',
+        okText: 'Çıkış Yap',
         cancelText: 'Vazgeç',
         isDanger: true
       });
@@ -1652,8 +1661,8 @@
     // Kayıtlı Hesap Çıkışı
     const confirmed = await showAppConfirm({
       title: 'Hesaptan Çıkış Yap',
-      message: 'Hesabınızdan çıkış yapılacak ve Hoş Geldin ekranına dönülecektir. İlerlemeniz bulut hesabınızda saklanmaktadır.\n\nEmin misiniz?',
-      icon: '🚪',
+      message: 'LexiQ hesabınızdan güvenle çıkış yapılacak.\n\nTüm XP puanlarınız, serileriniz ve rozetleriniz bulut hesabınızda güvenle saklanmaktadır.',
+      icon: '👋',
       okText: 'Çıkış Yap',
       cancelText: 'Vazgeç',
       isDanger: false
@@ -2793,7 +2802,8 @@
     track: '4A',
     level: 'A2',
     unitNo: 1,
-    dailyGoal: 15
+    dailyGoal: 15,
+    streakPledgeDays: 5
   };
 
   function startOnboardingFlow() {
@@ -3020,6 +3030,11 @@
       dom.onboardingModal.style.display = 'none';
     }
     switchAppMode('home');
+    if (obState.streakPledgeDays) {
+      setTimeout(() => {
+        startStreakPledge(obState.streakPledgeDays);
+      }, 600);
+    }
     showToast(`Hoş geldin, ${state.userName}! ${state.userAvatar} Öğrenme yolculuğun başlıyor.`);
     if (!localStorage.getItem('lexiq_tour_completed')) {
       setTimeout(() => {
@@ -4291,6 +4306,7 @@
     const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
     if (!lastDate) {
       if (!state.dayStreak) state.dayStreak = 1;
+      evaluateStreakPledge();
       return;
     }
 
@@ -4304,10 +4320,255 @@
         localStorage.setItem('lexiq_day_streak', '0');
       }
     } catch (e) {}
+
+    evaluateStreakPledge();
+  }
+
+  // ==========================================
+  // DUOLINGO BENZERİ GÜNLÜK SERİ SÖZÜ (STREAK PLEDGE) SİSTEMİ
+  // ==========================================
+  function getPledgeDayDateKey(startDateStr, dayOffset) {
+    const d = new Date(startDateStr + 'T00:00:00');
+    d.setDate(d.getDate() + dayOffset);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function startStreakPledge(targetDays) {
+    targetDays = parseInt(targetDays, 10);
+    if (![3, 5, 7].includes(targetDays)) targetDays = 5;
+    const today = getTodayDateKey();
+    const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
+    const initialHistory = {};
+    if (lastDate === today) {
+      initialHistory[today] = true;
+    }
+
+    state.streakPledge = {
+      active: true,
+      targetDays: targetDays,
+      startDate: today,
+      history: initialHistory,
+      completed: false,
+      success: null,
+      rewardClaimed: false
+    };
+
+    localStorage.setItem('lexiq_streak_pledge', JSON.stringify(state.streakPledge));
+    updateStreakPledgeSettingsUI();
+    showToast(`🔥 ${targetDays} Günlük Seri Sözün Başladı! Her gün çalışarak serini koru.`, 'correct');
+    playSoundEffect('celebration');
+    openStreakPledgeModal();
+  }
+
+  function evaluateStreakPledge() {
+    if (!state.streakPledge || !state.streakPledge.active) return;
+    const pledge = state.streakPledge;
+    const today = getTodayDateKey();
+    if (!pledge.history) pledge.history = {};
+
+    const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
+    if (lastDate === today) {
+      pledge.history[today] = true;
+    }
+
+    // Gece 12'den 12'ye 24 saat üzerinden gün sonu hesabı
+    const lastPledgeDate = getPledgeDayDateKey(pledge.startDate, pledge.targetDays - 1);
+    if (today > lastPledgeDate) {
+      // Tüm taahhüt süresi doldu
+      let allPassed = true;
+      for (let i = 0; i < pledge.targetDays; i++) {
+        const dKey = getPledgeDayDateKey(pledge.startDate, i);
+        if (pledge.history[dKey] !== true) {
+          allPassed = false;
+        }
+      }
+      pledge.active = false;
+      pledge.completed = true;
+      pledge.success = allPassed;
+
+      if (allPassed && !pledge.rewardClaimed) {
+        pledge.rewardClaimed = true;
+        const rewardXp = pledge.targetDays * 20;
+        addXp(rewardXp);
+        showToast(`🏆 Tebrikler! ${pledge.targetDays} Günlük Seri Sözünü Eksiksiz Tamamladın! (+${rewardXp} XP)`, 'correct');
+        playSoundEffect('celebration');
+      }
+    }
+
+    localStorage.setItem('lexiq_streak_pledge', JSON.stringify(pledge));
+    updateStreakPledgeSettingsUI();
+  }
+
+  function renderStreakPledgeDays(containerEl, isCompact = false) {
+    if (!containerEl) return;
+    containerEl.innerHTML = '';
+    if (!state.streakPledge) return;
+
+    const pledge = state.streakPledge;
+    const targetDays = pledge.targetDays || 5;
+    const today = getTodayDateKey();
+    const history = pledge.history || {};
+
+    for (let i = 0; i < targetDays; i++) {
+      const dayDate = getPledgeDayDateKey(pledge.startDate, i);
+      const dayNo = i + 1;
+      let status = 'future'; // 'completed' | 'missed' | 'current' | 'future'
+      let icon = '🔒';
+      let tagText = 'Bekliyor';
+
+      if (dayDate < today) {
+        if (history[dayDate] === true) {
+          status = 'completed';
+          icon = '✓';
+          tagText = 'Tamam';
+        } else {
+          status = 'missed';
+          icon = '✕';
+          tagText = 'Kaçtı';
+        }
+      } else if (dayDate === today) {
+        if (history[dayDate] === true) {
+          status = 'completed';
+          icon = '✓';
+          tagText = 'Tamam';
+        } else {
+          status = 'current';
+          icon = '🔥';
+          tagText = 'Bugün';
+        }
+      } else {
+        status = 'future';
+        icon = '🔒';
+        tagText = 'Bekliyor';
+      }
+
+      const badge = document.createElement('div');
+      badge.className = `streak-day-badge sdb-${status}`;
+      if (isCompact) {
+        badge.style.padding = '6px 4px';
+        badge.style.minWidth = '42px';
+      }
+
+      badge.innerHTML = `
+        <span class="sdb-day-label">${dayNo}. Gün</span>
+        <div class="sdb-icon-circle">${icon}</div>
+        <span class="sdb-status-tag">${tagText}</span>
+      `;
+      containerEl.appendChild(badge);
+    }
+  }
+
+  function openStreakPledgeModal() {
+    evaluateStreakPledge();
+    const modalEl = document.getElementById('streakPledgeModal');
+    if (!modalEl) return;
+
+    if (!state.streakPledge) {
+      openSettingsModal('reminder');
+      showToast('🔥 Önce bir Seri Çalışma Sözü başlatmalısın.');
+      return;
+    }
+
+    const pledge = state.streakPledge;
+    const today = getTodayDateKey();
+    const titleEl = document.getElementById('streakModalTitle');
+    const subtitleEl = document.getElementById('streakModalSubtitle');
+    const daysTrackEl = document.getElementById('streakModalDaysTrack');
+    const statusIconEl = document.getElementById('streakModalStatusIcon');
+    const statusTextEl = document.getElementById('streakModalStatusText');
+
+    if (titleEl) {
+      titleEl.textContent = `🔥 ${pledge.targetDays} Günlük Seri Sözün`;
+    }
+
+    let currentDayIndex = 1;
+    for (let i = 0; i < pledge.targetDays; i++) {
+      if (getPledgeDayDateKey(pledge.startDate, i) === today) {
+        currentDayIndex = i + 1;
+        break;
+      }
+    }
+
+    const todayDone = (pledge.history && pledge.history[today] === true);
+
+    if (subtitleEl) {
+      if (!pledge.active && pledge.completed) {
+        subtitleEl.textContent = pledge.success 
+          ? '🎉 Tüm seriyi başarıyla tamamladın! Tebrikler!' 
+          : '⚠️ Bu seri süresi doldu. Yeni bir seri sözü başlatabilirsin!';
+      } else {
+        subtitleEl.textContent = `Bugün serinin ${currentDayIndex}. günündesin! Her gün çalışarak serini koru.`;
+      }
+    }
+
+    if (daysTrackEl) {
+      renderStreakPledgeDays(daysTrackEl, false);
+    }
+
+    if (statusIconEl && statusTextEl) {
+      if (todayDone) {
+        statusIconEl.textContent = '🎉';
+        statusTextEl.innerHTML = `<strong>Harikasın!</strong> Bugünkü çalışma hedefini tamamladın. Serin güvende ve yeşil yandı! 🔥`;
+      } else {
+        statusIconEl.textContent = '⚡';
+        statusTextEl.innerHTML = `<strong>Hedef Bekliyor:</strong> Serini korumak için bugün kartlarda çalış veya arenada bir oyuna katıl!`;
+      }
+    }
+
+    modalEl.style.display = 'flex';
+  }
+
+  function closeStreakPledgeModal() {
+    const modalEl = document.getElementById('streakPledgeModal');
+    if (modalEl) modalEl.style.display = 'none';
+  }
+
+  function updateStreakPledgeSettingsUI() {
+    const activeBox = document.getElementById('settingStreakPledgeActiveBox');
+    const selectBox = document.getElementById('settingStreakPledgeSelectBox');
+    const statusTitle = document.getElementById('settingStreakPledgeStatusTitle');
+    const daysTrack = document.getElementById('settingStreakPledgeDaysTrack');
+
+    if (!activeBox || !selectBox) return;
+
+    if (state.streakPledge && state.streakPledge.active) {
+      activeBox.style.display = 'block';
+      selectBox.style.display = 'none';
+
+      if (statusTitle) {
+        statusTitle.textContent = `🎯 ${state.streakPledge.targetDays} Günlük Seri Sözü Devam Ediyor`;
+      }
+      if (daysTrack) {
+        renderStreakPledgeDays(daysTrack, true);
+      }
+    } else {
+      activeBox.style.display = 'none';
+      selectBox.style.display = 'block';
+    }
+  }
+
+  function checkDailyStreakFirstLaunch() {
+    const todayKey = getTodayDateKey();
+    const lastModalDate = localStorage.getItem('lexiq_last_streak_modal_date');
+
+    if (lastModalDate !== todayKey) {
+      localStorage.setItem('lexiq_last_streak_modal_date', todayKey);
+      if (state.streakPledge && state.streakPledge.active) {
+        setTimeout(() => {
+          openStreakPledgeModal();
+        }, 1200);
+      }
+    }
   }
 
   function updateDailyStudyStreak() {
     const today = getTodayDateKey();
+    if (state.streakPledge && state.streakPledge.active) {
+      if (!state.streakPledge.history) state.streakPledge.history = {};
+      state.streakPledge.history[today] = true;
+      localStorage.setItem('lexiq_streak_pledge', JSON.stringify(state.streakPledge));
+      updateStreakPledgeSettingsUI();
+    }
     const lastDate = state.lastStudyDate || localStorage.getItem('lexiq_last_study_date') || '';
 
     if (!lastDate) {
@@ -4550,7 +4811,8 @@
     const unitTitle = currentUnit.baslik || (currentUnit.unite_adi ? `${currentUnit.seviye || ''} • ${currentUnit.unite_adi}` : `Ünite ${currentUnit.unite_no}`);
 
     if (dom.homeUnitBadge) {
-      dom.homeUnitBadge.textContent = `${langMeta.flag} ${langMeta.name} • ${currentUnit.seviye || ''}`;
+      const levelText = currentUnit.seviye || state.userLevel || 'A2';
+      dom.homeUnitBadge.innerHTML = `<span class="hub-lang-row">${langMeta.flag} ${langMeta.name}</span><span class="hub-level-tag">${levelText}</span>`;
     }
     if (dom.homeHeroTitle) {
       dom.homeHeroTitle.textContent = unitTitle;
@@ -8908,6 +9170,125 @@
         updateTourPosition(targetEl);
       }
     });
+
+    // ==========================================
+    // STREAK PLEDGE EVENT LISTENERS
+    // ==========================================
+    // 1. Onboarding Streak Seçim Çipleri
+    const obStreakChips = document.querySelectorAll('.ob-streak-chip');
+    const obSkipStreakPledgeBtn = document.getElementById('obSkipStreakPledgeBtn');
+    if (obStreakChips) {
+      obStreakChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          obStreakChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          obState.streakPledgeDays = parseInt(chip.getAttribute('data-streak-days'), 10) || 5;
+        });
+      });
+    }
+    if (obSkipStreakPledgeBtn) {
+      obSkipStreakPledgeBtn.addEventListener('click', () => {
+        obStreakChips.forEach(c => c.classList.remove('active'));
+        obState.streakPledgeDays = null;
+        showToast('Seri sözü atlandı. Dilediğin zaman ayarlardan başlatabilirsin.');
+      });
+    }
+
+    // 2. Ayarlar Panelindeki Streak Taahhüt Butonları
+    const settingStreakOptBtns = document.querySelectorAll('.setting-streak-opt-btn');
+    let selectedSettingStreakDays = 5;
+    if (settingStreakOptBtns) {
+      settingStreakOptBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          settingStreakOptBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedSettingStreakDays = parseInt(btn.getAttribute('data-days'), 10) || 5;
+        });
+      });
+    }
+
+    const settingStartStreakPledgeBtn = document.getElementById('settingStartStreakPledgeBtn');
+    if (settingStartStreakPledgeBtn) {
+      settingStartStreakPledgeBtn.addEventListener('click', () => {
+        startStreakPledge(selectedSettingStreakDays);
+      });
+    }
+
+    const settingViewStreakModalBtn = document.getElementById('settingViewStreakModalBtn');
+    if (settingViewStreakModalBtn) {
+      settingViewStreakModalBtn.addEventListener('click', () => {
+        openStreakPledgeModal();
+      });
+    }
+
+    // 3. Ana Sayfadaki Streak Rozeti Tıklaması
+    if (dom.homeStatStreak) {
+      dom.homeStatStreak.style.cursor = 'pointer';
+      dom.homeStatStreak.addEventListener('click', () => {
+        openStreakPledgeModal();
+      });
+    }
+
+    // 4. Streak Pledge Modalı Butonları
+    const closeStreakModalBtn = document.getElementById('closeStreakModalBtn');
+    const streakModalActionBtn = document.getElementById('streakModalActionBtn');
+    const streakPledgeModal = document.getElementById('streakPledgeModal');
+
+    if (closeStreakModalBtn) {
+      closeStreakModalBtn.addEventListener('click', closeStreakPledgeModal);
+    }
+    if (streakPledgeModal) {
+      streakPledgeModal.addEventListener('click', (e) => {
+        if (e.target === streakPledgeModal) closeStreakPledgeModal();
+      });
+    }
+    if (streakModalActionBtn) {
+      streakModalActionBtn.addEventListener('click', () => {
+        closeStreakPledgeModal();
+        const today = getTodayDateKey();
+        const todayDone = state.streakPledge && state.streakPledge.history && state.streakPledge.history[today] === true;
+        if (!todayDone) {
+          switchAppMode('flashcards');
+        }
+      });
+    }
+
+    // ==========================================
+    // ANDROID GERİ TUŞU / UYGULAMADAN ÇIKIŞ DİYALOĞU
+    // ==========================================
+    window.handleAppBackPress = function() {
+      // Açık modal varsa kapat
+      const openModals = Array.from(document.querySelectorAll('.modal-overlay')).filter(m => m.style.display !== 'none');
+      if (openModals.length > 0) {
+        openModals[openModals.length - 1].style.display = 'none';
+        return true;
+      }
+      if (state.activeMode !== 'home') {
+        switchAppMode('home');
+        return true;
+      }
+
+      // Ana sayfadayken çekici çıkış onay ekranı göster
+      showAppConfirm({
+        title: "LexiQ'ten Çıkış",
+        message: "Bugünkü kelime çalışmaların ve kazandığın puanlar güvende! 🎯\n\nUygulamadan çıkmak istediğine emin misin?",
+        icon: "👋",
+        okText: "Uygulamadan Çık",
+        cancelText: "Kal ve Çalış",
+        isDanger: false
+      }).then(confirmed => {
+        if (confirmed) {
+          if (window.AndroidTTS && typeof window.AndroidTTS.exitApp === 'function') {
+            window.AndroidTTS.exitApp();
+          } else if (navigator.app && typeof navigator.app.exitApp === 'function') {
+            navigator.app.exitApp();
+          } else {
+            window.close();
+          }
+        }
+      });
+      return true;
+    };
 
     // Dışarıya ve test simülatörüne oyun başlatma köprüsü sağla
     window.startGameRound = startGameRound;
