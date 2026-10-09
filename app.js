@@ -7,8 +7,8 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 'v1.4.3';
-  const CURRENT_APP_BUILD = 'lexiq_build_15_clean';
+  const APP_VERSION = 'v1.4.4';
+  const CURRENT_APP_BUILD = 'lexiq_build_16_clean';
 
   // Build 13 temiz kurulum / sıfırlama güvencesi (Kullanıcı verilerini sıfırla, Hoş Geldin ekranını garantile)
   if (!localStorage.getItem(CURRENT_APP_BUILD)) {
@@ -5075,7 +5075,9 @@
       if (iconEl) iconEl.textContent = '⚡';
       if (titleEl) {
         titleEl.textContent = 'Harika İlerleme! (%50 Pekiştirildi)';
-        titleEl.style.color = '#38bdf8';
+        titleEl.style.color = '';
+        titleEl.classList.remove('gold-title');
+        titleEl.classList.add('blue-title');
       }
       if (msgEl) {
         msgEl.innerHTML = `Bugün öğrendiğin <strong>${targetCount}</strong> kelimenin <strong>${currentCount}</strong> tanesini oyunlarda başarıyla doğru yanıtladın! 🎯<br><br>Kalan <strong>${targetCount - currentCount}</strong> kelimeyi de pekiştirmek için oynamaya devam etmek ister misin?`;
@@ -5092,7 +5094,9 @@
       if (iconEl) iconEl.textContent = '🏆';
       if (titleEl) {
         titleEl.textContent = 'Tebrikler! Günlük Pekiştirme Tamamlandı! 🎉';
-        titleEl.style.color = '#fbbf24';
+        titleEl.style.color = '';
+        titleEl.classList.remove('blue-title');
+        titleEl.classList.add('gold-title');
       }
       if (msgEl) {
         msgEl.innerHTML = `Bugün öğrendiğin <strong>${targetCount}</strong> kelimenin <strong>HEPSİNİ</strong> oyunlarda doğru yaparak başarıyla pekiştirdin! 🌟<br><br>Sürekli aynı kelimeleri oynamak yerine ilerlemen için şimdi ne yapmak istersin?`;
@@ -5240,18 +5244,18 @@
       dom.activeGameRoundNumberBadge.textContent = `🎯 Tur ${activeGameSession.roundNumber}`;
     }
     if (dom.activeGameRoundXpMultiplierBadge) {
+      dom.activeGameRoundXpMultiplierBadge.style.color = '';
+      dom.activeGameRoundXpMultiplierBadge.style.background = '';
+      dom.activeGameRoundXpMultiplierBadge.classList.remove('mult-badge-100', 'mult-badge-50', 'mult-badge-20');
       if (mult >= 1.0) {
         dom.activeGameRoundXpMultiplierBadge.textContent = '%100 XP';
-        dom.activeGameRoundXpMultiplierBadge.style.color = '#38bdf8';
-        dom.activeGameRoundXpMultiplierBadge.style.background = 'rgba(56, 189, 248, 0.2)';
+        dom.activeGameRoundXpMultiplierBadge.classList.add('mult-badge-100');
       } else if (mult >= 0.5) {
         dom.activeGameRoundXpMultiplierBadge.textContent = '%50 XP';
-        dom.activeGameRoundXpMultiplierBadge.style.color = '#fbbf24';
-        dom.activeGameRoundXpMultiplierBadge.style.background = 'rgba(251, 191, 36, 0.2)';
+        dom.activeGameRoundXpMultiplierBadge.classList.add('mult-badge-50');
       } else {
         dom.activeGameRoundXpMultiplierBadge.textContent = '%20 XP (Pratik)';
-        dom.activeGameRoundXpMultiplierBadge.style.color = '#94a3b8';
-        dom.activeGameRoundXpMultiplierBadge.style.background = 'rgba(148, 163, 184, 0.2)';
+        dom.activeGameRoundXpMultiplierBadge.classList.add('mult-badge-20');
       }
     }
     if (dom.activeGameRoundProgressBar) {
@@ -5310,7 +5314,9 @@
       if (dom.roundModalIcon) dom.roundModalIcon.textContent = '🌟';
       if (dom.roundModalTitle) {
         dom.roundModalTitle.textContent = 'Günün Kelimeleri Pekiştirildi! 🎉';
-        dom.roundModalTitle.style.color = '#fbbf24';
+        dom.roundModalTitle.style.color = '';
+        dom.roundModalTitle.classList.remove('blue-title');
+        dom.roundModalTitle.classList.add('gold-title');
       }
       if (dom.roundModalSubtitle) dom.roundModalSubtitle.textContent = `Bugün öğrendiğin tüm kelimeleri (${todayLearned.length} kelime) ${cfg.name} ile tamamladın!`;
       if (dom.roundModalPedagogyText) {
@@ -5320,7 +5326,9 @@
       if (dom.roundModalIcon) dom.roundModalIcon.textContent = '🏆';
       if (dom.roundModalTitle) {
         dom.roundModalTitle.textContent = `${activeGameSession.roundNumber}. Tur Tamamlandı! 🎯`;
-        dom.roundModalTitle.style.color = '#38bdf8';
+        dom.roundModalTitle.style.color = '';
+        dom.roundModalTitle.classList.remove('gold-title');
+        dom.roundModalTitle.classList.add('blue-title');
       }
       if (dom.roundModalSubtitle) dom.roundModalSubtitle.textContent = `${cfg.name} modunda 10 kelimelik alıştırmayı başarıyla bitirdin!`;
       if (dom.roundModalPedagogyText) {

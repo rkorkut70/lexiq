@@ -1,13 +1,12 @@
 {
-  "version": "v1.4.3",
-  "versionCode": 27,
+  "version": "v1.4.4",
+  "versionCode": 28,
   "releaseDate": "2026-10-09",
   "notes": [
-    "Oyunlarda 10 kelimelik tur sistemi ve canlı ilerleme çubuğu",
-    "Günün tüm kelimeleri tamamlandığında akıllı karne ve diğer oyun önerileri",
-    "Kart eşleştirme ve tüm oyunlarda tur sonu ekranı görünürlük güvencesi",
-    "Kartlar sayfasına ilk girişte konuşma balonlu etkileşimli rehber",
-    "Günlük hedef tamamlama kutlamasında kart kullanım ipuçları",
-    "iOS ve Web için canlı uzaktan sürüm denetleme ve tek tıkla önbellek yenileme"
+    "Açık temada (aydınlık mod) oyun mesajları, tur sonu özetleri ve bilgilendirme pencerelerinin okunabilirliği mükemmel hale getirildi",
+    "Kutlama ve teşvik bannerlarında koyu lacivert zemin üzerinde canlı, kristal netliğinde kontrast sağlandı",
+    "Tur sonu istatistik kutuları, rozetler ve pedagoji öneri metinleri açık temaya tam uyumlu yapıldı",
+    "Oyun içi canlı tur çubuğu ve XP çarpan rozetleri temaya duyarlı hale getirildi",
+    "Günün kelimeleri tamamlandığında akıllı karne ve diğer oyunlara yönlendirme deneyimi geliştirildi"
   ]
 }
