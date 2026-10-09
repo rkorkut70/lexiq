@@ -15,7 +15,7 @@
   <meta http-equiv="Expires" content="0">
   <title>LexiQ • Çok Dilli Akıllı Kelime Kartları</title>
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="stylesheet" href="style.css?v=1791310000000">
+  <link rel="stylesheet" href="style.css?v=1.4.3">
 </head>
 <body>
   <div class="app-container">
@@ -391,6 +391,44 @@
           <p class="completed-hero-desc" id="cardCompletedFullDesc">
             Tebrikler! Belirlediğin öğrenme hedefini başarıyla tamamladın. Öğrendiğin bu kelimeleri kalıcı hafızana almak için şimdi <strong>Kelime Arenası'nda eğlenceli etkinliklerle</strong> pratik yapma zamanı!
           </p>
+
+          <!-- Kart Kullanım İpuçları & Kontroller Hatırlatması -->
+          <div class="card-tips-reminder-box">
+            <div class="tips-reminder-title">
+              <span>💡</span> Kart Kullanım İpuçları
+            </div>
+            <div class="tips-reminder-grid">
+              <div class="tip-reminder-item">
+                <span class="tip-icon">🔄</span>
+                <div>
+                  <strong>Karta Dokun:</strong>
+                  <span>3D çevirerek Türkçe anlam ve örneği gör</span>
+                </div>
+              </div>
+              <div class="tip-reminder-item">
+                <span class="tip-icon">👉</span>
+                <div>
+                  <strong>Swipe (Kaydır):</strong>
+                  <span>Sağa / sola kaydırarak kelime değiştir</span>
+                </div>
+              </div>
+              <div class="tip-reminder-item">
+                <span class="tip-icon">✅</span>
+                <div>
+                  <strong>Öğrendim:</strong>
+                  <span>Butona basarak hedefe kaydet</span>
+                </div>
+              </div>
+              <div class="tip-reminder-item">
+                <span class="tip-icon">🔊</span>
+                <div>
+                  <strong>Sesli Telaffuz:</strong>
+                  <span>US / UK butonlarıyla dinle</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="completed-hero-actions">
             <button id="cardFullArenaBtn" class="pill-btn primary-action-btn" type="button">
               <span>🎮</span> Kelime Arenası'nda Başla
@@ -665,6 +703,20 @@
         <!-- 2. SATIR: TEK SATIR BÜYÜK VE ORTALANMIŞ OYUN ADI -->
         <div class="active-game-title-row">
           <h2 class="active-game-title-text" id="activeGameNameBadge">Arena</h2>
+        </div>
+
+        <!-- 3. SATIR: CANLI TUR & İLERLEME ÇUBUĞU (10 KELİMELİK OTURUM HEDEFİ) -->
+        <div id="activeGameRoundBar" class="active-game-round-bar" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; margin: 4px auto 8px auto; padding: 6px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 16px; box-sizing: border-box;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="activeGameRoundNumberBadge" style="font-weight: 800; font-size: 0.85rem; color: #38bdf8;">🎯 Tur 1</span>
+            <span id="activeGameRoundXpMultiplierBadge" style="font-size: 0.72rem; font-weight: 800; padding: 2px 7px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-radius: 8px;">%100 XP</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 90px; height: 7px; background: rgba(255, 255, 255, 0.12); border-radius: 4px; overflow: hidden;">
+              <div id="activeGameRoundProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #10b981); border-radius: 4px; transition: width 0.3s ease;"></div>
+            </div>
+            <span id="activeGameRoundProgressText" style="font-weight: 800; color: var(--text-color); font-size: 0.82rem;">0 / 10</span>
+          </div>
         </div>
 
         <!-- Oyun Nasıl Oynanır Açıklama Modalı / Overlay -->
@@ -1098,7 +1150,7 @@
         <div class="welcome-hero-section">
           <div class="welcome-brand-wrapper">
             <h1 class="welcome-brand-name">Lexi<span class="welcome-brand-q">Q</span></h1>
-            <span class="welcome-version-pill">v1.3.9 Beta</span>
+            <span class="welcome-version-pill">v1.4.1</span>
           </div>
           <p class="welcome-hero-tagline">Akıllı Tekrar • Kelime Arenası • Kalıcı Başarı</p>
         </div>
@@ -1198,7 +1250,7 @@
             <input type="text" id="obNameInput" class="ob-text-input ob-name-input-styled" placeholder="Adını veya takma adını yaz..." maxlength="20" autocomplete="off" required>
           </div>
           <div id="obNameError" class="ob-input-error-text" style="display: none;"></div>
-          <div class="ob-field-hint">En az 2 karakter, genel ahlaka uygun bir isim belirleyiniz.</div>
+          <div class="ob-field-hint">En az 2 karakterden oluşan bir isim girin</div>
         </div>
 
         <div class="ob-btn-row">
@@ -1583,7 +1635,7 @@
         <div class="about-hero-box">
           <div class="about-brand-row">
             <span class="about-brand">Lexi<span class="brand-highlight">Q</span></span>
-            <span class="about-version-pill" id="aboutAppVersion">v1.3.9 Beta</span>
+            <span class="about-version-pill" id="aboutAppVersion">v1.4.1</span>
           </div>
           <p class="about-tagline">Müfredat Tabanlı Çok Dilli Kelime Arenası</p>
         </div>
@@ -2573,6 +2625,19 @@
                 </label>
               </div>
             </div>
+
+            <!-- Kart Kullanım Rehberi (İpuçları) -->
+            <div class="setting-block no-border">
+              <div class="setting-compact-row" style="align-items: center;">
+                <div class="setting-row-info">
+                  <span class="setting-row-text">💡 Kart Kullanım Rehberi</span>
+                  <span class="setting-row-desc">Kart çevirme, kaydırma ve kontrolleri anlatan etkileşimli rehberi yeniden göster</span>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="restartCardsTourBtn" style="white-space: nowrap; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px;">
+                  Rehberi Başlat
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- 2. SEKME: ARENA & OYUNLAR -->
@@ -3074,13 +3139,71 @@
     </div>
   </div>
 
+  <!-- OYUN TUR / SEANS SONU VE AKILLI REHBERLİK MODALI -->
+  <div id="gameRoundCompletedModal" class="modal-overlay" style="z-index: 10062; display: none;">
+    <div class="modal-card celebration-modal-card" style="max-width: 440px; text-align: center; padding: 24px 20px; border-radius: 24px;">
+      <div class="confirm-icon-wrap" id="roundModalIcon" style="font-size: 3.2rem; margin-bottom: 6px;">🎉</div>
+      <h3 class="confirm-title" id="roundModalTitle" style="font-size: 1.3rem; color: #38bdf8; font-weight: 800; margin: 0 0 6px 0;">Tur Tamamlandı!</h3>
+      <div id="roundModalSubtitle" style="font-size: 0.92rem; color: var(--text-color); font-weight: 600; margin-bottom: 14px;">10 kelime başarıyla tamamlandı</div>
+      
+      <!-- Mini İstatistikler Kutusu -->
+      <div class="round-summary-stats" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; background: rgba(255, 255, 255, 0.05); padding: 12px 8px; border-radius: 16px; border: 1px solid var(--border-color);">
+        <div style="text-align: center;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">SÜRE</div>
+          <div id="roundModalDuration" style="font-size: 1.05rem; font-weight: 800; color: #38bdf8; margin-top: 2px;">42s</div>
+        </div>
+        <div style="text-align: center; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">KELİME</div>
+          <div id="roundModalWordCount" style="font-size: 1.05rem; font-weight: 800; color: #10b981; margin-top: 2px;">10 / 10</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">KAZANILAN</div>
+          <div id="roundModalEarnedXp" style="font-size: 1.05rem; font-weight: 800; color: #fbbf24; margin-top: 2px;">+50 XP</div>
+        </div>
+      </div>
+
+      <!-- Bilgilendirme / Rehberlik Mesajı -->
+      <div id="roundModalPedagogyBox" style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px; margin-bottom: 18px; text-align: left;">
+        <div style="font-size: 0.85rem; line-height: 1.5; color: var(--text-color);" id="roundModalPedagogyText">
+          Bugün öğrendiğin tüm kelimelerle bu alıştırmayı yaptın! 🌟 Kalıcı hafıza için şimdi farklı bir alıştırma denemek ister misin?
+        </div>
+      </div>
+
+      <!-- Yönlendirme ve Aksiyon Butonları -->
+      <div class="confirm-actions-row" style="display: flex; flex-direction: column; gap: 9px; width: 100%;">
+        <!-- Önerilen 1. Farklı Oyun -->
+        <button type="button" class="pill-btn primary-action-btn" id="roundModalSuggestBtn1" style="width: 100%; padding: 12px 14px; font-size: 0.94rem; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #2563eb); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span id="roundSuggestIcon1">🎯</span>
+          <span id="roundSuggestText1">4 Şıklı Test'i Dene</span>
+          <span style="font-size: 0.75rem; background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 10px; font-weight: 800;">+%100 XP</span>
+        </button>
+
+        <!-- Önerilen 2. Alternatif Oyun -->
+        <button type="button" class="pill-btn" id="roundModalSuggestBtn2" style="width: 100%; padding: 11px 14px; font-size: 0.9rem; font-weight: 700; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span id="roundSuggestIcon2">🕹️</span>
+          <span id="roundSuggestText2">Harf Tetrisi Moduna Geç</span>
+        </button>
+
+        <!-- Mevcut Oyunda Devam Et (Serbest / Azaltılmış XP) -->
+        <button type="button" class="pill-btn" id="roundModalContinueSameBtn" style="width: 100%; padding: 10px 14px; font-size: 0.88rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 14px; cursor: pointer;">
+          <span id="roundContinueSameText">🔄 Bu Oyunda Yeni Tur Başlat (%50 XP)</span>
+        </button>
+
+        <!-- Arenaya Dön -->
+        <button type="button" class="pill-btn" id="roundModalExitArenaBtn" style="width: 100%; padding: 9px 14px; font-size: 0.85rem; font-weight: 600; background: transparent; border: none; color: var(--text-muted); cursor: pointer;">
+          🏠 Arena Menüsüne Dön
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- YENİLİKLER VE GÜNCELLEME BİLDİRİMİ MODALI -->
   <div id="appUpdateModal" class="modal-overlay" style="z-index: 10065; display: none;">
     <div class="modal-card celebration-modal-card" style="max-width: 440px; text-align: center; padding: 24px 20px; border-radius: 24px;">
       <div class="confirm-icon-wrap" style="font-size: 2.8rem; margin-bottom: 8px;">🎉</div>
       <h3 class="confirm-title" style="font-size: 1.3rem; color: #38bdf8; font-weight: 800; margin: 0 0 6px 0;">LexiQ Güncellendi!</h3>
       <div style="display: inline-block; padding: 4px 14px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; font-size: 0.84rem; font-weight: 800; color: #38bdf8; margin-bottom: 14px;">
-        Sürüm <span id="appUpdateVersionText">v1.3.9</span>
+        Sürüm <span id="appUpdateVersionText">v1.4.1</span>
       </div>
       <div class="update-notes-box" style="text-align: left; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px 16px; font-size: 0.88rem; line-height: 1.6; color: var(--text-color); margin-bottom: 18px; max-height: 280px; overflow-y: auto;">
         <div style="font-weight: 800; margin-bottom: 8px; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
@@ -3094,9 +3217,17 @@
           <li><strong>Akıllı Bildirimler:</strong> Yeni sürümler yüklendiğinde otomatik bilgilendirme sistemi eklendi.</li>
         </ul>
       </div>
-      <button type="button" class="pill-btn primary-action-btn" id="closeAppUpdateModalBtn" style="width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4); cursor: pointer;">
-        🚀 Harika, Keşfetmeye Başla!
-      </button>
+      <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+        <button type="button" class="pill-btn primary-action-btn" id="applyUpdateAndReloadBtn" style="width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #38bdf8, #2563eb); color: #fff; border: none; border-radius: 14px; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4); cursor: pointer; display: none;">
+          🚀 Hemen Güncelle & Yeniden Yükle
+        </button>
+        <button type="button" class="pill-btn" id="forceRefreshCacheBtn" style="width: 100%; padding: 11px; font-size: 0.88rem; font-weight: 700; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; border-radius: 14px; cursor: pointer;">
+          🔄 Önbelleği Temizle & Yenile
+        </button>
+        <button type="button" class="pill-btn primary-action-btn" id="closeAppUpdateModalBtn" style="width: 100%; padding: 12px; font-size: 0.92rem; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 14px; cursor: pointer;">
+          ✨ Tamam, Anladım
+        </button>
+      </div>
     </div>
   </div>
 
@@ -3146,11 +3277,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-  <script src="firebase_backend.js?v=1791310000000"></script>
+  <script src="firebase_backend.js?v=1.4.3"></script>
 
   <!-- Kelime Verisi ve Uygulama Mantığı (Sadece Standart Vanilla JS) -->
-  <script src="words_data.js?v=1791299900000"></script>
-  <script src="app.js?v=1791310000000"></script>
+  <script src="words_data.js?v=1.4.3"></script>
+  <script src="app.js?v=1.4.3"></script>
 
   </body>
 </html>

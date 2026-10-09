@@ -1,0 +1,13 @@
+{
+  "version": "v1.4.3",
+  "versionCode": 27,
+  "releaseDate": "2026-10-09",
+  "notes": [
+    "Oyunlarda 10 kelimelik tur sistemi ve canlı ilerleme çubuğu",
+    "Günün tüm kelimeleri tamamlandığında akıllı karne ve diğer oyun önerileri",
+    "Kart eşleştirme ve tüm oyunlarda tur sonu ekranı görünürlük güvencesi",
+    "Kartlar sayfasına ilk girişte konuşma balonlu etkileşimli rehber",
+    "Günlük hedef tamamlama kutlamasında kart kullanım ipuçları",
+    "iOS ve Web için canlı uzaktan sürüm denetleme ve tek tıkla önbellek yenileme"
+  ]
+}
