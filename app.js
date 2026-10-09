@@ -5895,8 +5895,11 @@
     });
   }
 
+  let badgesModalOpenedAt = 0;
+
   function openBadgesModal() {
     if (!dom.badgesModal) return;
+    badgesModalOpenedAt = Date.now();
     const visibleBadges = getVisibleBadgesConfigForUser(state.activeLanguage);
     const visibleUnlockedCount = visibleBadges.filter(b => state.unlockedBadges.includes(b.id)).length;
 
@@ -5938,7 +5941,8 @@
     dom.badgesModal.classList.add('active');
   }
 
-  function closeBadgesModal() {
+  function closeBadgesModal(force = false) {
+    if (!force && Date.now() - badgesModalOpenedAt < 350) return;
     dom.badgesModal.classList.remove('active');
   }
 
@@ -9203,10 +9207,25 @@
     if (dom.homeGameTetris) dom.homeGameTetris.addEventListener('click', () => handleHomeGameClick('tetris', 3));
 
     // Rozetler Butonu & Modalı
-    dom.badgesBtn.addEventListener('click', openBadgesModal);
-    dom.closeBadgesModalBtn.addEventListener('click', closeBadgesModal);
+    dom.badgesBtn.addEventListener('click', (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      openBadgesModal();
+    });
+    dom.closeBadgesModalBtn.addEventListener('click', (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      closeBadgesModal(true);
+    });
     dom.badgesModal.addEventListener('click', (e) => {
-      if (e.target === dom.badgesModal) closeBadgesModal();
+      if (e.target === dom.badgesModal) {
+        if (Date.now() - badgesModalOpenedAt < 400) return;
+        closeBadgesModal();
+      }
     });
 
     // Kutlama Modalı Kapatma
