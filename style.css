@@ -7043,143 +7043,242 @@ body[data-theme="dark"] .drawer-home-btn,
   box-shadow: 0 0 0 3px var(--accent-light);
 }
 
-/* Avatar Seçim Alanı ve Açılır Menü (Dropdown) */
-.ob-avatar-dropdown-wrapper {
-  position: relative;
-  width: 100%;
-  margin-top: 6px;
-}
-
-.ob-avatar-trigger-btn {
-  width: 100%;
+/* 2. Adım: Modern Hero Avatar & Açılır Avatar Menüsü (Sheet / Dropdown) */
+.ob-hero-avatar-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.ob-avatar-trigger-btn:hover {
-  border-color: var(--accent);
-  background: var(--bg-surface);
-}
-
-.ob-avatar-trigger-btn.open {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-light);
-}
-
-.ob-avatar-trigger-content {
-  display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 12px;
+  margin: 8px 0 20px 0;
+  width: 100%;
 }
 
-.ob-avatar-preview-badge {
-  width: 44px;
-  height: 44px;
+.ob-hero-avatar-orb {
+  position: relative;
+  width: 92px;
+  height: 92px;
   border-radius: 50%;
-  background: var(--accent-light);
+  background: radial-gradient(circle at 35% 35%, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.1) 70%, transparent 100%), var(--bg-card);
+  border: 3.5px solid var(--accent);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.3), inset 0 2px 6px rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.7rem;
-  border: 2px solid var(--accent);
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
 }
 
-.ob-avatar-trigger-info {
+.ob-hero-avatar-orb:hover,
+.ob-hero-avatar-orb:focus-visible {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.45);
+  border-color: #60a5fa;
+}
+
+.ob-hero-avatar-orb:active {
+  transform: scale(0.96);
+}
+
+.ob-hero-avatar-emoji {
+  font-size: 3.2rem;
+  line-height: 1;
+  user-select: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+.ob-hero-avatar-edit-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  border: 2.5px solid var(--bg-surface);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.ob-hero-avatar-orb:hover .ob-hero-avatar-edit-badge {
+  transform: scale(1.15) rotate(10deg);
+}
+
+.ob-avatar-open-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.15);
+  transition: all 0.2s ease;
+}
+
+.ob-avatar-open-dropdown-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+}
+
+.ob-avatar-open-dropdown-btn:active {
+  transform: translateY(0);
+}
+
+.ob-avatar-open-dropdown-btn.open {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.ob-dropdown-chevron {
+  font-size: 0.72rem;
+  transition: transform 0.2s ease;
+}
+
+/* Zorunlu İsim Kutusu Stil Güncellemesi */
+.ob-name-field-group {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto 16px auto;
   text-align: left;
 }
 
-.ob-avatar-trigger-label {
-  font-size: 0.95rem;
+.ob-name-input-styled {
+  text-align: center;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-main);
+  padding: 13px 16px;
+  border-radius: 16px;
+  letter-spacing: 0.02em;
 }
 
-.ob-avatar-trigger-sub {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  font-weight: 500;
+/* AÇILIR AVATAR MENÜSÜ / MODAL SHEET OVERLAY */
+.ob-avatar-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10500;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: obOverlayFadeIn 0.22s ease-out;
+  box-sizing: border-box;
 }
 
-.ob-avatar-dropdown-arrow {
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  transition: transform 0.25s ease;
+@keyframes obOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.ob-avatar-trigger-btn.open .ob-avatar-dropdown-arrow {
-  transform: rotate(180deg);
-  color: var(--accent);
-}
-
-/* Dropdown Açılır Menü Paneli */
-.ob-avatar-dropdown-panel {
-  margin-top: 8px;
+.ob-avatar-sheet-card {
+  width: 100%;
+  max-width: 400px;
+  max-height: 88vh;
   background: var(--bg-surface);
   border: 2px solid var(--accent);
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-  padding: 12px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  animation: slideDownFade 0.22s ease-out;
-  z-index: 25;
+  overflow: hidden;
+  animation: obSheetSlideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes slideDownFade {
+@keyframes obSheetSlideUp {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(28px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-.ob-avatar-panel-header {
+.ob-avatar-sheet-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--border-color);
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
-.ob-avatar-panel-title {
-  font-size: 0.85rem;
-  font-weight: 700;
+.ob-avatar-sheet-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.ob-avatar-sheet-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.ob-avatar-sheet-title {
+  font-size: 1.05rem;
+  font-weight: 800;
   color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
 }
 
-.ob-avatar-panel-current {
-  font-size: 0.82rem;
+.ob-avatar-sheet-desc {
+  font-size: 0.75rem;
   color: var(--text-muted);
+  margin: 2px 0 0 0;
 }
 
-.ob-avatar-panel-current strong {
-  font-size: 1.1rem;
-  color: var(--accent);
-  margin-left: 3px;
+.ob-avatar-sheet-x {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
+.ob-avatar-sheet-x:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* Kategori Butonları */
 .ob-avatar-cat-pills {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 10px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
   scrollbar-width: none;
+  flex-shrink: 0;
 }
 
 .ob-avatar-cat-pills::-webkit-scrollbar {
@@ -7187,13 +7286,13 @@ body[data-theme="dark"] .drawer-home-btn,
 }
 
 .ob-avatar-cat-pill {
-  padding: 5px 11px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-color);
   background: var(--bg-card);
   color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -7208,22 +7307,94 @@ body[data-theme="dark"] .drawer-home-btn,
   background: var(--accent);
   color: #ffffff;
   border-color: var(--accent);
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
-.ob-avatar-grid-scroll {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+/* Seçili Avatar Önizleme Şeridi */
+.ob-avatar-sheet-selected-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-  max-height: 190px;
-  overflow-y: auto;
-  padding: 4px 2px;
-  border-radius: 8px;
+  padding: 8px 14px;
+  background: rgba(37, 99, 235, 0.08);
+  border-bottom: 1px dashed var(--border-color);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.ob-avatar-panel-footer {
-  padding-top: 8px;
+.ob-avatar-sheet-selected-preview strong {
+  font-size: 1.45rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Avatar Izgarası (Grid) */
+.ob-avatar-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding: 14px 16px;
+  overflow-y: auto;
+  max-height: 250px;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+}
+
+.avatar-chip {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 10px 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.avatar-chip:hover {
+  transform: scale(1.12);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.avatar-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  position: relative;
+}
+
+.avatar-chip.active::after {
+  content: '✓';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Modal Altı Onay Butonu (Kullanıcı Onayı ile Kapanır) */
+.ob-avatar-sheet-footer {
+  padding: 12px 16px;
+  background: var(--bg-card);
   border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .ob-avatar-confirm-btn {
@@ -7235,47 +7406,23 @@ body[data-theme="dark"] .drawer-home-btn,
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-size: 0.92rem;
-  font-weight: 700;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   transition: all 0.2s ease;
+  letter-spacing: 0.02em;
 }
 
 .ob-avatar-confirm-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
 }
 
 .ob-avatar-confirm-btn:active {
   transform: translateY(0);
-}
-
-.avatar-chip {
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: 14px;
-  padding: 8px 0;
-  font-size: 1.6rem;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-chip:hover {
-  transform: scale(1.1);
-  border-color: var(--accent);
-}
-
-.avatar-chip.active {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 /* Zorunlu İsim Alanı Doğrulama ve Uyarı Stilleri */

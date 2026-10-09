@@ -3042,10 +3042,12 @@
   }
 
   function setupOnboardingAvatarDropdownEvents() {
+    const orb = document.getElementById('obAvatarPreviewOrb');
     const triggerBtn = document.getElementById('obAvatarTriggerBtn');
     const menu = document.getElementById('obAvatarDropdownMenu');
     const arrow = document.getElementById('obAvatarArrow');
     const confirmBtn = document.getElementById('obAvatarConfirmBtn');
+    const closeXBtn = document.getElementById('obAvatarSheetCloseXBtn');
     const catPills = document.querySelectorAll('#obAvatarCatPills .ob-avatar-cat-pill');
 
     function openDropdown() {
@@ -3055,7 +3057,7 @@
         triggerBtn.classList.add('open');
         triggerBtn.setAttribute('aria-expanded', 'true');
       }
-      if (arrow) arrow.textContent = '▴';
+      if (arrow) arrow.textContent = '▲';
       renderOnboardingAvatarDropdown(activeObAvatarCat);
     }
 
@@ -3066,7 +3068,15 @@
         triggerBtn.classList.remove('open');
         triggerBtn.setAttribute('aria-expanded', 'false');
       }
-      if (arrow) arrow.textContent = '▾';
+      if (arrow) arrow.textContent = '▼';
+    }
+
+    if (orb) {
+      orb.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openDropdown();
+      };
     }
 
     if (triggerBtn) {
@@ -3078,6 +3088,14 @@
         } else {
           openDropdown();
         }
+      };
+    }
+
+    if (closeXBtn) {
+      closeXBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDropdown();
       };
     }
 
@@ -3100,13 +3118,13 @@
       };
     });
 
-    document.addEventListener('click', (e) => {
-      if (!menu || menu.style.display !== 'flex') return;
-      const wrap = document.querySelector('.ob-avatar-dropdown-wrapper');
-      if (wrap && !wrap.contains(e.target)) {
-        closeDropdown();
-      }
-    });
+    if (menu) {
+      menu.onclick = (e) => {
+        if (e.target === menu) {
+          closeDropdown();
+        }
+      };
+    }
   }
 
   function startOnboardingFlow() {
@@ -3154,6 +3172,15 @@
     if (stepNum === 1) {
       updateOnboardingAvatarUI(obState.avatar || '🦊');
       renderOnboardingAvatarDropdown(activeObAvatarCat);
+      const menu = document.getElementById('obAvatarDropdownMenu');
+      if (menu) menu.style.display = 'none';
+      const triggerBtn = document.getElementById('obAvatarTriggerBtn');
+      if (triggerBtn) {
+        triggerBtn.classList.remove('open');
+        triggerBtn.setAttribute('aria-expanded', 'false');
+      }
+      const arrow = document.getElementById('obAvatarArrow');
+      if (arrow) arrow.textContent = '▼';
       const nameInput = dom.obNameInput || document.getElementById('obNameInput');
       if (nameInput) {
         nameInput.value = obState.name || '';

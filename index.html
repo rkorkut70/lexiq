@@ -1172,61 +1172,82 @@
       <!-- 2. ADIM: İSİM & AVATAR -->
       <div class="onboarding-step-view" id="obStep1" style="display: none;">
         
-        <div class="ob-step-tag" style="margin-bottom:10px;">ADIM 1 / 4</div><h2 class="ob-title">Profilini Oluştur 👤</h2>
-        <p class="ob-subtitle">Kişisel kelime öğrenme maceranda seni hangi isim ve avatar temsil etsin?</p>
-        
-        
+        <div class="ob-step-tag" style="margin-bottom:8px;">ADIM 1 / 4</div>
+        <h2 class="ob-title">Profilini Oluştur 👤</h2>
+        <p class="ob-subtitle">Öğrenme maceranda seni temsil edecek adını ve avatarını belirle.</p>
 
-        <div class="ob-field-group">
-          <label class="ob-field-label" for="obNameInput">Adın veya Takma Adın: <span style="color:#ef4444; font-weight:bold;">*</span></label>
-          <input type="text" id="obNameInput" class="ob-text-input" placeholder="Örn: Ali, Zeynep..." maxlength="20" autocomplete="off" required>
-          <div id="obNameError" class="ob-input-error-text" style="display: none;"></div>
+        <!-- Karakter Avatar Önizleme & Açılır Menü Tetikleyici -->
+        <div class="ob-hero-avatar-section">
+          <div class="ob-hero-avatar-orb" id="obAvatarPreviewOrb" role="button" tabindex="0" title="Avatarını Değiştirmek İçin Dokun">
+            <span class="ob-hero-avatar-emoji" id="obAvatarPreview">🦊</span>
+            <div class="ob-hero-avatar-edit-badge" title="Değiştir">✏️</div>
+          </div>
+          <button type="button" id="obAvatarTriggerBtn" class="ob-avatar-open-dropdown-btn" aria-haspopup="true">
+            <span>🎭 Avatar Seçimi Yap</span>
+            <span class="ob-dropdown-chevron" id="obAvatarArrow">▼</span>
+          </button>
         </div>
 
-        <div class="ob-field-group">
-          <label class="ob-field-label">Kendine Bir Avatar Seç:</label>
-          <div class="ob-avatar-dropdown-wrapper">
-            <!-- Açılır Menüyü Tetikleyen Seçim Kartı -->
-            <button type="button" id="obAvatarTriggerBtn" class="ob-avatar-trigger-btn" aria-haspopup="true" aria-expanded="false">
-              <div class="ob-avatar-trigger-content">
-                <span class="ob-avatar-preview-badge" id="obAvatarPreview">🦊</span>
-                <div class="ob-avatar-trigger-info">
-                  <span class="ob-avatar-trigger-label">Avatarını Belirle</span>
-                  <span class="ob-avatar-trigger-sub" id="obAvatarTriggerSub">Seçili: 🦊 (Değiştirmek için dokun)</span>
-                </div>
-              </div>
-              <span class="ob-avatar-dropdown-arrow" id="obAvatarArrow">▾</span>
-            </button>
-
-            <!-- Açılır Avatar Menüsü Paneli -->
-            <div id="obAvatarDropdownMenu" class="ob-avatar-dropdown-panel" style="display: none;">
-              <div class="ob-avatar-panel-header">
-                <span class="ob-avatar-panel-title">🎭 Beğendiğin Bir Avatar Seç</span>
-                <span class="ob-avatar-panel-current">Seçili: <strong id="obAvatarSelectedIndicator">🦊</strong></span>
-              </div>
-              <div class="ob-avatar-cat-pills" id="obAvatarCatPills">
-                <button type="button" class="ob-avatar-cat-pill active" data-cat="all">✨ Tümü</button>
-                <button type="button" class="ob-avatar-cat-pill" data-cat="animals">🐾 Hayvanlar</button>
-                <button type="button" class="ob-avatar-cat-pill" data-cat="nature">🌿 Doğa</button>
-                <button type="button" class="ob-avatar-cat-pill" data-cat="sci_fi">🚀 Kurgu</button>
-                <button type="button" class="ob-avatar-cat-pill" data-cat="abstract">💎 Sembol</button>
-                <button type="button" class="ob-avatar-cat-pill" data-cat="fun">😎 Eğlence</button>
-              </div>
-              <div class="ob-avatar-grid-scroll" id="obAvatarGrid">
-                <!-- JS ile zengin avatar listesi yerleşecek -->
-              </div>
-              <div class="ob-avatar-panel-footer">
-                <button type="button" id="obAvatarConfirmBtn" class="ob-avatar-confirm-btn">
-                  <span>✓</span> Avatarı Onayla ve Kapat
-                </button>
-              </div>
-            </div>
+        <!-- İsim Girişi -->
+        <div class="ob-field-group ob-name-field-group">
+          <label class="ob-field-label" for="obNameInput">
+            <span>👤 Adın veya Takma Adın</span>
+            <span class="ob-required-star">*</span>
+          </label>
+          <div class="ob-input-wrapper">
+            <input type="text" id="obNameInput" class="ob-text-input ob-name-input-styled" placeholder="Adını veya takma adını yaz..." maxlength="20" autocomplete="off" required>
           </div>
+          <div id="obNameError" class="ob-input-error-text" style="display: none;"></div>
+          <div class="ob-field-hint">En az 2 karakter, genel ahlaka uygun bir isim belirleyiniz.</div>
         </div>
 
         <div class="ob-btn-row">
           <button type="button" class="pill-btn secondary-btn" id="obStep1BackBtn">← Geri</button>
           <button type="button" class="pill-btn primary-action-btn" id="obStep1NextBtn">Devam Et ➔</button>
+        </div>
+
+        <!-- AÇILIR AVATAR MENÜSÜ / MODAL SHEET (KULLANICI ONAYI İLE KAPANIR) -->
+        <div id="obAvatarDropdownMenu" class="ob-avatar-sheet-overlay" style="display: none;">
+          <div class="ob-avatar-sheet-card">
+            <div class="ob-avatar-sheet-header">
+              <div class="ob-avatar-sheet-title-row">
+                <span class="ob-avatar-sheet-icon">🎭</span>
+                <div>
+                  <h3 class="ob-avatar-sheet-title">Avatarını Seç</h3>
+                  <p class="ob-avatar-sheet-desc">Beğendiğin simgeye dokun, ardından onayla</p>
+                </div>
+              </div>
+              <button type="button" id="obAvatarSheetCloseXBtn" class="icon-btn ob-avatar-sheet-x" aria-label="Kapat">✕</button>
+            </div>
+
+            <!-- Kategori Sekmeleri -->
+            <div class="ob-avatar-cat-pills" id="obAvatarCatPills">
+              <button type="button" class="ob-avatar-cat-pill active" data-cat="all">✨ Tümü</button>
+              <button type="button" class="ob-avatar-cat-pill" data-cat="animals">🐾 Hayvanlar</button>
+              <button type="button" class="ob-avatar-cat-pill" data-cat="nature">🌿 Doğa</button>
+              <button type="button" class="ob-avatar-cat-pill" data-cat="sci_fi">🚀 Kurgu</button>
+              <button type="button" class="ob-avatar-cat-pill" data-cat="abstract">💎 Sembol</button>
+              <button type="button" class="ob-avatar-cat-pill" data-cat="fun">😎 Eğlence</button>
+            </div>
+
+            <!-- Seçilen Avatar Bilgisi -->
+            <div class="ob-avatar-sheet-selected-preview">
+              <span>Seçili Avatar:</span>
+              <strong id="obAvatarSelectedIndicator">🦊</strong>
+            </div>
+
+            <!-- Izgara -->
+            <div class="ob-avatar-sheet-grid" id="obAvatarGrid">
+              <!-- JS ile doldurulacak -->
+            </div>
+
+            <!-- Kullanıcı Onayı Butonu (Kullanıcı onayı ile avatar ekranı kapansın) -->
+            <div class="ob-avatar-sheet-footer">
+              <button type="button" id="obAvatarConfirmBtn" class="ob-avatar-confirm-btn">
+                <span>✓</span> Bu Avatarı Seç ve Kapat
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
